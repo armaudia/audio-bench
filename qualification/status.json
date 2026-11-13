@@ -1,0 +1,17 @@
+{
+  "schema_id": "audio-bench/qualification-status/0.1",
+  "task": "B10",
+  "decision": "not_assessed",
+  "criteria_digest": null,
+  "target_fingerprint": null,
+  "acceptance_attempts": [],
+  "missing_prerequisites": [
+    "actual target access",
+    "founder-signed workload requirements",
+    "frozen numeric deadlines and lateness limits",
+    "approved quality margin",
+    "SDK package and conformance evidence",
+    "complete B05-B09 evidence path"
+  ],
+  "qualification_claim": "none"
+}

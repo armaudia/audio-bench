@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/core/0.1",
+  "title": "Sealed result core (immutable; no review/qualification/self digest inside the preimage)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "identity_algorithm",
+    "core_digest",
+    "run_manifest_digest",
+    "request_digest",
+    "dataset_id",
+    "comparison_cohort_id",
+    "configuration_id",
+    "scored_interval_set_id",
+    "metric_set_digest",
+    "registry_snapshot_id",
+    "observations_file_digest",
+    "outputs_file_digest",
+    "summary_digest",
+    "inventory_digest",
+    "predecessor_core_digest",
+    "correction_reason"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/core/0.1" },
+    "identity_algorithm": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/identity_algorithm" },
+    "core_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "run_manifest_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "request_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "dataset_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "comparison_cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "scored_interval_set_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "metric_set_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "registry_snapshot_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "observations_file_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "outputs_file_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "summary_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "inventory_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "predecessor_core_digest": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+        { "type": "null" }
+      ]
+    },
+    "correction_reason": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+        { "type": "null" }
+      ]
+    }
+  }
+}

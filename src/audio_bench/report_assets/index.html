@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>audio-bench evidence report</title>
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <header>
+    <h1>audio-bench evidence report</h1>
+    <p class="lede">
+      Execution, reproduction, review and qualification are independent dimensions. A passing
+      execution is not a qualification. Synthetic fixtures are correctness fixtures, not speech or
+      corpus evidence.
+    </p>
+    <p id="error" class="error" role="alert" hidden></p>
+  </header>
+
+  <main>
+    <section aria-labelledby="filters">
+      <h2 id="filters">Filters</h2>
+      <form id="filter-form" class="filters">
+        <label>Task <select id="filter-task"><option value="">all</option></select></label>
+        <label>Cohort <select id="filter-cohort"><option value="">all</option></select></label>
+        <label>Configuration <select id="filter-config"><option value="">all</option></select></label>
+        <button type="submit">Apply</button>
+        <button id="csv-export" type="button">Export visible rows (CSV)</button>
+        <a href="data/index.json" download>Raw index (JSON)</a>
+      </form>
+    </section>
+
+    <section aria-labelledby="rows">
+      <h2 id="rows">Rows</h2>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Configuration</th>
+            <th scope="col">Cohort</th>
+            <th scope="col">Task</th>
+            <th scope="col">Hardware</th>
+            <th scope="col">Metrics</th>
+            <th scope="col">Evidence dimensions</th>
+          </tr>
+        </thead>
+        <tbody id="rows-body">
+<!--ROWS-->
+        </tbody>
+      </table>
+      <p class="note">
+        A row with failed or missing observations is shown as-is and is never ranked as a complete
+        comparison. Partial intersections are labelled partial diagnostics in the JSON index.
+      </p>
+    </section>
+
+    <section aria-labelledby="gallery">
+      <h2 id="gallery">Synchronized preview (synthetic fixtures only)</h2>
+      <p class="note">
+        Preview audio is same-origin and only present when rights permit. When a synchronized
+        decoder is unavailable the page falls back to individual players and says so.
+      </p>
+      <div class="player">
+        <label>Case <select id="preview-case"><option value="">none</option></select></label>
+        <button id="play" type="button">Play</button>
+        <button id="pause" type="button">Pause</button>
+        <button id="switch" type="button">A/B switch</button>
+        <button id="reveal" type="button">Reveal identity</button>
+        <span id="player-status" role="status" aria-live="polite"></span>
+        <p id="player-identity"></p>
+        <div id="fallback" hidden></div>
+      </div>
+      <p class="note">
+        Keyboard: <kbd>Space</kbd> play/pause, <kbd>a</kbd>/<kbd>b</kbd> switch, <kbd>i</kbd> reveal.
+        Switching preserves the sample position; no per-track gain normalization is applied.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Built offline from a validated bundle. No external URL is fetched from query parameters.
+      Unknown IDs produce a safe error instead of an empty success.
+    </p>
+  </footer>
+
+  <script type="module" src="assets/app.js"></script>
+  <script type="module" src="assets/player.js"></script>
+</body>
+</html>

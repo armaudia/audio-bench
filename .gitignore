@@ -1,0 +1,15 @@
+# Local build/run outputs, never committed
+.venv/
+build/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+report/dist/
+.runs-local/
+# Downloaded assets and caches
+assets/
+cache/
+*.part
+# OS noise
+.DS_Store

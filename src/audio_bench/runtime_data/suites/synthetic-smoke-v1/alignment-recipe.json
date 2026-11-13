@@ -1,0 +1,1 @@
+{"identity_algorithm":"jcs-sha256-v1","implementation":"audio-bench.synthetic.fixed-interval.v1","kind":"alignment","recipe_id":"sha256:22fa37573d1a33b92c55a5b934f3de460eb89a933c098533005b35940735c6d0","schema_id":"audio-bench/recipe/0.1","settings":{"edge_exclusion_end":"0","edge_exclusion_start":"0","interval_rule":"full-case","post_score_refit":false}}

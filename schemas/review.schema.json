@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/review/0.1",
+  "title": "Append-only review record binding one sealed core",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "review_id",
+    "result_core_digest",
+    "actor",
+    "organization",
+    "relationship",
+    "scope",
+    "reviewed_at",
+    "decision",
+    "reproduction",
+    "referenced_attempts",
+    "qualification"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/review/0.1" },
+    "review_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "result_core_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "actor": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "organization": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "relationship": { "enum": ["independent", "same_organization", "vendor"] },
+    "scope": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "reviewed_at": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/utc" },
+    "decision": { "enum": ["pending", "reviewed", "changes_requested"] },
+    "reproduction": {
+      "enum": ["not_reproduced", "same_organization_reproduced", "independently_reproduced"]
+    },
+    "referenced_attempts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" }
+    },
+    "qualification": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["decision", "criteria_digest"],
+          "properties": {
+            "decision": { "enum": ["qualified", "not_qualified", "not_assessed"] },
+            "criteria_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" }
+          }
+        }
+      ]
+    }
+  }
+}

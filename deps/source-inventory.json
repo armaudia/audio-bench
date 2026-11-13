@@ -1,0 +1,118 @@
+{
+  "entries": [
+    {
+      "bytes": "20507",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:5f02fa3ad43761af108471bc9d0f498175031bd38499eb838042197613d8ee7d",
+      "source_path": "src/audioml_eval/assets.py"
+    },
+    {
+      "bytes": "3481",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:0809b1cc1daa207e46125b0fcfa321088b4b6cccfadf04fabc2cd8b74c947e20",
+      "source_path": "src/audioml_eval/audio.py"
+    },
+    {
+      "bytes": "20285",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:62f55368639cb13be1afa41038e1d9c8abd6819e534df2c6269eeda5eda7e529",
+      "source_path": "src/audioml_eval/metrics.py"
+    },
+    {
+      "bytes": "6388",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:a1d1baf70fee4a63dcf43fb996ce351318e63c25fc743eac5502b56fff833819",
+      "source_path": "src/audioml_eval/records.py"
+    },
+    {
+      "bytes": "17172",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:19028cee9a5bf558f21ef0aef70f4efbd556a8899f8f26e2b8a0d7c7b1c35a26",
+      "source_path": "src/audioml_eval/runner.py"
+    },
+    {
+      "bytes": "24606",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:2d09e95b37fff91d8a6ecc58613a3b07b962e06e9f87f44a2e0824ec6848f094",
+      "source_path": "src/audioml_eval/benchmarks.py"
+    },
+    {
+      "bytes": "33618",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:60496b7f52d64acd6f6556c9e5bf69eb93a2bf8c0d1b8baa00d791c2ccc472ef",
+      "source_path": "src/audioml_eval/vad_benchmark.py"
+    },
+    {
+      "bytes": "78616",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:761f0519829cbdf7680f9c7bc780bbaaff2d231c45c23a2c6306d47c8f4eb0de",
+      "source_path": "scripts/evaluate_noise_suppression.py"
+    },
+    {
+      "bytes": "2670",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:b79a8216bc648774cc19119e584150bcefca8fb557c981dba58830d5b3bca38f",
+      "source_path": "tests/test_assets_audio.py"
+    },
+    {
+      "bytes": "9866",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:3a78cd926b0ecd9c69c0f32a7f7e4fcaf0e0087c6a9cfb532db3151cc4e9fd7e",
+      "source_path": "tests/test_benchmarks_metrics.py"
+    },
+    {
+      "bytes": "1638",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:69ee9f055fb9d8f019f79b8a531eb2eadd62d60ec8ebdca5dbd06d87eb3e7bfe",
+      "source_path": "tests/test_records.py"
+    },
+    {
+      "bytes": "1739",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "harness",
+      "sha256": "sha256:c9eabc889c8b3c20c2d1fd323181660eb45ed2a4c21bd2b6ec49fed2a4b8b273",
+      "source_path": "tests/test_runner_scheduler.py"
+    },
+    {
+      "bytes": "16846",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "historical_read_only",
+      "sha256": "sha256:35f871e7d7362070c20fa35a5832115ea5388ffae550be3b25368a72bf5cebf4",
+      "source_path": "research/noise_suppression_assets_20261027.json"
+    },
+    {
+      "bytes": "116713",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "historical_read_only",
+      "sha256": "sha256:90adcfb7b612d5a661baf16e69f78df95eebc6f65bbfece973022af902bd9aae",
+      "source_path": "research/noise_suppression_pilot_20261027.md"
+    },
+    {
+      "bytes": "329",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "historical_read_only",
+      "sha256": "sha256:d3c8c8a218fc49c934bcacd77813f80791703c90a56dfc802cdd152431a4c5c4",
+      "source_path": "research/evidence/pilot-discovery-20261027/manifest.json"
+    },
+    {
+      "bytes": "32088",
+      "migration": "allowlisted inspection; original remains untouched",
+      "role": "historical_read_only",
+      "sha256": "sha256:3591d17581fb9c9168f10d3816f42a9c6178d6168ea386de6eafc6280c18c590",
+      "source_path": "research/evidence/pilot-discovery-20261027/source.txt"
+    }
+  ],
+  "schema_id": "audio-bench/provenance-inventory/0.1",
+  "source_repository": "audioml research workspace (read-only)"
+}

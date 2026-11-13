@@ -1,0 +1,93 @@
+{
+  "entries": [
+    {
+      "file": "_defs.schema.json",
+      "sha256": "sha256:c9f51ca9d97278228d99c98d69803b654aca70f5e0041ebb1e5bbdee5c9a7879"
+    },
+    {
+      "file": "asset-file.schema.json",
+      "sha256": "sha256:44c87e66d28db769ef548c2fb3896c238f6e1c11097d2ad1c45bb805c511a785"
+    },
+    {
+      "file": "case-set.schema.json",
+      "sha256": "sha256:9944a77d388653425ce0e1184d9e8037d5b732311f5bf15ccc06c280f540cb1b"
+    },
+    {
+      "file": "case.schema.json",
+      "sha256": "sha256:607e32416b558f9b972b72feb3c8fc967f23ddcf40b6eb0092febcbef439145c"
+    },
+    {
+      "file": "catalog.schema.json",
+      "sha256": "sha256:52c66d168dbd89266d8b08cede31b174fdfd7b5570e73350472802daf06d872e"
+    },
+    {
+      "file": "cohort.schema.json",
+      "sha256": "sha256:d8f8e691041a34dfce2abe6c27f25cddfd01e40f22d64194389222ab1e0cb203"
+    },
+    {
+      "file": "core.schema.json",
+      "sha256": "sha256:ec0d74a92bb094f768ad92aacdbd3c7107976bf2233089b907fe48e4f74f7f72"
+    },
+    {
+      "file": "dataset.schema.json",
+      "sha256": "sha256:8b78d9b2fb5a0d1338a77bce822e0e1134b8cdfc764fed81b319da0d52eb43e5"
+    },
+    {
+      "file": "export.schema.json",
+      "sha256": "sha256:106befd45ec57c3cedd1fe9c76f96e68d492c28824042b192f0e5d7505069335"
+    },
+    {
+      "file": "impact-plan.schema.json",
+      "sha256": "sha256:fccd67ef2f6b7146d4ef306e049572f78ba7162d794f7c797b2a1e927b1e7c8f"
+    },
+    {
+      "file": "inventory.schema.json",
+      "sha256": "sha256:e4d3b036ab7eef4134294ceca2d86b5f892bf24a6b5f92ee884c37116c6e94e6"
+    },
+    {
+      "file": "latest-snapshot.schema.json",
+      "sha256": "sha256:82d1102f76829f7ec3553c72a4726a8075399f8d5a1131d3f309a9cee5d253fe"
+    },
+    {
+      "file": "observation.schema.json",
+      "sha256": "sha256:49cf30c426125c1610783e36375080a5662d6d05d6f6060483c36ea493ea0c80"
+    },
+    {
+      "file": "output.schema.json",
+      "sha256": "sha256:fb05e695b1e6cfccaea0966d5b0ad34c77b1254adc5e652814f0125345f40c43"
+    },
+    {
+      "file": "recipe.schema.json",
+      "sha256": "sha256:2477be902dead7884385b736af44472bacd74f44900ac31c7a34aa3b45f035b7"
+    },
+    {
+      "file": "reconciliation-event.schema.json",
+      "sha256": "sha256:c37fc45b6c75f9ef523a765a11373506ed3c3697efca0359b70c4b92a9ea0bcd"
+    },
+    {
+      "file": "request.schema.json",
+      "sha256": "sha256:b4b5a76fc4863f3baadcf46aaa60663c0916a9a9a4ec0adc6e56bf6f7e68163e"
+    },
+    {
+      "file": "review.schema.json",
+      "sha256": "sha256:341b9653e452256ab378c00c89bb315ddbe3d6a062f67847fd884066bdf6df59"
+    },
+    {
+      "file": "run.schema.json",
+      "sha256": "sha256:84a68123cda619ea230236b839c49d4d9260d2ddd5171df36e611ee516692527"
+    },
+    {
+      "file": "scored-intervals.schema.json",
+      "sha256": "sha256:4ae7b45df3bacecd144452fe06b70fee3a61b7b6880108c560cd189ca57bbd77"
+    },
+    {
+      "file": "sdk/descriptor.schema.json",
+      "sha256": "sha256:3a93acd607a1ef1d7453a551da2608f8f3ca5d62fd7bb329698e3ad7ca501ec5"
+    },
+    {
+      "file": "sdk/effective-config.schema.json",
+      "sha256": "sha256:55956e149b3b8c420599c1a115e2b880ba4659c562128c207f89842b79cc5eea"
+    }
+  ],
+  "schema_dir_version": "0.1"
+}

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/cohort/0.1",
+  "title": "Comparison cohort (quality or runtime), frozen before execution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "identity_algorithm",
+    "comparison_cohort_id",
+    "evidence_kind",
+    "task",
+    "target_semantics",
+    "dataset_manifest_id",
+    "case_set_id",
+    "preprocessing_recipe_id",
+    "alignment_protocol_id",
+    "scored_interval_set_id",
+    "metric_set",
+    "aggregation",
+    "protocol_digest",
+    "runtime_condition"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/cohort/0.1" },
+    "identity_algorithm": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/identity_algorithm" },
+    "comparison_cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "evidence_kind": { "enum": ["quality", "runtime", "host"] },
+    "task": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "target_semantics": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "dataset_manifest_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "case_set_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "preprocessing_recipe_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "alignment_protocol_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "scored_interval_set_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "metric_set": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["metric_id", "metric_revision", "code_digest", "lock_digest", "settings_digest"],
+        "properties": {
+          "metric_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+          "metric_revision": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+          "code_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+          "lock_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+          "settings_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" }
+        }
+      }
+    },
+    "aggregation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["estimand", "seed", "repetitions", "bootstrap_count", "quantile_rule"],
+      "properties": {
+        "estimand": { "enum": ["paired_mean_delta_within_speaker_bootstrap"] },
+        "seed": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+        "repetitions": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+        "bootstrap_count": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+        "quantile_rule": { "const": "linear_2.5_97.5" }
+      }
+    },
+    "protocol_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "runtime_condition": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hardware_fingerprint",
+            "runtime_protocol_id",
+            "workload_id",
+            "duty_cycle",
+            "concurrency",
+            "delivery_budget_ns",
+            "input_queue_capacity",
+            "output_queue_capacity"
+          ],
+          "properties": {
+            "hardware_fingerprint": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+            "runtime_protocol_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+            "workload_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+            "duty_cycle": { "enum": ["continuous", "intermittent", "onset"] },
+            "concurrency": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+            "delivery_budget_ns": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/int64_string" },
+            "input_queue_capacity": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+            "output_queue_capacity": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" }
+          }
+        }
+      ]
+    }
+  }
+}

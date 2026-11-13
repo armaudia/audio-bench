@@ -1,0 +1,1 @@
+{"identity_algorithm":"jcs-sha256-v1","implementation":"audio-bench.synthetic.no-resample.v1","kind":"preprocessing","recipe_id":"sha256:b8cef975ed46d3dea869a1e8e5bd16f60cbd13eb31ffa324a3e6cc3a2f958d4d","schema_id":"audio-bench/recipe/0.1","settings":{"channels":1,"normalization":false,"resampling":"none","sample_rate_hz":16000}}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/export/0.1",
+  "title": "Approval of one exact public export digest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "export_id",
+    "public_core_digest",
+    "file_inventory",
+    "public_descriptor_digest",
+    "public_config_digest",
+    "approved_scopes",
+    "approval_actor",
+    "approved_at",
+    "redaction_policy_version"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/export/0.1" },
+    "export_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "public_core_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "file_inventory": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "media_type", "bytes", "sha256"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$"
+          },
+          "media_type": {
+            "enum": ["application/json", "application/jsonl", "audio/wav", "audio/flac", "image/png", "text/csv"]
+          },
+          "bytes": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+          "sha256": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" }
+        }
+      }
+    },
+    "public_descriptor_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "public_config_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "approved_scopes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "enum": ["evaluation", "redistribution", "public_playback"] }
+    },
+    "approval_actor": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "approved_at": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/utc" },
+    "redaction_policy_version": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" }
+  }
+}

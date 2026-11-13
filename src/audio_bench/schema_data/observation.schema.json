@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/observation/0.1",
+  "title": "One expected case x metric observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "run_id",
+    "attempt_id",
+    "configuration_id",
+    "comparison_cohort_id",
+    "case_id",
+    "metric_id",
+    "metric_revision",
+    "execution_status",
+    "reason",
+    "value",
+    "unit",
+    "direction",
+    "numerator",
+    "denominator",
+    "valid_interval",
+    "output_pcm_digest"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/observation/0.1" },
+    "run_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "attempt_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "comparison_cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "case_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "metric_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "metric_revision": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "execution_status": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/execution_status" },
+    "reason": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/reason" },
+        { "type": "null" }
+      ]
+    },
+    "value": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "null" }
+      ]
+    },
+    "unit": { "enum": ["dB", "ratio", "count", "index", "none"] },
+    "direction": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/direction" },
+    "numerator": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+        { "type": "null" }
+      ]
+    },
+    "denominator": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+        { "type": "null" }
+      ]
+    },
+    "valid_interval": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/value_interval" },
+        { "type": "null" }
+      ]
+    },
+    "output_pcm_digest": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+        { "type": "null" }
+      ]
+    }
+  }
+}

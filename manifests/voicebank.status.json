@@ -1,0 +1,26 @@
+{
+  "schema_id": "audio-bench/acquisition-status/0.1",
+  "dataset_label": "VoiceBank + DEMAND",
+  "mirror_revision": "4497db342d7312978c45690591fda86117831940",
+  "status": "blocked",
+  "reason": "terms_reviewed_assets_unverified",
+  "archive_sha256": null,
+  "archive_bytes": null,
+  "verified_pair_count": null,
+  "expected_inventory_note": "The plan specifies 824 clean/noisy pairs; this is an expected inventory target, not a verified count.",
+  "rights": {
+    "acquisition": "unknown",
+    "evaluation": "unknown",
+    "redistribution": "unknown",
+    "public_playback": "unknown"
+  },
+  "provenance_review": {
+    "reviewed_at": "2026-11-14",
+    "primary_record": "https://doi.org/10.7488/ds/2117",
+    "license": "Creative Commons Attribution 4.0 International Public License",
+    "terms_note": "Official record offers a direct archive download and lists an end-user CC BY 4.0 licence. The licence does not resolve moral, privacy, publicity, source-corpus, or individual-media questions; see docs/task-evidence/artifacts/voicebank-primary-source-review.md."
+  },
+  "execution_claim": "excluded",
+  "corpus_evaluation_claim": "not_assessed",
+  "next_action": "Complete a scope-specific rights review of the official archive, VCTK/DEMAND inputs, and voice-talent conditions; then acquire the selected official archive, record its exact bytes/hash, and verify all clean/noisy pairs before constructing an official manifest."
+}

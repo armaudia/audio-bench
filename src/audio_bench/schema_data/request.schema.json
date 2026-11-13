@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/request/0.1",
+  "title": "Evaluation request frozen by the trusted coordinator before execution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "request_id",
+    "source_request_key",
+    "sequence",
+    "sdk_package_digest",
+    "harness_revision",
+    "harness_digest",
+    "registry_snapshot_id",
+    "matrix",
+    "required_artifact_types",
+    "created_at",
+    "resource_profile_id",
+    "requested_target_id"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/request/0.1" },
+    "request_id": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "source_request_key": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "sequence": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+    "sdk_package_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "harness_revision": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "harness_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "registry_snapshot_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "matrix": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["configuration_id", "cohort_id", "expected_case_ids", "expected_metric_ids"],
+        "properties": {
+          "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+          "cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+          "expected_case_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" }
+          },
+          "expected_metric_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" }
+          },
+          "expected_artifact_paths": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024,
+              "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$"
+            }
+          }
+        }
+      }
+    },
+    "required_artifact_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "enum": ["observation", "output", "inventory", "summary"] }
+    },
+    "created_at": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/utc" },
+    "resource_profile_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "requested_target_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" }
+  }
+}

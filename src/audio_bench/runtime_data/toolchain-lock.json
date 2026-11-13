@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "platform": "macOS arm64 laboratory (local development environment only)",
+  "python": {
+    "implementation": "CPython",
+    "version": "3.12.16",
+    "soabi": "cpython-312-darwin",
+    "lock": "locks/requirements-macos-arm64.lock"
+  },
+  "compiler": {
+    "id": "AppleClang",
+    "version": "21.0.0 (clang-2100.4.1.1)",
+    "target": "arm64-apple-darwin27.2.0",
+    "flags": "not applicable: no SDK/native driver compiled"
+  },
+  "cmake": {
+    "version": "3.27.4",
+    "generator": "not selected (native project blocked on installed SDK)"
+  },
+  "os": {
+    "name": "macOS",
+    "kernel": "Darwin 27.2.0",
+    "sdk": "27.2",
+    "deployment_target": null
+  },
+  "decoder": {
+    "soundfile": "0.14.0",
+    "libsndfile": "1.2.2"
+  },
+  "qualification": "not a frozen target fingerprint; no B10 criteria or acceptance run"
+}

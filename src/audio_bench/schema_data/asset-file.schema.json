@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/asset-file/0.1",
+  "title": "One verified encoded audio asset in an immutable dataset file shard",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id", "relative_path", "file_sha256", "file_bytes", "decoded_pcm_sha256",
+    "sample_rate_hz", "channels", "sample_count", "case_id", "role", "speaker_id",
+    "session_id", "partition"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/asset-file/0.1" },
+    "relative_path": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "file_sha256": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "file_bytes": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+    "decoded_pcm_sha256": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "sample_rate_hz": { "const": 16000 },
+    "channels": { "const": 1 },
+    "sample_count": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+    "case_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "role": { "enum": ["clean", "noisy"] },
+    "speaker_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "session_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "partition": { "enum": ["train", "dev", "test", "synthetic"] }
+  }
+}

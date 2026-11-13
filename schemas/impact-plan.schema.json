@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/impact-plan/0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "changed_paths", "tier", "requires_manual_review"],
+  "properties": {
+    "schema_id": {"const": "audio-bench/impact-plan/0.1"},
+    "changed_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "tier": {"enum": ["rescore_and_revalidate_all", "reexecute_affected_configurations_and_revalidate", "rebuild_affected_cohorts_and_reexecute", "rebuild_reports", "documentation_only", "full_revalidation_and_reexecution"]},
+    "requires_manual_review": {"const": true}
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/latest-snapshot/0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "source_branch", "scope", "sequence", "request_id", "core_digest"],
+  "properties": {
+    "schema_id": {"const": "audio-bench/latest-snapshot/0.1"},
+    "source_branch": {"$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id"},
+    "scope": {"$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id"},
+    "sequence": {"$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string"},
+    "request_id": {"$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id"},
+    "core_digest": {"$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest"}
+  }
+}

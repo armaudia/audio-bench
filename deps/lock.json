@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "dependencies": [
+    {
+      "id": "python",
+      "role": "host",
+      "version": "CPython 3.12.16",
+      "artifact": "locks/requirements-macos-arm64.lock",
+      "sha256": "sha256:a5629d464df28ed0cbf27285728a21addeef16d26fb0ab0f5b37fc23996ba2b9",
+      "platform": "macOS arm64",
+      "license_notice": "runtime package notices from locked wheels"
+    },
+    {
+      "id": "numpy",
+      "role": "runtime",
+      "version": "2.5.4",
+      "artifact": "locks/requirements-macos-arm64.lock",
+      "platform": "macOS arm64",
+      "license_notice": "BSD-3-Clause"
+    },
+    {
+      "id": "scipy",
+      "role": "runtime",
+      "version": "1.18.1",
+      "artifact": "locks/requirements-macos-arm64.lock",
+      "platform": "macOS arm64",
+      "license_notice": "BSD-3-Clause"
+    },
+    {
+      "id": "soundfile",
+      "role": "runtime",
+      "version": "0.14.0",
+      "artifact": "locks/requirements-macos-arm64.lock",
+      "platform": "macOS arm64",
+      "license_notice": "BSD-3-Clause"
+    },
+    {
+      "id": "libsndfile",
+      "role": "runtime-decoder",
+      "version": "1.2.2",
+      "artifact": "SoundFile wheel and its bundled runtime",
+      "platform": "macOS arm64",
+      "license_notice": "LGPL-2.1-or-later"
+    },
+    {
+      "id": "jsonschema",
+      "role": "runtime",
+      "version": "4.26.0",
+      "artifact": "locks/requirements-macos-arm64.lock",
+      "platform": "macOS arm64",
+      "license_notice": "MIT"
+    },
+    {
+      "id": "pystoi",
+      "role": "metric",
+      "version": "0.4.1",
+      "artifact": "locks/requirements-macos-arm64.lock",
+      "platform": "macOS arm64",
+      "license_notice": "MIT"
+    },
+    {
+      "id": "rfc8785",
+      "role": "identity",
+      "version": "0.1.4",
+      "artifact": "locks/requirements-macos-arm64.lock",
+      "sha256": "sha256:520d690b448ecf0703691c76e1a34a24ddcd4fc5bc41d589cb7c58ec651bcd48",
+      "platform": "Python pure wheel",
+      "license_notice": "Apache-2.0"
+    },
+    {
+      "id": "audio-sdk-contract",
+      "role": "runtime-interface",
+      "version": "0.1",
+      "artifact": "../audio-sdk/CONTRACTS.md",
+      "sha256": "sha256:5f649304efdcac91f4c052b705a672529d0976ab05e70bbc7300cc205ac11f9f",
+      "platform": "consumed contract text; installed package is separately pinned below",
+      "license_notice": "consumed as read-only specification text"
+    },
+    {
+      "id": "audio-sdk-descriptor-schema",
+      "role": "schema",
+      "version": "0.1",
+      "artifact": "schemas/sdk/descriptor.schema.json (copied byte-for-byte from verified install)",
+      "sha256": "sha256:3a93acd607a1ef1d7453a551da2608f8f3ca5d62fd7bb329698e3ad7ca501ec5",
+      "source_tree_sha256_observed_but_not_consumed": "sha256:581cecdf4fa53f55c89281fc10f2867c15b75457c47d8ccd2ac760e2a9995159",
+      "note": "Mutable source tree differs from packaged schema; package schema is authoritative for this pin."
+    },
+    {
+      "id": "audio-sdk-effective-config-schema",
+      "role": "schema",
+      "version": "0.1",
+      "artifact": "schemas/sdk/effective-config.schema.json (copied byte-for-byte from verified install)",
+      "sha256": "sha256:55956e149b3b8c420599c1a115e2b880ba4659c562128c207f89842b79cc5eea"
+    },
+    {
+      "id": "audio-sdk-installed-package",
+      "role": "runtime",
+      "version": "0.1.0 local macOS arm64 Release candidate",
+      "artifact": "../audio-sdk/build/candidate/audio-sdk-0.1.0.tar.gz",
+      "sha256": "sha256:82bb8f64c882b77a51e708bac0c79eae586c07cb0e96c84c8a9388d2100a387e",
+      "file_manifest": "deps/sdk-snapshot/audio-sdk-0.1.0.files.sha256",
+      "file_manifest_sha256": "sha256:b83f1acef7ccfa6d5b6520330db855f9608e5a8167ef45ef92e23c699708c4cd",
+      "build_id": "audio-sdk/0.1.0+sha256:fe66742bc610c4a1d27439c127908d803bc14555c6009a98d3339d594dc8d800",
+      "platform": "macOS arm64; local source-linked integration only",
+      "headers": {
+        "provider_v0.h": "sha256:56616c0ba3df5077190bae08c42aa3e370b7e88d82a516eccda59a8a56fc7b91",
+        "session_v0.h": "sha256:53445fd7581b203e16f718046a042c5e21151cff57016cb35d55e2b258e7691c"
+      },
+      "libraries": {
+        "libaudio_sdk.dylib": "sha256:49f8d1bfa5f2ecf57d63c65b2a2f25b048ff6022adf1c57f9e62e02650a8cf14",
+        "libaudio_sdk.a": "sha256:b6b37d9cd830921506d7421a1c7d252c950c1f6ca6678ac212d8c97221c3a1ec"
+      },
+      "conformance_executable_sha256": "sha256:b4acf6f0910d0b40ad93f7e8889e0ac9246f0af9fceb8dede67c8100aba1d4bc",
+      "conformance": {
+        "speex_report_sha256": "sha256:97bbfb5d5891cd0a73b6d5944148646ff8f0df77ee693fb94f54dc30bc4e71dc",
+        "highpass_report_sha256": "sha256:1dbece70c4e1f07e8d83e728b3ea18307997f6c48a6df07c354f8796c03fd0d3",
+        "result_each": "37 passed, 0 failed, 0 skipped",
+        "external_provider_ctest": "3/3 passed, including expected fault detections"
+      },
+      "qualification": "not a stable release; Linux, hosted CI, CPython 3.12 SDK binding and cross-host reproducibility unverified"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/run/0.1",
+  "title": "Attempt run manifest (immutable; core_digest stays null permanently)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "request_id",
+    "run_id",
+    "attempt_id",
+    "configuration_id",
+    "comparison_cohort_id",
+    "expected_case_metric_set_id",
+    "sdk_package_digest",
+    "provider_digest",
+    "conformance_digest",
+    "source_build_digest",
+    "toolchain_lock_digest",
+    "environment_digest",
+    "machine_fingerprint",
+    "collector_version",
+    "started_at",
+    "ended_at",
+    "status",
+    "reason",
+    "core_digest"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/run/0.1" },
+    "request_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "run_id": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "attempt_id": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "comparison_cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "expected_case_metric_set_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "sdk_package_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "provider_digest": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+        { "type": "null" }
+      ]
+    },
+    "conformance_digest": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+        { "type": "null" }
+      ]
+    },
+    "source_build_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "toolchain_lock_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "environment_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "machine_fingerprint": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "collector_version": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "started_at": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/utc" },
+    "ended_at": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/utc" },
+    "status": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/execution_status" },
+    "reason": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/reason" },
+        { "type": "null" }
+      ]
+    },
+    "core_digest": {
+      "description": "Always null. The sealed core references this manifest's digest; a manifest is never patched with its own core digest.",
+      "type": "null"
+    }
+  }
+}

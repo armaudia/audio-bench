@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/recipe/0.1",
+  "title": "Frozen preprocessing / alignment / decode recipe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "identity_algorithm", "recipe_id", "kind", "implementation", "settings"],
+  "properties": {
+    "schema_id": { "const": "audio-bench/recipe/0.1" },
+    "identity_algorithm": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/identity_algorithm" },
+    "recipe_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "kind": { "enum": ["preprocessing", "alignment", "decode"] },
+    "implementation": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+    "settings": {
+      "type": "object",
+      "description": "Closed settings object: canonical decimal strings, booleans, safe integers, strings and arrays only. No nested free-form metadata.",
+      "additionalProperties": {
+        "anyOf": [
+          { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/decimal_string" },
+          { "type": "boolean" },
+          { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/safe_integer" },
+          { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+          {
+            "type": "array",
+            "items": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/decimal_string" }
+          }
+        ]
+      }
+    }
+  }
+}

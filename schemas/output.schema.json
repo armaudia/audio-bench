@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.audio-bench.invalid/output/0.1",
+  "title": "Rendered output artifact record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "attempt_id",
+    "case_id",
+    "configuration_id",
+    "mode",
+    "workload_id",
+    "native_container_sha",
+    "decoded_pcm_sha",
+    "format",
+    "sample_count",
+    "source_map_digest",
+    "source_input_digest",
+    "sdk_config_digest",
+    "preview"
+  ],
+  "properties": {
+    "schema_id": { "const": "audio-bench/output/0.1" },
+    "attempt_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "case_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "mode": { "enum": ["sequential", "paced"] },
+    "workload_id": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+        { "type": "null" }
+      ]
+    },
+    "native_container_sha": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "decoded_pcm_sha": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["container", "subtype", "sample_rate_hz", "channels"],
+      "properties": {
+        "container": { "enum": ["wav"] },
+        "subtype": { "enum": ["FLOAT", "PCM_16"] },
+        "sample_rate_hz": { "const": 16000 },
+        "channels": { "const": 1 }
+      }
+    },
+    "sample_count": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/uint64_string" },
+    "source_map_digest": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+        { "type": "null" }
+      ]
+    },
+    "source_input_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+    "sdk_config_digest": {
+      "oneOf": [
+        { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+        { "type": "null" }
+      ]
+    },
+    "preview": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["recipe", "digest"],
+          "properties": {
+            "recipe": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/display_text" },
+            "digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" }
+          }
+        },
+        { "type": "null" }
+      ]
+    }
+  }
+}
