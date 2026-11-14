@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #include "wire.hpp"
+#include <algorithm>
 #include <audio_sdk/provider_v0.h>
 #include <audio_sdk/session_v0.h>
 #include <array>
