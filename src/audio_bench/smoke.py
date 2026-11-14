@@ -83,8 +83,8 @@ def _implementation_digest(repository: Path, paths: list[Path]) -> str:
             absolute = package_root.joinpath(*parts[2:])
         else:
             absolute = repository / path
-            if not absolute.is_file() and parts and parts[0] == "native":
-                absolute = repository / "native" / Path(*parts[1:])
+            if not absolute.is_file() and parts and parts[0] == "schemas":
+                absolute = package_root / "schema_data" / Path(*parts[1:])
         if not absolute.is_file():
             raise ValidationError(f"implementation identity input is missing: {path}")
         files[path.as_posix()] = _digest_file(absolute)
