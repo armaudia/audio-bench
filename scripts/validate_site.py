@@ -30,22 +30,36 @@ def validate_index(index):
         if row.get("runner_mode") not in {"audio-bench", "submitter-owned"}:
             raise ValueError(f"unsupported runner mode in {row['submission_id']}")
         source = row.get("source")
-        if not isinstance(source, dict) or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", source.get("repository", "")):
-            raise ValueError(f"invalid source repository in {row['result_id']}")
+        if not isinstance(source, dict):
+            raise ValueError(f"missing source provenance in {row['result_id']}")
+        if source.get("visibility") == "private":
+            if set(source) != {"visibility", "revision", "repository_identity_sha256"}:
+                raise ValueError(f"private source metadata may contain only identity hash and revision in {row['result_id']}")
+            if not re.fullmatch(r"sha256:[0-9a-f]{64}", source.get("repository_identity_sha256", "")):
+                raise ValueError(f"invalid private source identity hash in {row['result_id']}")
+        else:
+            if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", source.get("repository", "")):
+                raise ValueError(f"invalid source repository in {row['result_id']}")
+            if set(source) - {"visibility", "repository", "revision", "url"}:
+                raise ValueError(f"unexpected source metadata in {row['result_id']}")
+            if source.get("url") is not None and (not isinstance(source["url"], str) or not source["url"].startswith("https://")):
+                raise ValueError(f"source URL must use HTTPS in {row['result_id']}")
         if not re.fullmatch(r"[0-9a-f]{40}", source.get("revision", "")):
             raise ValueError(f"source revision must be a full commit in {row['result_id']}")
-        if set(source) - {"repository", "revision", "url"}:
-            raise ValueError(f"unexpected source metadata in {row['result_id']}")
-        if source.get("url") is not None and (not isinstance(source["url"], str) or not source["url"].startswith("https://")):
-            raise ValueError(f"source URL must use HTTPS in {row['result_id']}")
         if row.get("model_digest") is not None and not re.fullmatch(r"sha256:[0-9a-f]{64}", row["model_digest"]):
             raise ValueError(f"invalid model digest in {row['result_id']}")
         evidence = row.get("evidence")
         if not isinstance(evidence, dict):
             raise ValueError(f"missing evidence provenance in {row['result_id']}")
-        for field in ("configuration_id", "sdk_package_digest", "harness_digest", "bundle_manifest_digest"):
+        fields = ("configuration_id", "sdk_package_digest", "harness_digest", "bundle_manifest_digest") if row["runner_mode"] == "audio-bench" else ("harness_digest", "dataset_manifest_digest")
+        for field in fields:
             if not isinstance(evidence.get(field), str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", evidence[field]):
                 raise ValueError(f"invalid evidence {field} in {row['result_id']}")
+        if row["runner_mode"] == "submitter-owned":
+            for field in ("reference_raw_latency_ms", "candidate_raw_latency_ms", "reference_baseline_latency_ms"):
+                value = evidence.get(field)
+                if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
+                    raise ValueError(f"invalid evidence {field} in {row['result_id']}")
         metrics = row.get("metrics")
         if not isinstance(metrics, list):
             raise ValueError(f"metrics must be a list in {row['result_id']}")
@@ -55,7 +69,7 @@ def validate_index(index):
             for field in ("metric_id", "label", "unit", "display_value", "raw_display_value"):
                 if not isinstance(metric.get(field), str):
                     raise ValueError(f"invalid metric {field} in {row['result_id']}")
-            for field in ("median", "normalized_value"):
+            for field in ("median", "normalized_value", "normalized_median"):
                 value = metric.get(field)
                 if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)):
                     raise ValueError(f"invalid metric {field} in {row['result_id']}")
@@ -63,6 +77,16 @@ def validate_index(index):
                 raise ValueError(f"invalid normalized display value in {row['result_id']}")
         if row["runner_mode"] == "submitter-owned" and not any(token in row["result_status"].lower() for token in ("submitter", "unverified")):
             raise ValueError(f"submitter-owned results must be clearly labeled in {row['result_id']}")
+        if row["runner_mode"] == "submitter-owned":
+            reference_local = evidence["reference_raw_latency_ms"]
+            candidate_local = evidence["candidate_raw_latency_ms"]
+            reference_central = evidence["reference_baseline_latency_ms"]
+            expected = candidate_local * reference_central / reference_local
+            for metric in metrics:
+                normalized = metric.get("normalized_median")
+                if normalized is not None:
+                    if metric.get("unit") != "ms" or not math.isclose(normalized, expected, rel_tol=1e-6, abs_tol=1e-6):
+                        raise ValueError(f"invalid normalized latency in {row['result_id']}")
     return len(seen)
 
 

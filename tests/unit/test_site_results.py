@@ -74,6 +74,13 @@ def test_submitter_owned_results_must_disclose_unverified_status(monkeypatch, tm
     monkeypatch.setattr(publisher, "validate_bundle", lambda path: type("Report", (), {"valid": True, "errors": []})())
     row = publisher.result_from_bundle(bundle)
     row["runner_mode"] = "submitter-owned"
+    row["source"] = {"visibility": "private", "revision": "a" * 40,
+                     "repository_identity_sha256": "sha256:" + "1" * 64}
+    row["evidence"] = {"harness_digest": "sha256:" + "2" * 64,
+                       "dataset_manifest_digest": "sha256:" + "3" * 64,
+                       "reference_raw_latency_ms": 10.0,
+                       "candidate_raw_latency_ms": 20.0,
+                       "reference_baseline_latency_ms": 12.0}
     try:
         validate_site.validate_index({"schema_id": "audio-bench/site-results/0.1", "updated_at": None, "results": [row]})
     except ValueError as exc:

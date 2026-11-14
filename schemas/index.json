@@ -37,6 +37,10 @@
       "sha256": "sha256:106befd45ec57c3cedd1fe9c76f96e68d492c28824042b192f0e5d7505069335"
     },
     {
+      "file": "external-dataset.schema.json",
+      "sha256": "sha256:d75a65175f0991909fbe251c9c05db8bfcabbd338a8f894019900dcbaa47e51a"
+    },
+    {
       "file": "impact-plan.schema.json",
       "sha256": "sha256:fccd67ef2f6b7146d4ef306e049572f78ba7162d794f7c797b2a1e927b1e7c8f"
     },
@@ -87,6 +91,10 @@
     {
       "file": "sdk/effective-config.schema.json",
       "sha256": "sha256:55956e149b3b8c420599c1a115e2b880ba4659c562128c207f89842b79cc5eea"
+    },
+    {
+      "file": "submitter-result.schema.json",
+      "sha256": "sha256:54a342fb09d9409ec80c1946ce3fbe8bdd9d6463a02168a094f73ab7d3451982"
     }
   ],
   "schema_dir_version": "0.1"

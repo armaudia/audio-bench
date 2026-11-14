@@ -53,7 +53,7 @@ jobs:
       - name: Merge validated CI results into cumulative Pages data
         if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
         run: |
-          python scripts/build_site_results.py --existing results-store/site/data/results.json --from-index build/ci/results.json --output results-store/site/data/results.json
+          python scripts/build_site_results.py --existing results-store/site/data/results.json --from-index build/ci/results.json --submitter-results submissions/results --output results-store/site/data/results.json
           cp results-store/site/data/results.json site/data/results.json
           python scripts/validate_site.py
           git -C results-store config user.name github-actions[bot]

@@ -13,9 +13,10 @@ metadata and is validated without checking out or executing the referenced code.
 The merged `main` CI runs the currently supported synthetic smoke suite. After a
 successful run, the Pages workflow validates and publishes cumulative smoke result
 records to <https://armaudia.github.io/audio-bench/>. These are synthetic functional
-checks, not third-party pipeline benchmarks or speech-quality rankings. Candidate
-provider execution and submitter-owned result ingestion are not enabled; example
-manifests are disabled and are not presented as measurements.
+checks, not third-party pipeline benchmarks or speech-quality rankings. Submitter-owned
+result JSON can be ingested through a PR without exposing private source, but the
+private runner execution tooling is not yet included. Public candidate-provider
+execution is also not enabled; example manifests are disabled and are not measurements.
 
 ## Setup
 

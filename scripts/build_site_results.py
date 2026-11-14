@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from audio_bench import aggregate, canonical  # noqa: E402
 from audio_bench.bundle import validate_bundle  # noqa: E402
 from audio_bench.errors import ValidationError  # noqa: E402
+from audio_bench.submitter_results import load_submitter_result  # noqa: E402
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -96,6 +97,44 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
     }
 
 
+def result_from_submitter_file(path: Path) -> dict[str, Any]:
+    """Convert an explicitly unverified submitter record to the Pages presentation shape."""
+    record = load_submitter_result(path)
+    metrics = []
+    for metric in record["metrics"]:
+        normalized = metric.get("normalized_median")
+        metrics.append({
+            "metric_id": metric["metric_id"],
+            "label": metric["label"],
+            "unit": metric["unit"],
+            "median": metric["median"],
+            "finite_count": metric["finite_count"],
+            "display_value": f"{metric['median']:.4g} {metric['unit']}".strip(),
+            "raw_display_value": f"{metric['median']:.4g} {metric['unit']}".strip(),
+            "normalized_display_value": f"{normalized:.4g} ms" if normalized is not None else None,
+        })
+    return {
+        "submission_id": record["submission_id"],
+        "result_id": record["result_id"],
+        "display_name": record["display_name"],
+        "task": "Noise cancellation",
+        "runner_mode": "submitter-owned",
+        "result_status": record["result_status"],
+        "provider_id": record["provider_id"],
+        "suite_id": record["suite_id"],
+        "dataset_id": record["dataset_id"],
+        "model_digest": record["model_digest"],
+        "source": {
+            "visibility": "private",
+            "revision": record["source"]["revision"],
+            "repository_identity_sha256": record["source"]["repository_identity_sha256"],
+        },
+        "metrics": metrics,
+        "baseline": record["baseline"],
+        "evidence": record["evidence"],
+    }
+
+
 def build_index(bundles: list[Path], existing: Path | None = None) -> dict[str, Any]:
     rows: dict[str, dict[str, Any]] = {}
     if existing and existing.exists():
@@ -112,7 +151,7 @@ def build_index(bundles: list[Path], existing: Path | None = None) -> dict[str, 
     return _index(rows)
 
 
-def merge_index_files(existing: Path, additions: Path) -> dict[str, Any]:
+def merge_index_files(existing: Path, additions: Path, submitter_paths: list[Path] | None = None) -> dict[str, Any]:
     rows: dict[str, dict[str, Any]] = {}
     for path in (existing, additions):
         if not path.exists():
@@ -125,6 +164,19 @@ def merge_index_files(existing: Path, additions: Path) -> dict[str, Any]:
         for row in current["results"]:
             if not isinstance(row, dict) or not isinstance(row.get("result_id"), str):
                 raise ValueError(f"result row lacks a result_id: {path}")
+            previous = rows.get(row["result_id"])
+            if previous is not None and previous != row:
+                raise ValueError(f"conflicting records use result_id {row['result_id']!r}")
+            rows[row["result_id"]] = row
+    for item in submitter_paths or []:
+        files = sorted(item.glob("*.json")) if item.is_dir() else [item]
+        for path in files:
+            if path.name.startswith("_"):
+                continue
+            row = result_from_submitter_file(path)
+            previous = rows.get(row["result_id"])
+            if previous is not None and previous != row:
+                raise ValueError(f"conflicting records use result_id {row['result_id']!r}")
             rows[row["result_id"]] = row
     return _index(rows)
 
@@ -142,6 +194,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--existing", type=Path, help="merge with a prior cumulative Pages index")
     parser.add_argument("--from-index", type=Path, help="merge rows from a generated result index")
+    parser.add_argument("--submitter-results", type=Path, nargs="*", default=[], help="validated submitter result files or directories")
     parser.add_argument("--output", type=Path, default=ROOT / "site/data/results.json")
     parser.add_argument("bundles", type=Path, nargs="*")
     args = parser.parse_args()
@@ -149,7 +202,7 @@ def main() -> None:
         if args.from_index:
             if args.bundles or not args.existing:
                 parser.error("--from-index requires --existing and does not accept bundle arguments")
-            index = merge_index_files(args.existing, args.from_index)
+            index = merge_index_files(args.existing, args.from_index, args.submitter_results)
         else:
             if not args.bundles:
                 parser.error("provide one or more bundles, or use --from-index")

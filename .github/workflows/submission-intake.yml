@@ -4,9 +4,21 @@ on:
     paths:
       - 'submissions/**'
       - 'src/audio_bench/submission.py'
+      - 'src/audio_bench/submitter_results.py'
+      - 'src/audio_bench/external_dataset.py'
       - 'src/audio_bench/schema_data/submission.schema.json'
+      - 'src/audio_bench/schema_data/submitter-result.schema.json'
+      - 'src/audio_bench/schema_data/external-dataset.schema.json'
+      - 'schemas/submitter-result.schema.json'
+      - 'schemas/external-dataset.schema.json'
       - 'scripts/validate_submission.py'
+      - 'scripts/validate_submitter_results.py'
+      - 'scripts/build_site_results.py'
+      - 'scripts/fetch_external_dataset.py'
       - 'tests/unit/test_submission.py'
+      - 'tests/unit/test_submitter_results.py'
+      - 'tests/unit/test_external_dataset.py'
+      - 'tests/unit/test_site_results.py'
       - '.github/workflows/submission-intake.yml'
 permissions:
   contents: read
@@ -22,7 +34,10 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r locks/requirements-ci.txt
+      - run: python -m pip install --no-deps --no-build-isolation -e .
       - name: Validate registration metadata only
         run: python scripts/validate_submission.py submissions/*.json examples/submissions/*.json
-      - name: Test submission policy and latency normalization
-        run: python -m pytest tests/unit/test_submission.py -q
+      - name: Validate submitter-owned result records
+        run: python scripts/validate_submitter_results.py submissions/results
+      - name: Test submission and result policy
+        run: python -m pytest tests/unit/test_submission.py tests/unit/test_submitter_results.py tests/unit/test_external_dataset.py tests/unit/test_site_results.py -q
