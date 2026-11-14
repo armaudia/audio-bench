@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Closed catalog metadata validation and dependency-graph checks.
 
 Metadata validation never executes source code, resolves URLs, downloads assets or imports

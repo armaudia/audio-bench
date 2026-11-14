@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Safe acquisition and archive extraction (B03 step 1).
 
 Nothing here is used by tests against the network: the tests drive the same code with a fake

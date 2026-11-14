@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 import os
 import json
 import subprocess
@@ -9,6 +11,7 @@ from audio_bench.bundle import validate_bundle
 from audio_bench import __main__ as cli
 from audio_bench.report import build_report
 from audio_bench.smoke import run_sdk_smoke
+from audio_bench.errors import ValidationError
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,7 +21,16 @@ _SDK_ARCHIVE = next(item["artifact"] for item in _SDK_LOCK["dependencies"]
 SDK_PREFIX = Path(os.environ.get(
     "AUDIO_SDK_PREFIX", str((ROOT / _SDK_ARCHIVE).resolve().parent / "audio-sdk-0.1.0")
 ))
-NATIVE_BUILD = Path(os.environ.get("AUDIO_BENCH_NATIVE_BUILD", ROOT / "native/build-foundation09"))
+NATIVE_BUILD = Path(os.environ.get("AUDIO_BENCH_NATIVE_BUILD", ROOT / "build/ci/native"))
+
+
+@pytest.mark.parametrize("dependencies", [{}, {"numpy": "0.0.0"}])
+def test_frozen_metric_environment_rejects_missing_or_different_versions(tmp_path, dependencies):
+    from audio_bench.smoke import _verify_python_environment
+
+    (tmp_path / "toolchain-lock.json").write_text(json.dumps({"python_dependencies": dependencies}))
+    with pytest.raises(ValidationError, match="frozen metric environment"):
+        _verify_python_environment(tmp_path)
 
 
 def test_installed_cli_requires_explicit_external_sdk_prefix(tmp_path, monkeypatch):
@@ -31,6 +43,34 @@ def test_installed_cli_requires_explicit_external_sdk_prefix(tmp_path, monkeypat
         "smoke", "--output", str(tmp_path / "bundle"),
     ])
     assert parsed.sdk_prefix is None
+
+
+@pytest.mark.sdk
+@pytest.mark.skipif(
+    not (SDK_PREFIX / "bin/audio_sdk_conformance").is_file()
+    or not (NATIVE_BUILD / "audio_bench_collect").is_file(),
+    reason="verified installed SDK/native build is not available",
+)
+@pytest.mark.parametrize("field", ["sdk_package_digest", "sdk_build_id"])
+def test_smoke_rejects_native_binaries_from_a_different_sdk(tmp_path, monkeypatch, field):
+    import audio_bench.smoke as smoke
+
+    original_run = smoke.subprocess.run
+
+    def mismatch_identity(command, *args, **kwargs):
+        result = original_run(command, *args, **kwargs)
+        if "--output-dir" in command:
+            summary_path = Path(command[command.index("--output-dir") + 1]) / "collector-summary.json"
+            summary = json.loads(summary_path.read_text())
+            summary[field] = "wrong-sdk-identity"
+            summary_path.write_text(json.dumps(summary))
+        return result
+
+    monkeypatch.setattr(smoke.subprocess, "run", mismatch_identity)
+    bundle = tmp_path / "rejected"
+    with pytest.raises(ValidationError, match="native collector identity mismatch"):
+        run_sdk_smoke(bundle, native_build=NATIVE_BUILD, sdk_prefix=SDK_PREFIX, repository=ROOT)
+    assert (bundle / "failure-evidence.json").is_file()
 
 
 @pytest.mark.sdk

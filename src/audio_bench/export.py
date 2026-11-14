@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Safe public export: explicit allowlist, no link following, bounded reads.
 
 Threat model (B08/TEST_PLAN B-T15): the exported directory is candidate-influenced. Therefore:

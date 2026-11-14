@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Strict protocol-v1 codec for the supervised native driver/collector boundary.
 
 A DRAINED message is an end-of-stream acknowledgement only. Drain audio is always an OUTPUT

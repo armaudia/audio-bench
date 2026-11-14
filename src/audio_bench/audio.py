@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Decode/encode and PCM identity helpers.
 
 Migration provenance: selected the small ``resample``, ``sample_interval``, ``chunks`` and

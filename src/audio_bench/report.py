@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Offline static evidence report.
 
 Input is a validated bundle; output is plain HTML/CSS/ES modules with compact JSON shards. No
@@ -14,6 +16,8 @@ import html
 import io
 import json
 import jsonschema
+import os
+import tempfile
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -151,6 +155,26 @@ def build_report(
     site_cap_bytes: int = SITE_CAP_BYTES,
     index_cap_bytes: int = INDEX_CAP_BYTES,
 ) -> dict[str, Any]:
+    if output.is_symlink():
+        raise ValidationError("report output may not be a symlink", path=str(output))
+    if output.exists() and any(output.iterdir()):
+        raise ValidationError("report output must be a fresh/empty directory", path=str(output))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".audio-bench-report-", dir=output.parent) as temporary:
+        staged = Path(temporary) / "report"
+        result = _write_report(bundle, staged, site_cap_bytes=site_cap_bytes, index_cap_bytes=index_cap_bytes)
+        os.replace(staged, output)
+    result["output"] = str(output)
+    return result
+
+
+def _write_report(
+    bundle: Path,
+    output: Path,
+    *,
+    site_cap_bytes: int,
+    index_cap_bytes: int,
+) -> dict[str, Any]:
     report = validate_bundle(bundle)
     if not report.valid:
         raise ValidationError("refusing to build a report from an invalid bundle: " + "; ".join(report.errors[:5]))
@@ -159,7 +183,7 @@ def build_report(
         raise ValidationError("bundle contains no sealed attempts to report")
     if output.exists() and any(output.iterdir()):
         raise ValidationError(f"report output must be a fresh/empty directory: {output}")
-    output.mkdir(parents=True)
+    output.mkdir(parents=True, exist_ok=True)
     (output / "assets").mkdir()
     (output / "data").mkdir()
 

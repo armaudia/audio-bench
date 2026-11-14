@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Quality metrics with explicit undefined outcomes.
 
 Migration provenance: SI-SDR's zero-mean projection formula was audited and ported from the

@@ -14,3 +14,7 @@ cache/
 *.part
 # OS noise
 .DS_Store
+
+/sdk-source/
+/dist/
+/build-pip-install.json

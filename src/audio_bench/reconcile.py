@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Durable local revision planning and serialized latest-snapshot reconciliation."""
 
 from __future__ import annotations

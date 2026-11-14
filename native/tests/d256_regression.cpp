@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+ * SPDX-License-Identifier: Apache-2.0
+ */
 #include "d256_provider.hpp"
 
 #include <audio_sdk/session_v0.h>

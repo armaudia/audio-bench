@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+ * SPDX-License-Identifier: Apache-2.0
+ */
 const errorBox = document.querySelector('#error');
 const tbody = document.querySelector('#rows-body');
 const params = new URLSearchParams(location.search);
@@ -61,6 +64,7 @@ function render(rows) {
     for (const attempt of row.attempts) {
       const p = document.createElement('p');
       p.textContent = `Attempt ${attempt.attempt_id}: ${attempt.status}; counts ${JSON.stringify(attempt.counts)}`;
+      for (const [key, value] of Object.entries(attempt.badges)) p.append(' ', badge(key, value));
       badgeCell.append(p);
     }
     tr.append(badgeCell);

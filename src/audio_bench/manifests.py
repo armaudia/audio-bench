@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Asset/case/cohort manifests, deterministic selection and frozen interval maps.
 
 Everything here is frozen *before* a candidate runs. The VoiceBank real-corpus path is blocked on

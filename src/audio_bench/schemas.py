@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Offline schema loading, validation and code-level invariants.
 
 JSON Schema (Draft 2020-12) covers shape and closed objects. Anything that needs recomputation or

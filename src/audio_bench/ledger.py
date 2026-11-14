@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Immutable attempt storage and core sealing without hash cycles.
 
 Sealing order (EVIDENCE_SPEC "Core sealing without hash cycles"):

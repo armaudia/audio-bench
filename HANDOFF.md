@@ -1,3 +1,10 @@
+> Release-hardening update, 2026-11-14: see
+> [current evidence](docs/task-evidence/release-readiness-20261114.md) and
+> [release policy](RELEASING.md). The Candidate 09/task snapshot below is
+> historical; current consumer builds use the exact source pin and host-specific
+> artifact lock. GitHub publication, hosted CI and policy readback are pending
+> authentication, not completed by the local work.
+
 # audio-bench implementation handoff
 
 **Status:** local implementation and synthetic functional path are available. Nothing is published,

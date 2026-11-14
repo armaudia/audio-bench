@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Frozen paired bootstrap from EVIDENCE_SPEC.md.
 
 The estimand is the paired mean delta over utterances, with resampling **within each observed

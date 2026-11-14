@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Frame schedule, lateness and accounting arithmetic (EVIDENCE_SPEC "Timing and runtime equations").
 
 All quantities are exact integers in one monotonic clock domain. Absolute sample indexes are never

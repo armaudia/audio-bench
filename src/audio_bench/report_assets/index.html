@@ -60,13 +60,13 @@
         decoder is unavailable the page falls back to individual players and says so.
       </p>
       <div class="player">
-        <label>Case <select id="preview-case"><option value="">none</option></select></label>
-        <button id="play" type="button">Play</button>
-        <button id="pause" type="button">Pause</button>
-        <button id="switch" type="button">A/B switch</button>
+        <label>Case <select id="preview-case" disabled><option value="">none</option></select></label>
+        <button id="play" type="button" disabled>Play</button>
+        <button id="pause" type="button" disabled>Pause</button>
+        <button id="switch" type="button" disabled>A/B switch</button>
         <label>Position <input id="seek" type="range" min="0" max="1" step="0.01" value="0" disabled></label>
         <output id="position">0.00 s</output>
-        <button id="reveal" type="button">Reveal identity</button>
+        <button id="reveal" type="button" disabled>Reveal identity</button>
         <span id="player-status" role="status" aria-live="polite"></span>
         <p id="player-identity"></p>
         <div id="fallback" hidden></div>

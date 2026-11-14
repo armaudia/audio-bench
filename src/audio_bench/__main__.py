@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Command-line entry points for offline validation and synthetic fixture generation."""
 
 from __future__ import annotations
@@ -58,7 +60,7 @@ def parser() -> argparse.ArgumentParser:
 
     smoke = sub.add_parser("smoke", help="run the pinned SDK on synthetic fixtures and seal local evidence")
     smoke.add_argument("--output", required=True, type=Path)
-    smoke.add_argument("--native-build", type=Path, default=Path("build/native"))
+    smoke.add_argument("--native-build", type=Path, default=Path("build/ci/native"))
     smoke.add_argument(
         "--sdk-prefix",
         type=Path,

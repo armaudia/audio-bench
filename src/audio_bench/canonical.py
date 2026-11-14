@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Strict JSON ingestion, RFC 8785 (JCS) canonicalization and content identities.
 
 Rules implemented here (EVIDENCE_SPEC.md "Encoding and identity"):

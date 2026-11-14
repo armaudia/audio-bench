@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Case-level scoring: frozen intervals, digest checks, explicit failure rows.
 
 Scoring runs *after* rendering and outside timing jobs. Every expected case x metric receives

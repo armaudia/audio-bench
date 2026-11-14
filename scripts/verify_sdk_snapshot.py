@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Verify the external SDK prefix against the reviewed byte snapshot in deps/lock.json."""
 from __future__ import annotations
 

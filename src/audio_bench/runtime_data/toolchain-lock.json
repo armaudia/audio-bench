@@ -1,31 +1,51 @@
 {
   "schema_version": 1,
-  "platform": "macOS arm64 laboratory (local development environment only)",
+  "platform": "macOS-27.2.1-arm64-arm-64bit",
   "python": {
-    "implementation": "CPython",
-    "version": "3.12.16",
-    "soabi": "cpython-312-darwin",
-    "lock": "locks/requirements-macos-arm64.lock"
+    "version": "3.12.16"
   },
-  "compiler": {
-    "id": "AppleClang",
-    "version": "21.0.0 (clang-2100.4.1.1)",
-    "target": "arm64-apple-darwin27.2.0",
-    "flags": "not applicable: no SDK/native driver compiled"
+  "sdk_build": {
+    "schema_id": "audio-sdk/build-info/0.1",
+    "build_id": "audio-sdk/0.1.0+sha256:54a0e29298611655cae75f24a82f0c54410e410f7d2dc48336f0119fd17e7405",
+    "version": "0.1.0",
+    "build_type": "Release",
+    "c_compiler": "AppleClang 21.0.0.21000401",
+    "cxx_compiler": "AppleClang 21.0.0.21000401",
+    "flags_sha256": "sha256:bd3eb87c950b5233ec511fc596c2eb0f74114c82712df53b09757af27e1b5610",
+    "runtime_inputs_sha256": "sha256:75885da8572b122a726d2e73b63b8b674f91b67fc6f91606c749323471bd7131",
+    "target": "Darwin-arm64",
+    "deployment_target": "",
+    "source_allocation_sha256": "sha256:100cc29507daf4b59b01c7b6539fef15f34d1a23360760458134e8dff247d1f7",
+    "dependency_lock_sha256": "sha256:7e834253dad944604a2e2283f4d809ab1383c9db4f08b83482a8b41efc043e3a",
+    "speexdsp_revision": "7a158783df74efe7c2d1c6ee8363c1e695c71226"
   },
-  "cmake": {
-    "version": "3.27.4",
-    "generator": "not selected (native project blocked on installed SDK)"
-  },
-  "os": {
-    "name": "macOS",
-    "kernel": "Darwin 27.2.0",
-    "sdk": "27.2",
-    "deployment_target": null
-  },
-  "decoder": {
+  "qualification": "not_assessed",
+  "python_dependencies": {
+    "attrs": "26.1.0",
+    "build": "1.6.1",
+    "cffi": "2.1.1",
+    "click": "8.5.0",
+    "filelock": "4.2.4",
+    "iniconfig": "2.3.1",
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "numpy": "2.5.4",
+    "packaging": "26.3",
+    "pip-tools": "7.6.2",
+    "pluggy": "1.7.0",
+    "psutil": "7.2.2",
+    "pycparser": "3.12",
+    "pygments": "2.21.0",
+    "pyproject-hooks": "1.3.3",
+    "pystoi": "0.4.1",
+    "pytest": "9.1.1",
+    "referencing": "0.37.0",
+    "rfc8785": "0.1.4",
+    "rpds-py": "2026.9.1",
+    "scipy": "1.18.1",
+    "setuptools": "84.2.1",
     "soundfile": "0.14.0",
-    "libsndfile": "1.2.2"
-  },
-  "qualification": "not a frozen target fingerprint; no B10 criteria or acceptance run"
+    "typing-extensions": "4.16.0",
+    "wheel": "0.48.0"
+  }
 }

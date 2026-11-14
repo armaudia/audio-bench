@@ -139,32 +139,19 @@
     {
       "id": "audio-sdk-installed-package",
       "role": "runtime",
-      "version": "0.1.0 Candidate 09; local macOS arm64 Release candidate",
-      "artifact": "../audio-sdk/build/candidates/macos-arm64-20261114-foundation-09/audio-sdk-0.1.0.tar.gz",
-      "sha256": "sha256:5707c4ff688d12876c3ff3e290db7c5eda76f8bdd2fa28e6fe197abd1353a464",
+      "version": "0.1.0",
+      "source_revision": "84a102112ce83fb519303a832be15ad88e452d74",
+      "artifact": "build/sdk-licensed-final/candidate/audio-sdk-0.1.0.tar.gz",
+      "sha256": "sha256:c5d3c2a28440cd7e443761fdbc6f29c08b83192d2b93e02a83699898f6cd2742",
       "file_manifest": "deps/sdk-snapshot/audio-sdk-0.1.0.files.sha256",
-      "file_manifest_sha256": "sha256:81d2ec4996897b1901b0e240eb1be617cabfa2a901b7721a2f26eba6228a6807",
-      "build_id": "audio-sdk/0.1.0+sha256:15959d8f04e8080c5804b3019decea7c720b27e1593a43352cf9ba97d5a6cb1c",
-      "platform": "macOS arm64; local source-linked integration only",
+      "file_manifest_sha256": "sha256:fabccf097d5266ee7024a9820f8e269150206dd478af602a49fdb692888e2d18",
+      "build_id": "audio-sdk/0.1.0+sha256:54a0e29298611655cae75f24a82f0c54410e410f7d2dc48336f0119fd17e7405",
+      "platform": "Darwin arm64",
+      "qualification": "not_assessed; source-pinned functional package only",
       "headers": {
-        "provider_v0.h": "sha256:56616c0ba3df5077190bae08c42aa3e370b7e88d82a516eccda59a8a56fc7b91",
-        "session_v0.h": "sha256:53445fd7581b203e16f718046a042c5e21151cff57016cb35d55e2b258e7691c"
-      },
-      "libraries": {
-        "libaudio_sdk.dylib": "sha256:0e5c0f23152fd95d8859d298f18ee69bb6c68dc4176c6ce9fae3b8b224d11472",
-        "libaudio_sdk.a": "sha256:fae96d377df30576cf74d0f2f6c0b041700bd09c2147dd0f1c353edce68284d6"
-      },
-      "conformance_executable_sha256": "sha256:1272a85050e6dc94aae59b00515d6c3c4e760e7f8a8fcc7399dd77856a14917b",
-      "conformance": {
-        "speex_report_sha256": "sha256:6c3fb2750000ebe650589b90c62f3dceb3aff42ad878d31ddf7065075b34e80d",
-        "highpass_report_sha256": "sha256:03ef89f2833132cf08c5766f5446ca0cd119d26b3958293ae427911e9fb5758d",
-        "result_each": "37 passed, 0 failed, 0 skipped",
-        "external_provider_ctest": "10/10 passed against Candidate 09"
-      },
-      "qualification": "local macOS arm64 candidate; Linux/hosted CI, independent reproducibility, legal release clearance and broad target qualification remain open",
-      "candidate_manifest": "../audio-sdk/build/candidates/macos-arm64-20261114-foundation-09/candidate-manifest.json",
-      "candidate_manifest_sha256": "sha256:407511936b65f111a446378a69ed4c7bc51c86e7fed568998b1b53ebd3cced52",
-      "supersedes_sha256": "6dbe3de332c8f0d108ec12928bf324bcf7aff33b9a085c9200f5778f0483c54a"
+        "provider_v0.h": "sha256:f168965ade4f342c8a222b15be625551789158891cab24f9ce135a583f2e1766",
+        "session_v0.h": "sha256:a81f9c74941b3a2e735f1b8f39f6ca0ea610818fc3c402fa2709c4d118fb0ca1"
+      }
     }
   ]
 }

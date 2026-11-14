@@ -1,10 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """A closed synthetic fixture that demonstrates failure visibility, not SDK integration."""
 
 import shutil
 import uuid
+
+import pytest
 from pathlib import Path
 
 from audio_bench import canonical, ledger
+from audio_bench.errors import ValidationError
 from audio_bench.bundle import validate_bundle
 from audio_bench.manifests import build_synthetic_dataset
 from audio_bench.metrics import METRICS
@@ -131,8 +136,18 @@ def test_blocked_attempt_survives_sealing_validation_and_report(tmp_path):
     result = validate_bundle(root)
     assert result.valid, result.errors
     assert result.counts == {"cases": 24, "requests": 1, "attempts": 1, "reviews": 0}
+    (tmp_path / "report").mkdir()
     report_result = build_report(root, tmp_path / "report")
     assert report_result["rows"] == 1
     html = (tmp_path / "report" / "index.html").read_text()
     assert "execution: blocked" in html
     assert "qualification: not_assessed" in html
+
+    failed_output = tmp_path / "oversize-report"
+    with pytest.raises(ValidationError, match="above"):
+        build_report(root, failed_output, site_cap_bytes=1)
+    assert not failed_output.exists()
+    linked_output = tmp_path / "linked-report"
+    linked_output.symlink_to(tmp_path / "report", target_is_directory=True)
+    with pytest.raises(ValidationError, match="symlink"):
+        build_report(root, linked_output)

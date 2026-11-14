@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """audio-bench: reproducible evaluation harness for the audio SDK benchmark platform.
 
 The package implements the normative evidence specification in ``EVIDENCE_SPEC.md``:

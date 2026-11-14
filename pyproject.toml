@@ -7,7 +7,8 @@ name = "audio-bench"
 version = "0.1.0"
 description = "Reproducible audio processing evaluation harness (evidence specification v0.1)"
 requires-python = ">=3.12,<3.13"
-license = { text = "Proprietary" }
+license = "Apache-2.0 AND LicenseRef-Synthetic-Fixtures"
+license-files = ["LICENSE", "NOTICE", "DATA_LICENSE.md", "LICENSES/*.txt"]
 dependencies = [
   "numpy>=2.0",
   "scipy>=1.11",
@@ -41,6 +42,7 @@ audio_bench = [
   "runtime_data/docs/task-evidence/artifacts/sdk-conformance/*",
   "runtime_data/schemas/sdk/providers/*",
   "runtime_data/deps/lock.json",
+  "runtime_data/deps/sdk-source.json",
   "runtime_data/deps/sdk-snapshot/*",
   "runtime_data/toolchain-lock.json",
   "runtime_data/locks/*",

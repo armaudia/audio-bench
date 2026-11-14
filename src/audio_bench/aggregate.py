@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Status precedence, expected-matrix completeness and paired summaries.
 
 Rules from EVIDENCE_SPEC.md "Status, completeness and aggregation":

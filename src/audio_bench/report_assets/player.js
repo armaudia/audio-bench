@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+ * SPDX-License-Identifier: Apache-2.0
+ */
 const caseSelect = document.querySelector('#preview-case');
 const status = document.querySelector('#player-status');
 const identity = document.querySelector('#player-identity');
@@ -62,6 +65,7 @@ async function loadIndex() {
     }
   }
   caseSelect.addEventListener('change', selectCase);
+  caseSelect.disabled = caseSelect.options.length < 2;
 }
 async function selectCase() {
   const selection = ++selectionToken;
@@ -110,6 +114,7 @@ async function selectCase() {
     seek.value = '0';
     position.value = '0.00 s';
     fallback.hidden = true;
+    for (const id of ['play', 'pause', 'switch', 'reveal']) document.getElementById(id).disabled = false;
     status.textContent = 'Both tracks decoded; synchronized switching is available.';
     identity.textContent = reveal ? (item.identity || item.case_id) : 'Identity hidden';
   } catch (error) {

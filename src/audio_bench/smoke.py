@@ -1,8 +1,11 @@
+# SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
+# SPDX-License-Identifier: Apache-2.0
 """Run the pinned local SDK against the checked-in synthetic suite and seal a bundle."""
 
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import json
 import os
 import platform
@@ -106,7 +109,7 @@ def _copy_manifest(source: Path, destination: Path) -> None:
             raise ValidationError(f"unexpected synthetic manifest entry: {entry}")
 
 
-def _verify_sdk_snapshot(prefix: Path, runtime_data: Path) -> None:
+def _verify_sdk_snapshot(prefix: Path, runtime_data: Path) -> dict[str, Any]:
     lock = canonical.strict_loads((runtime_data / "deps/lock.json").read_bytes())
     dependency = next(item for item in lock["dependencies"] if item["id"] == "audio-sdk-installed-package")
     manifest = runtime_data / "deps/sdk-snapshot/audio-sdk-0.1.0.files.sha256"
@@ -128,6 +131,21 @@ def _verify_sdk_snapshot(prefix: Path, runtime_data: Path) -> None:
     }
     if observed != expected:
         raise ValidationError("SDK prefix files differ from the pinned manifest")
+    return dependency
+
+
+def _verify_python_environment(runtime_data: Path) -> dict[str, str]:
+    lock = canonical.strict_loads((runtime_data / "toolchain-lock.json").read_bytes())
+    expected = lock.get("python_dependencies", {})
+    actual = {}
+    for name in ("numpy", "scipy", "soundfile", "jsonschema", "filelock", "psutil", "pystoi", "rfc8785"):
+        actual[name] = importlib.metadata.version(name)
+        if expected.get(name) != actual[name]:
+            raise ValidationError(
+                f"runtime dependency {name} differs from the frozen metric environment; "
+                "install the pinned requirements and run scripts/prepare_sdk.py"
+            )
+    return actual
 
 
 def _reconstruct_output(raw_path: Path, map_path: Path, count: int) -> np.ndarray:
@@ -183,7 +201,8 @@ def run_sdk_smoke(
 
     manifest = repository / "manifests/synthetic/synthetic-16k-v1"
     suite = repository / "suites/synthetic-smoke-v1"
-    _verify_sdk_snapshot(sdk_prefix, repository)
+    python_packages = _verify_python_environment(repository)
+    checked_sdk = _verify_sdk_snapshot(sdk_prefix, repository)
     dataset = canonical.require_canonical((manifest / "dataset.json").read_bytes())
     if dataset["rights"]["evaluation"]["decision"] != "allowed":
         raise ValidationError("synthetic fixture does not declare local evaluation allowed")
@@ -211,6 +230,7 @@ def run_sdk_smoke(
         "system": platform.platform(),
         "machine": platform.machine(),
         "python": platform.python_version(),
+        "python_packages": python_packages,
     }
     cases = canonical.parse_jsonl((manifest / "cases-0000.jsonl").read_bytes())
     case_set = canonical.require_canonical((manifest / "case-set.json").read_bytes())
@@ -242,10 +262,7 @@ def run_sdk_smoke(
             "request_id": request_id,
             "source_request_key": f"local-synthetic-smoke-{attempt_id}",
             "sequence": "1",
-            "sdk_package_digest": next(
-                item["sha256"] for item in canonical.strict_loads((repository / "deps/lock.json").read_bytes())["dependencies"]
-                if item["id"] == "audio-sdk-installed-package"
-            ),
+            "sdk_package_digest": checked_sdk["sha256"],
             "harness_revision": "audio-bench-local-smoke-v1",
             "harness_digest": _implementation_digest(repository, [
                 *[Path("src/audio_bench") / path.name for path in Path(__file__).resolve().parent.glob("*.py")],
@@ -313,6 +330,16 @@ def run_sdk_smoke(
             for path in input_files:
                 command += ["--input", str(path)]
             subprocess.run(command, check=True, capture_output=True, text=True, timeout=300)
+            collector_identity = canonical.strict_loads((native_output / "collector-summary.json").read_bytes())
+            expected_identity = {
+                "sdk_package_digest": checked_sdk["sha256"],
+                "sdk_build_id": checked_sdk["build_id"],
+                "sdk_config_digest": configuration_id,
+                "provider_id": provider_id,
+            }
+            for field, expected in expected_identity.items():
+                if collector_identity.get(field) != expected:
+                    raise ValidationError(f"native collector identity mismatch: {field}; rebuild against the pinned SDK")
 
             conformance = repository / "docs/task-evidence/artifacts/sdk-conformance"
             conformance_digest = canonical.digest_of({

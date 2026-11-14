@@ -1,0 +1,8 @@
+Synthetic correctness fixtures
+
+The generated synthetic audio retains the explicit acquisition, evaluation,
+redistribution and public-playback grants recorded in the corresponding
+synthetic-16k-v1/dataset.json manifest. Those recorded grants are unchanged.
+The platform software license does not grant rights in third-party recordings,
+models, datasets or customer audio. No hosted submission or competition rights
+are inferred. These fixtures contain no human speaker recordings.
