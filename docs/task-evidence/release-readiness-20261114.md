@@ -18,26 +18,36 @@ it does not supply missing third-party model or dataset permissions.
 - Report output accepts empty directories, rejects symlinks and publishes
   atomically; a size-limit failure leaves no partial report directory.
 - Native collector package/build/config/provider identities and frozen Python dependency versions are checked before sealing. Mismatched old binaries are rejected.
-- A Chromium regression is configured in hosted CI; its hosted execution remains
-  pending. No listening-gallery acceptance or authorized real corpus is claimed.
+- Hosted Chromium acceptance passed for evidence badges, filters, CSV download,
+  unknown-filter errors and disabled unavailable-media controls. No authorized
+  real corpus or listening-gallery acceptance is claimed.
 
-## Prepared, requiring hosted verification
+## Hosted verification and publication
 
-- Linux x86-64 and macOS arm64 CI, with pinned official Action commits, read-only
-  tokens, machine-readable test reports and an aggregate required quality check.
-- SDK CI additionally runs address/undefined and thread sanitizer jobs.
-- Code ownership, dependency update configuration, main/tag rulesets and an
-  administration script with preconditions and settings readback.
-- Public-repository release workflows rerun CI, verify reviewed ancestry and
-  archive checksums, require release-environment approval and attest artifacts.
-- Source history was checked for common GitHub/AWS/private-key secret patterns;
-  no matches were found. This is not an independent security audit.
+- Public source: https://github.com/armaudia/audio-bench
+- Linux x86-64 (Ubuntu 24.04) and macOS arm64 (macOS 15) acceptance passed:
+  https://github.com/armaudia/audio-bench/actions/runs/43609204288
+- Each host builds the exact public SDK source pin, tests native integration,
+  runs all 82 unit/integration tests without skips, evaluates both providers,
+  builds the wheel and executes installed smoke/validation/report outside source.
+- Chromium acceptance on Linux passed. The initial clean-wheel failure exposed
+  an omitted schema identity path; wheel execution now resolves that input from
+  its packaged authoritative schema_data. GCC algorithm includes and integer-type
+  portability defects were also fixed before the successful run.
+- The dependency-update scan passed after retrying a GitHub container failure.
+- CI actions are commit-pinned, ordinary workflow tokens are read-only, and a
+  quality aggregate requires every matrix and licensing job. Public release jobs
+  verify tagged main ancestry, archive checksums and provenance before publishing.
+- Main and immutable release-tag policy definitions are under .github/;
+  scripts/github_admin.py applies and reads back GitHub enforcement after CI.
+  Its machine-readable API evidence is retained at build/github-settings.json.
+- Software licensing: Apache-2.0; synthetic fixtures retain independent asset terms.
+  SDK core/MPL source and third-party notices accompany bundled SDK distributions.
 
-## Outstanding
+## Remaining qualification gates
 
-Repository creation/push, hosted job results, policy and
-visibility readback, and release-environment configuration are not yet complete.
-The owner approved the mixed SDK licensing and Apache benchmark software license. The individual CLA is published in his personal name. Workload/target acceptance,
-independent security review, corpus and model rights/reference evidence remain
-outside the locally verified scope. Do not call the private neural product a
-qualified commercial release.
+Representative speech/corpus permissions and acquisition; hostile submission
+isolation and adversarial review; public evidence export and an authorized
+listening gallery; target workload criteria, real performance/quality acceptance
+and production deployment qualification. These are disabled or not assessed,
+not release claims. This is a synthetic evaluation tool prerelease.

@@ -2,8 +2,9 @@
 > [current evidence](docs/task-evidence/release-readiness-20261114.md) and
 > [release policy](RELEASING.md). The Candidate 09/task snapshot below is
 > historical; current consumer builds use the exact source pin and host-specific
-> artifact lock. GitHub publication, hosted CI and policy readback are pending
-> authentication, not completed by the local work.
+> artifact lock. Public source is now at armaudia/audio-bench. Hosted Linux
+> and macOS CI passed, including clean-wheel execution and Chromium acceptance.
+> Read current evidence for release scope; the task snapshot below is historical.
 
 # audio-bench implementation handoff
 

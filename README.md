@@ -66,6 +66,6 @@ native code. Tiny16 and other neural processors are not included.
 
 [RELEASING.md](RELEASING.md) describes CI and intended GitHub controls.
 [Release-hardening evidence](docs/task-evidence/release-readiness-20261114.md)
-records current local checks; [HANDOFF.md](HANDOFF.md) retains the earlier task
-history. Hosted runs and GitHub settings readback are required before claiming
-that the new controls are enforced. First-party software is Apache-2.0; synthetic asset terms are separate in DATA_LICENSE.md. The maintainer is Tsakanyan Hovhannes, acting individually.
+records local and hosted checks; [HANDOFF.md](HANDOFF.md) retains the earlier task
+history. The hosted Linux/macOS checks, installed wheel and Chromium acceptance passed.
+GitHub settings readback is retained by the administration script under build/. First-party software is Apache-2.0; synthetic asset terms are separate in DATA_LICENSE.md. The maintainer is Tsakanyan Hovhannes, acting individually.
