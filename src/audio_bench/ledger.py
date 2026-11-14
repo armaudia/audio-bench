@@ -133,10 +133,16 @@ def seal_attempt(
     validator.validate("run", run)
     if run["core_digest"] is not None:
         raise ValidationError("run manifest must keep core_digest null")
+    if run["configuration_id"] != matrix_entry["configuration_id"]:
+        raise ValidationError("run configuration identity differs from its frozen request matrix")
     for row in observations:
         validator.validate("observation", row)
+        if row["configuration_id"] != run["configuration_id"]:
+            raise ValidationError("observation configuration identity differs from run")
     for row in outputs:
         validator.validate("output", row)
+        if row["configuration_id"] != run["configuration_id"]:
+            raise ValidationError("output configuration identity differs from run")
 
     expected = {
         (case_id, metric_id)
@@ -268,6 +274,22 @@ def verify_attempt(
     run_bytes = (attempt_dir / "run.json").read_bytes()
     run = canonical.require_canonical(run_bytes, path="run.json")
     validator.validate("run", run)
+    config_path = attempt_dir / "effective-config.json"
+    if not config_path.is_file():
+        raise ValidationError("attempt is missing frozen effective-config.json", path=str(attempt_dir))
+    config_bytes = config_path.read_bytes()
+    canonical.require_canonical(config_bytes, path="effective-config.json")
+    if sha256_bytes(config_bytes) != run["configuration_id"]:
+        raise ValidationError("effective config bytes do not match run configuration_id", path=str(attempt_dir))
+    environment_path = attempt_dir / "environment.json"
+    if environment_path.is_file():
+        environment = canonical.require_canonical(environment_path.read_bytes(), path="environment.json")
+        if canonical.digest_of(environment) != run["environment_digest"]:
+            raise ValidationError("environment snapshot does not match run environment_digest")
+    descriptor_path = attempt_dir / "provider-descriptor.json"
+    if run["provider_digest"] is not None:
+        if not descriptor_path.is_file() or sha256_bytes(descriptor_path.read_bytes()) != run["provider_digest"]:
+            raise ValidationError("provider descriptor bytes do not match run provider_digest")
     core = canonical.require_canonical((attempt_dir / "core.json").read_bytes(), path="core.json")
     validator.validate("core", core)
     inventory = canonical.require_canonical((attempt_dir / "inventory.json").read_bytes(), path="inventory.json")
@@ -276,11 +298,17 @@ def verify_attempt(
     outputs = canonical.parse_jsonl((attempt_dir / "outputs.jsonl").read_bytes(), path="outputs.jsonl")
     for row in observations:
         validator.validate("observation", row)
+        if row["configuration_id"] != run["configuration_id"]:
+            raise ValidationError("observation configuration identity differs from run")
     for row in outputs:
         validator.validate("output", row)
+        if row["configuration_id"] != run["configuration_id"]:
+            raise ValidationError("output configuration identity differs from run")
 
     if core["run_manifest_digest"] != sha256_bytes(run_bytes):
         raise ValidationError("core does not reference this run manifest", path=str(attempt_dir))
+    if core["configuration_id"] != run["configuration_id"]:
+        raise ValidationError("core configuration identity differs from run", path=str(attempt_dir))
     if request is not None and core["request_digest"] != request_digest(request):
         raise ValidationError("core does not reference this request", path=str(attempt_dir))
     for field, name in (
@@ -349,6 +377,9 @@ def matrix_entry_for(request: Mapping[str, Any], run: Mapping[str, Any]) -> dict
             entry["configuration_id"] == run["configuration_id"]
             and entry["cohort_id"] == run["comparison_cohort_id"]
         ):
+            if (run.get("provider_digest") is not None
+                    and entry.get("provider_digest") != run["provider_digest"]):
+                raise ValidationError("run provider identity differs from its frozen request matrix")
             return entry
     raise ValidationError(
         f"run {run['run_id']} does not belong to any frozen request matrix entry"

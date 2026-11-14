@@ -9,11 +9,13 @@ from audio_bench.export import (
     _read_beneath,
     _validate_json_bytes,
     ExportPolicy,
+    approve_export,
     build_offline_candidate,
     export_candidate,
     project_record,
     verify_export,
 )
+from audio_bench.report import build_public_report
 
 
 def test_safe_open_rejects_symlink_and_reads_regular_file(tmp_path):
@@ -49,8 +51,9 @@ def test_offline_candidate_projects_by_record_type_and_rebuilds_public_hashes(tm
         "schema_id": "audio-bench/run/0.1",
         "run_id": "11111111-1111-4111-8111-111111111111",
         "attempt_id": "22222222-2222-4222-8222-222222222222",
-        "configuration_id": "synthetic.provider",
+        "configuration_id": "sha256:" + "a" * 64,
         "comparison_cohort_id": "sha256:" + "1" * 64,
+        "provider_digest": "sha256:" + "2" * 64,
         "status": "passed",
         "reason": None,
         "started_at": "2026-01-01T00:00:00Z",
@@ -61,7 +64,7 @@ def test_offline_candidate_projects_by_record_type_and_rebuilds_public_hashes(tm
     }))
     observation = {
         "schema_id": "audio-bench/observation/0.1",
-        "configuration_id": "synthetic.provider",
+        "configuration_id": "sha256:" + "a" * 64,
         "comparison_cohort_id": "sha256:" + "1" * 64,
         "case_id": "case-1",
         "metric_id": "si_sdr_db",
@@ -96,8 +99,21 @@ def test_offline_candidate_projects_by_record_type_and_rebuilds_public_hashes(tm
     assert "private_key" not in run
     assert rows[0]["value"] == 2.5 and "secret" not in rows[0]
     assert b"DO_NOT_EXPORT" not in b"".join(path.read_bytes() for path in destination.iterdir() if path.is_file())
-    approval_shape = {"file_inventory": candidate["files"]}
-    verify_export(destination, approval_shape)
+    approval = approve_export(
+        candidate,
+        export_id="synthetic-export-1",
+        public_core_digest=candidate["public_core_digest"],
+        public_descriptor_digest="sha256:" + "2" * 64,
+        public_config_digest="sha256:" + "a" * 64,
+        approved_scopes=["evaluation"],
+        approval_actor="synthetic test reviewer",
+        approved_at="2026-01-01T00:00:00Z",
+    )
+    verify_export(destination, approval)
+    report = build_public_report(destination, approval, tmp_path / "approved-report.html")
+    assert report["observations"] == 1
+    page = (tmp_path / "approved-report.html").read_text()
+    assert "si_sdr_db" in page and "DO_NOT_EXPORT" not in page
 
 
 def test_offline_candidate_failure_is_atomic_and_media_requires_rights(tmp_path):

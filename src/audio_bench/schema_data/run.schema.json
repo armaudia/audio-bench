@@ -31,7 +31,7 @@
     "request_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
     "run_id": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
     "attempt_id": { "type": "string", "format": "uuid", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
-    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "comparison_cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "expected_case_metric_set_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "sdk_package_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },

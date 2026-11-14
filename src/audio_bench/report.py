@@ -13,6 +13,7 @@ import gzip
 import html
 import io
 import json
+import jsonschema
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -21,6 +22,7 @@ from typing import Any, Iterable, Mapping
 from . import aggregate, canonical, ledger
 from .bundle import validate_bundle
 from .errors import ValidationError
+from .export import PUBLIC_INVENTORY_SCHEMA, PUBLIC_RECORD_SCHEMAS, _read_beneath, verify_export
 
 SITE_CAP_BYTES = 500 * 1024 * 1024
 INDEX_CAP_BYTES = 1024 * 1024
@@ -276,3 +278,127 @@ def _render_html(rows: Iterable[Mapping[str, Any]]) -> str:
             "</tr>"
         )
     return template.replace("<!--ROWS-->", "\n".join(table_rows))
+
+
+def build_public_report(
+    public_bundle: Path,
+    approval: Mapping[str, Any],
+    destination: Path,
+) -> dict[str, Any]:
+    """Render a static report only from the exact directory bytes covered by approval."""
+    from .schemas import Validator
+
+    Validator().validate("export", approval)
+    verify_export(public_bundle, approval)
+    if destination.exists() or destination.is_symlink():
+        raise ValidationError("public report destination must be new", path=str(destination))
+    core_bytes = _read_beneath(public_bundle, "core.json", limit=1024 * 1024)
+    core = canonical.require_canonical(core_bytes, path="core.json")
+    if core.get("schema_id") != "audio-bench/public-core/0.1":
+        raise ValidationError("unsupported public core schema")
+    if core.get("public_core_digest", core.get("core_digest")) != approval["public_core_digest"]:
+        raise ValidationError("approval does not bind this public core")
+    if canonical.content_id(core, "core_digest") != core.get("core_digest"):
+        raise ValidationError("public core digest does not recompute")
+    inventory_bytes = _read_beneath(public_bundle, "inventory.json", limit=1024 * 1024)
+    inventory = canonical.require_canonical(inventory_bytes, path="inventory.json")
+    jsonschema.Draft202012Validator(PUBLIC_INVENTORY_SCHEMA).validate(inventory)
+    if core.get("inventory_digest") != ledger.sha256_bytes(inventory_bytes):
+        raise ValidationError("public core does not bind the approved inventory")
+    public_files = inventory.get("files")
+    if not isinstance(public_files, list):
+        raise ValidationError("public inventory files must be an array")
+    paths = [entry.get("path") for entry in public_files if isinstance(entry, Mapping)]
+    if len(paths) != len(public_files) or len(paths) != len(set(paths)):
+        raise ValidationError("public inventory paths are malformed or duplicated")
+    if inventory.get("actual_artifact_set_id") != canonical.digest_of(paths):
+        raise ValidationError("public inventory artifact-set identity does not recompute")
+    if core.get("payload_digest") != canonical.digest_of([
+        [entry["path"], entry["sha256"]] for entry in public_files
+    ]):
+        raise ValidationError("public core does not bind the projected payload digests")
+    for entry in public_files:
+        payload = _read_beneath(public_bundle, entry["path"], limit=100_000_000)
+        if entry["bytes"] != str(len(payload)) or entry["sha256"] != ledger.sha256_bytes(payload):
+            raise ValidationError(f"public inventory payload digest mismatch: {entry['path']}")
+
+    observations = []
+    observations_bytes = _read_beneath(
+        public_bundle, "observations.jsonl", limit=100_000_000
+    )
+    for line in observations_bytes.splitlines():
+        row = canonical.strict_loads(line, path="observations.jsonl")
+        jsonschema.Draft202012Validator(PUBLIC_RECORD_SCHEMAS["observation"]).validate(row)
+        observations.append(row)
+    public_run = None
+    public_outputs = []
+    for kind in ("run", "output", "summary"):
+        relative = f"{kind}.json"
+        path = public_bundle / relative
+        if path.is_file():
+            row = canonical.require_canonical(
+                _read_beneath(public_bundle, relative, limit=1024 * 1024), path=relative
+            )
+            jsonschema.Draft202012Validator(PUBLIC_RECORD_SCHEMAS[kind]).validate(row)
+            if kind == "run":
+                public_run = row
+            elif kind == "output":
+                public_outputs.append(row)
+    if public_run is None:
+        raise ValidationError("approved report is missing its public run record")
+    configs = {row["configuration_id"] for row in observations}
+    configs.update(row["configuration_id"] for row in public_outputs)
+    configs.add(public_run["configuration_id"])
+    if configs != {approval["public_config_digest"]}:
+        raise ValidationError("approval configuration digest does not match public records")
+    provider_digest = public_run.get("provider_digest")
+    if provider_digest is not None and provider_digest != approval["public_descriptor_digest"]:
+        raise ValidationError("approval descriptor digest does not match the public run")
+    for row in observations:
+        if (row.get("configuration_id") != public_run["configuration_id"]
+                or row.get("comparison_cohort_id") != public_run["comparison_cohort_id"]):
+            raise ValidationError("public observation does not bind to the approved run")
+    observed_cases = {row.get("case_id") for row in observations}
+    for row in public_outputs:
+        if (row.get("configuration_id") != public_run["configuration_id"]
+                or row.get("sdk_config_digest") != public_run["configuration_id"]):
+            raise ValidationError("public output configuration does not bind to the approved run")
+        if row.get("case_id") not in observed_cases:
+            raise ValidationError("public output case is absent from public observations")
+
+    rows = []
+    for row in observations:
+        rows.append(
+            "<tr>"
+            f"<td>{html.escape(str(row.get('case_id', '')))}</td>"
+            f"<td>{html.escape(str(row.get('metric_id', '')))}</td>"
+            f"<td>{html.escape(str(row.get('execution_status', '')))}</td>"
+            f"<td>{html.escape(str(row.get('value', '—')))}</td>"
+            f"<td>{html.escape(str(row.get('unit', '')))}</td>"
+            "</tr>"
+        )
+    page = (
+        "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\">"
+        "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+        "<title>Approved offline benchmark report</title>"
+        "<style>body{font:16px system-ui;max-width:72rem;margin:2rem auto;padding:0 1rem}"
+        "table{border-collapse:collapse;width:100%}th,td{border:1px solid #bbb;padding:.45rem;text-align:left}"
+        "code{overflow-wrap:anywhere}</style><body><h1>Approved offline benchmark report</h1>"
+        f"<p>Approval <code>{html.escape(str(approval['export_id']))}</code></p>"
+        f"<p>Public core <code>{html.escape(core['core_digest'])}</code></p>"
+        f"<p>Approved by {html.escape(approval['approval_actor'])} at "
+        f"{html.escape(approval['approved_at'])}</p>"
+        "<table><thead><tr><th>Case</th><th>Metric</th><th>Status</th><th>Value</th><th>Unit</th>"
+        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></body></html>"
+    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(destination.name + ".tmp")
+    temporary.write_text(page, encoding="utf-8")
+    temporary.replace(destination)
+    return {
+        "report": str(destination),
+        "observations": len(observations),
+        "public_core_digest": core["core_digest"],
+        "approval_export_id": approval["export_id"],
+        "inventory_entries": len(inventory.get("files", [])),
+    }

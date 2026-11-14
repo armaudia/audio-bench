@@ -50,7 +50,7 @@ SDK_SCHEMA_FILES = {
     "effective-config": "effective-config.schema.json",
 }
 SDK_SCHEMA_DIGESTS = {
-    "descriptor": "sha256:3a93acd607a1ef1d7453a551da2608f8f3ca5d62fd7bb329698e3ad7ca501ec5",
+    "descriptor": "sha256:9db5fee497272ecf2c734f31cfb0a4662b43c01d745f856745ca9bcdcdc9c2ba",
     "effective-config": "sha256:55956e149b3b8c420599c1a115e2b880ba4659c562128c207f89842b79cc5eea",
 }
 
@@ -419,6 +419,7 @@ def check_semantics(kind: str, record: Any, *, path: str | None = None) -> None:
         if len(set(keys)) != len(keys):
             raise ValidationError("request matrix has duplicate configuration/cohort pairs", path=path)
         for entry in matrix:
+            canonical.expect_digest(entry["configuration_id"], "configuration_id", path=path)
             if len(set(entry["expected_case_ids"])) != len(entry["expected_case_ids"]):
                 raise ValidationError("expected_case_ids contains duplicates", path=path)
             if len(set(entry["expected_metric_ids"])) != len(entry["expected_metric_ids"]):
@@ -435,6 +436,7 @@ def check_semantics(kind: str, record: Any, *, path: str | None = None) -> None:
     if kind == "run":
         _check_uuid(record["run_id"], "run_id", path=path)
         _check_uuid(record["attempt_id"], "attempt_id", path=path)
+        canonical.expect_digest(record["configuration_id"], "configuration_id", path=path)
         if record["core_digest"] is not None:
             raise ValidationError("run.core_digest must stay null; the core references the manifest digest", path=path)
         if record["status"] == "passed" and record["reason"] is not None:
@@ -445,6 +447,7 @@ def check_semantics(kind: str, record: Any, *, path: str | None = None) -> None:
             raise ValidationError("run ended before it started", path=path)
 
     if kind == "observation":
+        canonical.expect_digest(record["configuration_id"], "configuration_id", path=path)
         status = record["execution_status"]
         value = record["value"]
         if status == "passed" and value is None and record["reason"] is None:
@@ -464,7 +467,10 @@ def check_semantics(kind: str, record: Any, *, path: str | None = None) -> None:
                 raise ValidationError("valid_interval end precedes start", path=path)
 
     if kind == "output":
+        canonical.expect_digest(record["configuration_id"], "configuration_id", path=path)
         _check_uint(record["sample_count"], "sample_count", path=path)
+        if record["sdk_config_digest"] != record["configuration_id"]:
+            raise ValidationError("output configuration_id must equal the SDK effective-config digest", path=path)
         if record["mode"] == "paced" and record["workload_id"] is None:
             raise ValidationError("paced output requires a workload_id", path=path)
         if record["mode"] == "sequential" and record["workload_id"] is not None:
@@ -494,6 +500,7 @@ def check_semantics(kind: str, record: Any, *, path: str | None = None) -> None:
                 raise ValidationError("complete inventory artifact sets disagree", path=path)
 
     if kind == "core":
+        canonical.expect_digest(record["configuration_id"], "configuration_id", path=path)
         canonical.verify_content_id(record, "core_digest", path=path)
         if (record["predecessor_core_digest"] is None) != (record["correction_reason"] is None):
             raise ValidationError("correction lineage requires predecessor_core_digest and correction_reason together", path=path)

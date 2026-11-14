@@ -2,19 +2,18 @@
 
 Reproducible evaluation, explicit asset/case manifests, canonical immutable evidence, honest native
 runtime measurement, safe export and an offline static report for the audio SDK. This directory
-now contains the independent Python evidence core and synthetic tests; it does **not** yet contain
-a working native driver or real SDK integration.
+contains the independent Python evidence core, a native driver/collector integrated with pinned SDK
+Candidate 09, and synthetic functional tests.
 
 ## Status
 
 - **Implemented locally:** strict duplicate-free JSON and RFC 8785 identities; closed evidence
   schemas; immutable ledger primitives; deterministic synthetic assets/manifests; metric/statistics
-  groundwork; fixed-rate schedule and IPC reference codec; adversarial export checks; offline
-  report shell.
-- **Blocked:** native driver/collector and SDK-backed execution (no installed SDK package,
-  conformance artifacts or public schema files); VoiceBank evaluation (rights and bytes not
-  verified); submitted execution/public export (no disposable isolation infrastructure); workload
-  qualification (no approved target/criteria).
+  pipeline; native SDK driver/collector; frame-completion-aligned local 10 ms paced fixture path; checked offline
+  projection, exact approval, and public static report generation.
+- **Still gated/incomplete:** the full paced workload/fault matrix, hostile-child isolation and
+  independent security review; VoiceBank evaluation (rights and bytes unverified); public
+  publication/browser gallery acceptance; workload qualification (no approved target/criteria).
 - Synthetic data is correctness/scenario evidence only. No performance, corpus, SDK conformance or
   qualification claim is made.
 
@@ -35,4 +34,5 @@ python3.12 -m venv .venv
 
 Validation never executes candidate code or downloads schemas. `validate` returns 0 for a valid
 bundle, 1 for invalid/coverage errors and 2 for a bad invocation. Third-party native execution and
-public export are disabled until isolation and independent adversarial checks pass.
+the public `export` command remain disabled until isolation and independent adversarial checks pass.
+Local offline projection/report helpers do not authorize publication.

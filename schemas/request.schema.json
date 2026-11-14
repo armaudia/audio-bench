@@ -34,9 +34,10 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["configuration_id", "cohort_id", "expected_case_ids", "expected_metric_ids"],
+        "required": ["configuration_id", "provider_digest", "cohort_id", "expected_case_ids", "expected_metric_ids"],
         "properties": {
-          "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+          "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
+          "provider_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
           "cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
           "expected_case_ids": {
             "type": "array",

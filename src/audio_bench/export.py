@@ -63,7 +63,7 @@ PUBLIC_PROJECTIONS: dict[str, frozenset[str]] = {
     }),
     "run": frozenset({
         "schema_id", "run_id", "attempt_id", "configuration_id", "comparison_cohort_id",
-        "status", "reason", "started_at", "ended_at", "collector_version",
+        "provider_digest", "status", "reason", "started_at", "ended_at", "collector_version",
     }),
     "summary": frozenset({
         "schema_id", "attempt_status", "complete", "expected_case_metric_count",
@@ -75,20 +75,114 @@ PUBLIC_PROJECTIONS: dict[str, frozenset[str]] = {
 
 PUBLIC_REQUIRED = {
     "observation": ("schema_id", "configuration_id", "comparison_cohort_id", "case_id", "metric_id", "execution_status"),
-    "output": ("schema_id", "case_id", "configuration_id", "decoded_pcm_sha", "sample_count", "format"),
+    "output": ("schema_id", "case_id", "configuration_id", "decoded_pcm_sha", "sample_count", "format", "sdk_config_digest"),
     "run": ("schema_id", "run_id", "attempt_id", "configuration_id", "status"),
     "summary": ("schema_id",),
 }
 
+_DIGEST = {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+_ID = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-z0-9][a-z0-9._-]*$"}
+_NULLABLE_DIGEST = {"oneOf": [_DIGEST, {"type": "null"}]}
+_NULLABLE_TEXT = {"oneOf": [{"type": "string", "maxLength": 2000}, {"type": "null"}]}
+
 PUBLIC_RECORD_SCHEMAS = {
-    kind: {
+    "observation": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "additionalProperties": False,
-        "required": list(required),
-        "properties": {field.split(".", 1)[0]: {} for field in sorted(PUBLIC_PROJECTIONS[kind])},
-    }
-    for kind, required in PUBLIC_REQUIRED.items()
+        "type": "object", "additionalProperties": False,
+        "required": list(PUBLIC_REQUIRED["observation"]),
+        "properties": {
+            "schema_id": {"const": "audio-bench/public-observation/0.1"},
+            "run_id": {"type": "string", "format": "uuid"},
+            "attempt_id": {"type": "string", "format": "uuid"},
+            "configuration_id": dict(_DIGEST),
+            "comparison_cohort_id": dict(_DIGEST),
+            "case_id": dict(_ID), "metric_id": dict(_ID), "metric_revision": dict(_ID),
+            "execution_status": {"enum": ["passed", "failed", "blocked", "invalid", "not_applicable", "not_run"]},
+            "reason": _NULLABLE_TEXT,
+            "value": {"oneOf": [{"type": "number"}, {"type": "null"}]},
+            "unit": {"enum": ["dB", "ratio", "count", "index", "none"]},
+            "direction": {"enum": ["higher", "lower", "diagnostic"]},
+            "numerator": {"oneOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]*)$"}, {"type": "null"}]},
+            "denominator": {"oneOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]*)$"}, {"type": "null"}]},
+            "valid_interval": {"oneOf": [{
+                "type": "object", "additionalProperties": False,
+                "required": ["start_sample", "end_sample", "sample_rate_hz"],
+                "properties": {
+                    "start_sample": {"type": "string", "pattern": "^(0|-?[1-9][0-9]*)$"},
+                    "end_sample": {"type": "string", "pattern": "^(0|-?[1-9][0-9]*)$"},
+                    "sample_rate_hz": {"const": 16000},
+                },
+            }, {"type": "null"}]},
+            "output_pcm_digest": _NULLABLE_DIGEST,
+        },
+    },
+    "output": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object", "additionalProperties": False,
+        "required": list(PUBLIC_REQUIRED["output"]),
+        "properties": {
+            "schema_id": {"const": "audio-bench/public-output/0.1"},
+            "attempt_id": {"type": "string", "format": "uuid"},
+            "case_id": dict(_ID), "configuration_id": dict(_DIGEST),
+            "mode": {"enum": ["sequential", "paced"]},
+            "workload_id": {"oneOf": [dict(_ID), {"type": "null"}]},
+            "native_container_sha": dict(_DIGEST), "decoded_pcm_sha": dict(_DIGEST),
+            "format": {
+                "type": "object", "additionalProperties": False,
+                "required": ["container", "subtype", "sample_rate_hz", "channels"],
+                "properties": {
+                    "container": {"const": "wav"}, "subtype": {"enum": ["FLOAT", "PCM_16"]},
+                    "sample_rate_hz": {"const": 16000}, "channels": {"const": 1},
+                },
+            },
+            "sample_count": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"},
+            "source_map_digest": _NULLABLE_DIGEST,
+            "source_input_digest": dict(_DIGEST), "sdk_config_digest": dict(_DIGEST),
+            "preview": {"oneOf": [{
+                "type": "object", "additionalProperties": False, "required": ["recipe", "digest"],
+                "properties": {"recipe": {"type": "string", "maxLength": 2000}, "digest": dict(_DIGEST)},
+            }, {"type": "null"}]},
+        },
+    },
+    "run": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object", "additionalProperties": False,
+        "required": list(PUBLIC_REQUIRED["run"]),
+        "properties": {
+            "schema_id": {"const": "audio-bench/public-run/0.1"},
+            "run_id": {"type": "string", "format": "uuid"},
+            "attempt_id": {"type": "string", "format": "uuid"},
+            "configuration_id": dict(_DIGEST), "comparison_cohort_id": dict(_DIGEST),
+            "provider_digest": _NULLABLE_DIGEST,
+            "status": {"enum": ["passed", "failed", "blocked", "invalid", "not_applicable", "not_run"]},
+            "reason": _NULLABLE_TEXT,
+            "started_at": {"type": "string", "format": "date-time"},
+            "ended_at": {"type": "string", "format": "date-time"},
+            "collector_version": {"type": "string", "maxLength": 2000},
+        },
+    },
+    "summary": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object", "additionalProperties": False,
+        "required": list(PUBLIC_REQUIRED["summary"]),
+        "properties": {
+            "schema_id": {"const": "audio-bench/public-summary/0.1"},
+            "attempt_status": {"enum": ["passed", "failed", "blocked", "invalid", "not_applicable", "not_run"]},
+            "complete": {"type": "boolean"},
+            "expected_case_metric_count": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"},
+            "delivered_case_metric_count": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"},
+            "missing": {"type": "array", "items": {"type": "string", "maxLength": 512}},
+            "extra": {"type": "array", "items": {"type": "string", "maxLength": 512}},
+            "duplicates": {"type": "array", "items": {"type": "string", "maxLength": 512}},
+            "mean": {"type": "number"}, "median": {"type": "number"},
+            "min": {"type": "number"}, "max": {"type": "number"},
+            "finite_count": {"type": "integer", "minimum": 0},
+            "undefined_reasons": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+            **{status: {"type": "integer", "minimum": 0}
+               for status in ("passed", "failed", "blocked", "invalid", "not_applicable", "not_run")},
+            "label": {"type": "string", "maxLength": 2000},
+        },
+    },
 }
 PUBLIC_INVENTORY_SCHEMA = {
     "type": "object",
@@ -96,11 +190,21 @@ PUBLIC_INVENTORY_SCHEMA = {
     "required": ["schema_id", "files", "actual_artifact_set_id"],
     "properties": {
         "schema_id": {"const": "audio-bench/public-inventory/0.1"},
-        "files": {"type": "array", "items": {"type": "object", "additionalProperties": False,
-                    "required": ["path", "media_type", "bytes", "sha256"],
-                    "properties": {"path": {"type": "string"}, "media_type": {"type": "string"},
-                                   "bytes": {"type": "string"}, "sha256": {"type": "string"}}}},
-        "actual_artifact_set_id": {"type": "string"},
+        "files": {
+            "type": "array",
+            "items": {
+                "type": "object", "additionalProperties": False,
+                "required": ["path", "media_type", "bytes", "sha256"],
+                "properties": {
+                    "path": {"type": "string", "minLength": 1, "maxLength": 1024,
+                             "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$"},
+                    "media_type": {"enum": ["application/json", "application/jsonl", "audio/wav"]},
+                    "bytes": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"},
+                    "sha256": dict(_DIGEST),
+                },
+            },
+        },
+        "actual_artifact_set_id": dict(_DIGEST),
     },
 }
 PUBLIC_CORE_SCHEMA = {
@@ -122,7 +226,10 @@ def _record_type(record: Mapping[str, Any]) -> str:
     parts = schema_id.rsplit("/", 2) if isinstance(schema_id, str) else []
     if len(parts) != 3:
         raise ValidationError("public record has an invalid schema_id")
-    return parts[1]
+    record_type = parts[1]
+    if record_type.startswith("public-"):
+        record_type = record_type.removeprefix("public-")
+    return record_type
 
 #: Private markers that must never appear in public text (B08 step 6).
 FORBIDDEN_TEXT_PATTERNS = (
@@ -330,16 +437,23 @@ def _validate_wav(path: Path, payload: bytes, policy: ExportPolicy) -> None:
 
     try:
         info = sf.info(io.BytesIO(payload))
-        decoded, rate = sf.read(io.BytesIO(payload), dtype="float32", always_2d=True)
     except Exception as exc:  # malformed container
         raise ValidationError(f"malformed WAV: {exc}", path=str(path)) from None
-    if info.channels > policy.max_audio_channels:
-        raise ValidationError("WAV has too many channels", path=str(path))
+    if info.channels != 1 or info.channels > policy.max_audio_channels:
+        raise ValidationError("exported WAV must be mono", path=str(path))
     if info.frames > policy.max_audio_seconds * info.samplerate:
         raise ValidationError("WAV exceeds the 30-minute cap", path=str(path))
     if info.samplerate != audio.SAMPLE_RATE:
         raise ValidationError("exported WAV must be 16 kHz", path=str(path))
-    if rate != audio.SAMPLE_RATE or not np.isfinite(decoded).all():
+    decoded_bytes = info.frames * info.channels * np.dtype(np.float32).itemsize
+    if decoded_bytes > policy.max_media_bytes:
+        raise ValidationError("decoded WAV exceeds the bounded decode allocation", path=str(path))
+    try:
+        decoded, rate = sf.read(io.BytesIO(payload), dtype="float32", always_2d=True)
+    except Exception as exc:
+        raise ValidationError(f"malformed WAV decode: {exc}", path=str(path)) from None
+    if (rate != audio.SAMPLE_RATE or decoded.shape != (info.frames, info.channels)
+            or not np.isfinite(decoded).all()):
         raise ValidationError("WAV decode failed finite-sample validation", path=str(path))
 
 
@@ -387,6 +501,8 @@ def project_record(
         for part in parts[:-1]:
             target = target.setdefault(part, {})
         target[parts[-1]] = value
+    if allowlist is None and kind in PUBLIC_RECORD_SCHEMAS:
+        result["schema_id"] = f"audio-bench/public-{kind}/0.1"
     return result
 
 
@@ -467,10 +583,11 @@ def build_offline_candidate(
             raise ValidationError(f"unsupported export type: {relative!r}")
 
         files.sort(key=lambda item: item["path"])
+        payload_files = list(files)
         inventory = {
             "schema_id": "audio-bench/public-inventory/0.1",
-            "files": files,
-            "actual_artifact_set_id": canonical.digest_of([item["path"] for item in files]),
+            "files": payload_files,
+            "actual_artifact_set_id": canonical.digest_of([item["path"] for item in payload_files]),
         }
         jsonschema.Draft202012Validator(PUBLIC_INVENTORY_SCHEMA).validate(inventory)
         inventory_bytes = canonical.dumps(inventory)
@@ -479,7 +596,7 @@ def build_offline_candidate(
             "schema_id": "audio-bench/public-core/0.1",
             "identity_algorithm": canonical.JCS_IDENTITY_ALGORITHM,
             "inventory_digest": sha256_bytes(inventory_bytes),
-            "payload_digest": canonical.digest_of([[item["path"], item["sha256"]] for item in files]),
+            "payload_digest": canonical.digest_of([[item["path"], item["sha256"]] for item in payload_files]),
             "core_digest": "sha256:" + "0" * 64,
         }
         core["core_digest"] = canonical.content_id(core, "core_digest")

@@ -24,7 +24,7 @@
     "schema_id": { "const": "audio-bench/output/0.1" },
     "attempt_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
     "case_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
-    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "mode": { "enum": ["sequential", "paced"] },
     "workload_id": {
       "oneOf": [

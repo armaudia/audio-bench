@@ -28,6 +28,9 @@ ALLOWED_TOP_LEVEL_FILES = {
     "scored-intervals.json",
     "cohort.json",
     "export-candidate.json",
+    "effective-config.json",
+    "provider-descriptor.json",
+    "failure-evidence.json",
     "manifest.json",
 }
 ALLOWED_PREFIXES = ("cases-", "files-", "recipe-")
@@ -253,6 +256,32 @@ def validate_bundle(root: Path, *, validator: Validator | None = None) -> Bundle
             record = canonical.require_canonical(path.read_bytes(), path=_rel(path, root))
             validator.validate("request", record, path=_rel(path, root))
             requests[record["request_id"]] = record
+        except ValidationError as exc:
+            report.add(str(exc))
+
+    config_path = root / "effective-config.json"
+    if config_path.exists():
+        try:
+            config_bytes = config_path.read_bytes()
+            canonical.require_canonical(config_bytes, path=_rel(config_path, root))
+            config_digest = "sha256:" + hashlib.sha256(config_bytes).hexdigest()
+            for request in requests.values():
+                if not any(row["configuration_id"] == config_digest for row in request["matrix"]):
+                    report.add(f"{_rel(config_path, root)} digest is not referenced by a request matrix")
+        except ValidationError as exc:
+            report.add(str(exc))
+    descriptor_path = root / "provider-descriptor.json"
+    if descriptor_path.exists():
+        try:
+            descriptor = canonical.require_canonical(
+                descriptor_path.read_bytes(), path=_rel(descriptor_path, root)
+            )
+            descriptor_digest = "sha256:" + hashlib.sha256(descriptor_path.read_bytes()).hexdigest()
+            for request in requests.values():
+                if not any(row["provider_digest"] == descriptor_digest for row in request["matrix"]):
+                    report.add(f"{_rel(descriptor_path, root)} digest is not referenced by a request matrix")
+            if descriptor.get("schema_id") != "audio-sdk/descriptor/0.1":
+                report.add(f"{_rel(descriptor_path, root)} is not an SDK provider descriptor")
         except ValidationError as exc:
             report.add(str(exc))
 

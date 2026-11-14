@@ -26,7 +26,7 @@
     },
     {
       "file": "core.schema.json",
-      "sha256": "sha256:ec0d74a92bb094f768ad92aacdbd3c7107976bf2233089b907fe48e4f74f7f72"
+      "sha256": "sha256:a996a7737124d5cf32c9f96cc501962c9feaab18080707692eed40d7642c00d6"
     },
     {
       "file": "dataset.schema.json",
@@ -50,11 +50,11 @@
     },
     {
       "file": "observation.schema.json",
-      "sha256": "sha256:49cf30c426125c1610783e36375080a5662d6d05d6f6060483c36ea493ea0c80"
+      "sha256": "sha256:7fa210ce515499179588d94ff15ef561acce6227e8ef434e7e308cb47ab55f85"
     },
     {
       "file": "output.schema.json",
-      "sha256": "sha256:fb05e695b1e6cfccaea0966d5b0ad34c77b1254adc5e652814f0125345f40c43"
+      "sha256": "sha256:08d8a211c48cd09242a7c206b8d8288a153e2bc0124e12870c16aae060b8f6e7"
     },
     {
       "file": "recipe.schema.json",
@@ -66,7 +66,7 @@
     },
     {
       "file": "request.schema.json",
-      "sha256": "sha256:b4b5a76fc4863f3baadcf46aaa60663c0916a9a9a4ec0adc6e56bf6f7e68163e"
+      "sha256": "sha256:8f22713d7d15f014f24b0bf057eb9317d4e41c566463a69b3b9105a01d74d2bf"
     },
     {
       "file": "review.schema.json",
@@ -74,7 +74,7 @@
     },
     {
       "file": "run.schema.json",
-      "sha256": "sha256:84a68123cda619ea230236b839c49d4d9260d2ddd5171df36e611ee516692527"
+      "sha256": "sha256:7b94f95856b4fc777acec108ff80fd79899910241b95b81a659549b13fc60b33"
     },
     {
       "file": "scored-intervals.schema.json",
@@ -82,7 +82,7 @@
     },
     {
       "file": "sdk/descriptor.schema.json",
-      "sha256": "sha256:3a93acd607a1ef1d7453a551da2608f8f3ca5d62fd7bb329698e3ad7ca501ec5"
+      "sha256": "sha256:9db5fee497272ecf2c734f31cfb0a4662b43c01d745f856745ca9bcdcdc9c2ba"
     },
     {
       "file": "sdk/effective-config.schema.json",

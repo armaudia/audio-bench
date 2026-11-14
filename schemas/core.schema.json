@@ -31,7 +31,7 @@
     "request_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "dataset_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "comparison_cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
-    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "scored_interval_set_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "metric_set_digest": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "registry_snapshot_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },

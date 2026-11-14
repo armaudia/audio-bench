@@ -31,6 +31,7 @@ audio_bench = [
   "schema_data/*.json",
   "schema_data/*.schema.json",
   "schema_data/sdk/*.schema.json",
+  "schema_data/sdk/canonical-vectors.json",
   "schema_data/sdk/providers/*.json",
   "report_assets/*",
   "runtime_data/manifests/synthetic/synthetic-16k-v1/*",
@@ -42,6 +43,11 @@ audio_bench = [
   "runtime_data/deps/lock.json",
   "runtime_data/deps/sdk-snapshot/*",
   "runtime_data/toolchain-lock.json",
+  "runtime_data/locks/*",
+  "runtime_data/pyproject.toml",
+  "runtime_data/native/CMakeLists.txt",
+  "runtime_data/native/src/*.cpp",
+  "runtime_data/native/src/*.hpp",
 ]
 
 [tool.pytest.ini_options]

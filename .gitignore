@@ -1,6 +1,7 @@
 # Local build/run outputs, never committed
 .venv/
 build/
+native/build-*/
 __pycache__/
 *.pyc
 .pytest_cache/

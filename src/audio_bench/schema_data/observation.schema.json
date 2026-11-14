@@ -27,7 +27,7 @@
     "schema_id": { "const": "audio-bench/observation/0.1" },
     "run_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
     "attempt_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
-    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
+    "configuration_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "comparison_cohort_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/digest" },
     "case_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },
     "metric_id": { "$ref": "https://schemas.audio-bench.invalid/defs/0.1#/$defs/bounded_id" },

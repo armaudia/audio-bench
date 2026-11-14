@@ -49,6 +49,7 @@ def test_finite_pair_intersection_shows_excluded_rows():
 
 def test_seal_and_recompute_synthetic_bundle_without_hash_cycles(tmp_path):
     digest = lambda value: canonical.digest_of({"synthetic_fixture": value})
+    config_id = digest("effective-config")
     request = {
         "schema_id": "audio-bench/request/0.1",
         "request_id": "00000000-0000-4000-8000-000000000001",
@@ -60,10 +61,14 @@ def test_seal_and_recompute_synthetic_bundle_without_hash_cycles(tmp_path):
         "harness_digest": digest("harness"),
         "registry_snapshot_id": digest("registry"),
         "matrix": [{
-            "configuration_id": "fixture.config.v0",
+            "configuration_id": config_id,
+            "provider_digest": digest("provider"),
             "cohort_id": digest("cohort"),
             "expected_case_ids": ["case-1"],
             "expected_metric_ids": ["clipping_count"],
+            "expected_artifact_paths": [
+                "effective-config.json", "observations.jsonl", "outputs.jsonl", "summary.json",
+            ],
         }],
         "required_artifact_types": ["observation", "output", "inventory", "summary"],
         "created_at": "2026-11-13T00:00:00Z",
@@ -80,7 +85,7 @@ def test_seal_and_recompute_synthetic_bundle_without_hash_cycles(tmp_path):
         "request_id": request["request_id"],
         "run_id": "00000000-0000-4000-8000-000000000002",
         "attempt_id": "00000000-0000-4000-8000-000000000003",
-        "configuration_id": "fixture.config.v0",
+        "configuration_id": config_id,
         "comparison_cohort_id": request["matrix"][0]["cohort_id"],
         "expected_case_metric_set_id": digest("expected"),
         "sdk_package_digest": request["sdk_package_digest"],
@@ -98,11 +103,14 @@ def test_seal_and_recompute_synthetic_bundle_without_hash_cycles(tmp_path):
         "core_digest": None,
     }
     attempt = ledger.start_attempt(tmp_path, run)
+    ledger.sealed_write(attempt / "effective-config.json", canonical.dumps({
+        "synthetic_fixture": "effective-config",
+    }))
     observation = {
         "schema_id": "audio-bench/observation/0.1",
         "run_id": "00000000-0000-4000-8000-000000000002",
         "attempt_id": "00000000-0000-4000-8000-000000000003",
-        "configuration_id": "fixture.config.v0",
+        "configuration_id": config_id,
         "comparison_cohort_id": request["matrix"][0]["cohort_id"],
         "case_id": "case-1",
         "metric_id": "clipping_count",
@@ -121,7 +129,7 @@ def test_seal_and_recompute_synthetic_bundle_without_hash_cycles(tmp_path):
         "schema_id": "audio-bench/output/0.1",
         "attempt_id": "00000000-0000-4000-8000-000000000003",
         "case_id": "case-1",
-        "configuration_id": "fixture.config.v0",
+        "configuration_id": config_id,
         "mode": "sequential",
         "workload_id": None,
         "native_container_sha": digest("wav"),
@@ -130,7 +138,7 @@ def test_seal_and_recompute_synthetic_bundle_without_hash_cycles(tmp_path):
         "sample_count": "160",
         "source_map_digest": None,
         "source_input_digest": digest("input"),
-        "sdk_config_digest": None,
+        "sdk_config_digest": config_id,
         "preview": None,
     }
     summary = {"schema_id": "audio-bench/summary/0.1"}

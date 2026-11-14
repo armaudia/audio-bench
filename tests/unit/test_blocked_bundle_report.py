@@ -38,7 +38,7 @@ def test_blocked_attempt_survives_sealing_validation_and_report(tmp_path):
     request_id = str(uuid.UUID("10000000-0000-4000-8000-000000000001"))
     run_id = str(uuid.UUID("10000000-0000-4000-8000-000000000002"))
     attempt_id = str(uuid.UUID("10000000-0000-4000-8000-000000000003"))
-    config_id = "raw.control.v0"
+    config_id = _digest("effective-config")
     request = {
         "schema_id": "audio-bench/request/0.1",
         "request_id": request_id,
@@ -51,9 +51,13 @@ def test_blocked_attempt_survives_sealing_validation_and_report(tmp_path):
         "registry_snapshot_id": _digest("catalog"),
         "matrix": [{
             "configuration_id": config_id,
+            "provider_digest": _digest("synthetic-provider"),
             "cohort_id": cohort["comparison_cohort_id"],
             "expected_case_ids": cases,
             "expected_metric_ids": ["si_sdr_db"],
+            "expected_artifact_paths": [
+                "effective-config.json", "observations.jsonl", "outputs.jsonl", "summary.json",
+            ],
         }],
         "required_artifact_types": ["observation", "output", "inventory", "summary"],
         "created_at": "2026-11-13T00:00:00Z",
@@ -84,6 +88,9 @@ def test_blocked_attempt_survives_sealing_validation_and_report(tmp_path):
         "core_digest": None,
     }
     attempt_dir = ledger.start_attempt(root, run)
+    ledger.sealed_write(attempt_dir / "effective-config.json", canonical.dumps({
+        "synthetic_test_only": "effective-config",
+    }))
     observations = [
         {
             "schema_id": "audio-bench/observation/0.1",

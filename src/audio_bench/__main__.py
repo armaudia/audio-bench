@@ -16,6 +16,19 @@ from .schemas import Validator, schema_index
 from .smoke import run_sdk_smoke
 
 
+def _locked_sdk_prefix() -> Path | None:
+    repo = Path(__file__).resolve().parents[2]
+    lock_path = repo / "deps/lock.json"
+    # A source checkout can derive the adjacent Candidate prefix. A wheel carries
+    # the lock as data, but cannot assume the workspace-relative SDK build exists.
+    if not lock_path.is_file():
+        return None
+    lock = json.loads(lock_path.read_text())
+    artifact = next(item["artifact"] for item in lock["dependencies"]
+                    if item["id"] == "audio-sdk-installed-package")
+    return (repo / artifact).resolve().parent / "audio-sdk-0.1.0"
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="python -m audio_bench")
     sub = root.add_subparsers(dest="command", required=True)
@@ -46,7 +59,11 @@ def parser() -> argparse.ArgumentParser:
     smoke = sub.add_parser("smoke", help="run the pinned SDK on synthetic fixtures and seal local evidence")
     smoke.add_argument("--output", required=True, type=Path)
     smoke.add_argument("--native-build", type=Path, default=Path("build/native"))
-    smoke.add_argument("--sdk-prefix", type=Path, default=Path("../audio-sdk/build/candidate/audio-sdk-0.1.0"))
+    smoke.add_argument(
+        "--sdk-prefix",
+        type=Path,
+        default=_locked_sdk_prefix(),
+    )
     smoke.add_argument("--provider", choices=("speex.ns.v0", "dsp.highpass80.v0"), default="dsp.highpass80.v0")
 
     return root
@@ -95,6 +112,10 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"valid": True, "entries": len(catalog["entries"]), "executed_candidate_code": False}, indent=2))
             return 0
         if args.command == "smoke":
+            if args.sdk_prefix is None:
+                raise InvocationError(
+                    "an installed audio-bench wheel requires --sdk-prefix; its SDK package is external"
+                )
             result = run_sdk_smoke(
                 args.output,
                 native_build=args.native_build,
