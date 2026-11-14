@@ -13,7 +13,7 @@ report/
 .mypy_cache/
 .ruff_cache/
 # Downloaded assets and caches
-assets/
+/assets/
 cache/
 *.part
 # OS noise
