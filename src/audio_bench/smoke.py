@@ -376,7 +376,7 @@ def run_sdk_smoke(
                 }),
                 "toolchain_lock_digest": _digest_file(toolchain),
                 "environment_digest": canonical.digest_of(environment_snapshot),
-                "machine_fingerprint": f"local {platform.system()} {platform.machine()}; not qualified",
+                "machine_fingerprint": f"{platform.system()} {platform.machine()}; not qualified",
                 "collector_version": "audio-bench-native-collector/0.1 protocol-v1",
                 "started_at": started,
                 "ended_at": now,
@@ -449,7 +449,7 @@ def run_sdk_smoke(
             ledger.sealed_write(attempt / "collector-summary.json", canonical.dumps(collector_summary))
             summary = {
                 "schema_id": "audio-bench/summary/0.1",
-                "label": "synthetic functional integration; local workstation; not qualified",
+                "label": "synthetic functional integration; not qualified",
                 "provider_id": provider_id,
                 "sdk_build_id": collector_summary["sdk_build_id"],
                 "collector": collector_summary,

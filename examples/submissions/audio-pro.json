@@ -1,0 +1,23 @@
+{
+  "schema_id": "audio-bench/submission/0.1",
+  "submission_id": "audio-pro-tiny16-example",
+  "display_name": "audio-pro FastEnhancer Tiny16 (submitter-run example)",
+  "task": "noise-cancellation",
+  "runner_mode": "submitter-owned",
+  "source": {
+    "repository": "armaudia/audio-pro",
+    "visibility": "private",
+    "revision": "623b31b11b871feb64e9501ff38607e9f1621007"
+  },
+  "provider_id": "pro.fastenhancer-tiny16.f32.v0",
+  "model_digest": null,
+  "baseline_provider_id": "speex.ns.v0",
+  "benchmark": {
+    "dataset_id": "synthetic-16k-v1",
+    "suite_id": "synthetic-smoke-v1"
+  },
+  "execution": {
+    "enabled": false,
+    "reason": "Demonstration only. audio-pro has no weights and its rights policy currently blocks real model execution. Replace the placeholder commit and obtain model/data clearance before enabling."
+  }
+}

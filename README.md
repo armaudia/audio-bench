@@ -1,9 +1,21 @@
 # audio-bench
 
-Local reproducible evaluation and offline evidence reports for audio-sdk contract
-0.1. Implemented scope: two built-in DSP providers, 24 deterministic synthetic
-cases, seven quality/diagnostic metrics, immutable evidence, validation, and a
-static browser report with filters and CSV/JSON downloads.
+Local reproducible evaluation and evidence reports for audio-sdk contract 0.1.
+Implemented benchmark scope: two built-in DSP providers, 24 deterministic
+synthetic cases, seven quality/diagnostic metrics, immutable evidence, validation,
+and an interactive static report. Synthetic cases are functional fixtures, not a
+speech-quality benchmark.
+
+## Submit a pipeline
+
+See [the submission protocol](docs/SUBMISSIONS.md). A submission PR contains only
+metadata and is validated without checking out or executing the referenced code.
+The merged `main` CI runs the currently supported synthetic smoke suite. After a
+successful run, the Pages workflow validates and publishes cumulative smoke result
+records to <https://armaudia.github.io/audio-bench/>. These are synthetic functional
+checks, not third-party pipeline benchmarks or speech-quality rankings. Candidate
+provider execution and submitter-owned result ingestion are not enabled; example
+manifests are disabled and are not presented as measurements.
 
 ## Setup
 
@@ -58,11 +70,11 @@ directory. The wheel does not silently download or execute candidate code.
 
 ## Limits and status
 
-This is synthetic functional evidence, not representative speech evaluation,
-performance ranking or workload qualification. Real corpus acquisition, hostile
-submissions, public export/publication, a listening gallery and production timing
-qualification remain gated. The collector is not an isolation boundary for hostile
-native code. Tiny16 and other neural processors are not included.
+The current runner executes only the two pinned built-in providers. VOiCES or
+another rights-cleared real corpus, arbitrary third-party provider execution,
+submitter-owned result ingestion, and production timing qualification are not
+enabled. The collector is not an isolation boundary for hostile native code.
+Tiny16 and other neural processors are not included.
 
 [RELEASING.md](RELEASING.md) describes CI and intended GitHub controls.
 GitHub settings readback is retained by the administration script under build/. First-party software is Apache-2.0; synthetic asset terms are separate in DATA_LICENSE.md. The maintainer is Tsakanyan Hovhannes, acting individually.

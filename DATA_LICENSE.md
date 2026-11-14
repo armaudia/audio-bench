@@ -9,6 +9,8 @@ in `manifests/synthetic/synthetic-16k-v1/dataset.json`; see
 `LICENSES/LicenseRef-Synthetic-Fixtures.txt`. They are not representative human
 speech. No third-party corpus or recording rights are asserted.
 
-No hosted competition, submission ingestion, retention, public-audio publication
-or customer-data service is enabled. Separate approved terms and consent controls
-are prerequisites for those services.
+The Pages workflow is configured to publish only repository-reviewed result metadata. It does
+not accept uploads or private source/audio. Automated result ingestion, corpus
+redistribution, public-audio playback, and customer-data processing are not
+enabled. Separate approved terms and consent controls are prerequisites before
+accepting external artifacts or media.

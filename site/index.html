@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Public audio pipeline benchmark results with source, model, dataset, and runner provenance.">
+  <title>Audio Bench — Results</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <header class="hero">
+    <nav aria-label="Main navigation"><a class="brand" href="./">audio<span>bench</span></a><a href="https://github.com/armaudia/audio-bench/blob/main/docs/SUBMISSIONS.md">Submit a pipeline</a></nav>
+    <div class="hero-copy">
+      <p class="eyebrow">Open benchmark · Reproducible evidence</p>
+      <h1>Compare audio pipelines<br>with clear evidence.</h1>
+      <p>Review synthetic noise-cancellation checks with their source revision, dataset, harness, and runner provenance. These checks are functional evidence, not speech-quality rankings.</p>
+      <a class="button" href="https://github.com/armaudia/audio-bench/blob/main/docs/SUBMISSIONS.md">How to submit <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="hero-stats" aria-label="Result counts">
+      <div><strong id="result-count">—</strong><span>published runs</span></div>
+      <div><strong id="pipeline-count">—</strong><span>pipelines</span></div>
+      <div><strong id="suite-count">—</strong><span>benchmark suites</span></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="trust-note" aria-labelledby="evidence-heading">
+      <div class="trust-mark" aria-hidden="true">i</div>
+      <div><h2 id="evidence-heading">Know how each result was measured</h2>
+        <p>Audio-bench-run results are produced by the pinned CI runner. Submitter-run results are planned for private source and will be marked not independently verified. Any future latency estimate will remain beside the raw measurement.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="results-heading">
+      <div class="section-heading"><div><p class="eyebrow">THE RESULTS</p><h2 id="results-heading">Benchmark results</h2></div><a class="download" href="data/results.json" download>Download all results ↓</a></div>
+      <div class="filters" role="search">
+        <label for="search">Search pipelines</label><input id="search" type="search" placeholder="Name, provider, or source">
+        <label for="runner-filter">Runner</label><select id="runner-filter"><option value="">All runners</option><option value="audio-bench">Audio-bench</option><option value="submitter-owned">Submitter-owned</option></select>
+        <label for="suite-filter">Suite</label><select id="suite-filter"><option value="">All suites</option></select>
+        <button id="clear-filters" type="button">Clear filters</button>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite">Loading results…</p>
+      <div id="results" class="results-grid"></div>
+    </section>
+
+    <section class="how" aria-labelledby="how-heading">
+      <p class="eyebrow">RUN MODES</p><h2 id="how-heading">Your code stays yours.</h2>
+      <div class="how-grid">
+        <article><span class="step">01</span><h3>Our runner</h3><p>For public repositories. The benchmark runs after the submission is merged, using an immutable source revision on the audio-bench runner.</p><span class="tag tag-verified">Audio-bench-run</span></article>
+        <article><span class="step">02</span><h3>Your runner <span class="run-state">Planned</span></h3><p>For private repositories or submitters who keep execution in their own environment. The intended flow runs a reference model first and reports raw plus calibrated latency. Private-runner execution and result ingestion are not enabled yet.</p><span class="tag tag-owner">Submitter-run · not independently verified</span></article>
+      </div>
+      <p class="fine-print">Latency calibration estimates a common hardware scale. It does not normalize speech-quality metrics or prove a result is correct. Synthetic fixtures are for functional checks, not speech-quality rankings.</p>
+    </section>
+  </main>
+  <footer><a href="https://github.com/armaudia/audio-bench">GitHub repository</a><span>Results are versioned and downloadable as JSON.</span></footer>
+  <script type="module" src="assets/site.js"></script>
+</body>
+</html>

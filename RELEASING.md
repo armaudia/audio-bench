@@ -46,9 +46,7 @@ The release workflow reruns CI, requires the tag's commit to be on main, require
 approval in the `release` environment, verifies both platform archive checksums,
 and attests the artifacts before publishing them. Assets are attached to a draft
 first, then the release is published with repository release immutability enabled. Only organization owners may create release tags. Separate immutable-tag rules
-without bypass actors prevent those tags from being rewritten or deleted. A corrected release uses a new version. PyPI upload, public benchmark
-publication, third-party code execution and model distribution are not enabled by
-these workflows.
+without bypass actors prevent those tags from being rewritten or deleted. A corrected release uses a new version. PyPI upload, third-party provider execution and model distribution are not enabled by these workflows. `pages.yml` deploys the static results UI and publishes only validated synthetic smoke summaries from successful main CI runs to the `benchmark-results` branch. Candidate registrations are not executed, submitter-owned results are not ingested, and no real-corpus results are available.
 
 Before creating a stable release, record scope-specific source/license decisions,
 passing hosted runs for the advertised targets, clean install evidence, remaining

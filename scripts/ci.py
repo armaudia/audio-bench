@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
 # SPDX-License-Identifier: Apache-2.0
-"""Verify native integration, all unit tests, both providers and a clean installed wheel."""
+"""Verify the build and unit checks, with benchmark execution reserved for main pushes."""
 from __future__ import annotations
 
 import argparse
@@ -24,6 +24,10 @@ def run(*args: str, cwd: Path | None = None, env: dict | None = None) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--wheelhouse", type=Path)
+    parser.add_argument(
+        "--skip-benchmarks", action="store_true",
+        help="run build/conformance/unit checks without executing the synthetic evaluation suite",
+    )
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     output = root / "build/ci"
@@ -40,17 +44,27 @@ def main() -> None:
     run("ctest", "--test-dir", str(native), "--output-on-failure", "--timeout", "60",
         "--output-junit", str(output / "native-tests.xml"))
     env = dict(os.environ, AUDIO_BENCH_NATIVE_BUILD=str(native), AUDIO_SDK_PREFIX=str(prefix))
-    run(sys.executable, "-m", "pytest", "tests/unit", "-q", "--junitxml", str(output / "unit-tests.xml"), cwd=root, env=env)
+    test_command = [sys.executable, "-m", "pytest", "tests/unit", "-q"]
+    if args.skip_benchmarks:
+        test_command.extend(["-m", "not sdk"])
+    test_command.extend(["--junitxml", str(output / "unit-tests.xml")])
+    run(*test_command, cwd=root, env=env)
     suites = ET.parse(output / "unit-tests.xml").getroot()
     if any(int(suite.get("skipped", "0")) for suite in suites.iter("testsuite")):
         raise RuntimeError("release checks must not skip SDK integration tests")
-    for name, provider in (("highpass", "dsp.highpass80.v0"), ("speex", "speex.ns.v0")):
-        bundle = output / name
-        run(sys.executable, "-m", "audio_bench", "smoke", "--output", str(bundle),
-            "--native-build", str(native), "--sdk-prefix", str(prefix), "--provider", provider, cwd=root)
-        run(sys.executable, "-m", "audio_bench", "validate", str(bundle), cwd=root)
-        run(sys.executable, "-m", "audio_bench", "report", "build", "--bundle", str(bundle),
-            "--output", str(output / (name + "-report")), cwd=root)
+    if not args.skip_benchmarks:
+        bundles = []
+        for name, provider in (("highpass", "dsp.highpass80.v0"), ("speex", "speex.ns.v0")):
+            bundle = output / name
+            bundles.append(str(bundle))
+            run(sys.executable, "-m", "audio_bench", "smoke", "--output", str(bundle),
+                "--native-build", str(native), "--sdk-prefix", str(prefix), "--provider", provider, cwd=root)
+            run(sys.executable, "-m", "audio_bench", "validate", str(bundle), cwd=root)
+            run(sys.executable, "-m", "audio_bench", "report", "build", "--bundle", str(bundle),
+                "--output", str(output / (name + "-report")), cwd=root)
+        run(sys.executable, "scripts/build_site_results.py", "--output", str(output / "results.json"),
+            *bundles, cwd=root)
+        run(sys.executable, "scripts/validate_site.py", str(output / "results.json"), cwd=root)
     wheels = output / "wheels"
     run(sys.executable, "-m", "pip", "wheel", "--no-deps", "--no-build-isolation", "--wheel-dir", str(wheels), str(root))
     wheel = next(wheels.glob("audio_bench-*.whl"))
@@ -62,11 +76,12 @@ def main() -> None:
         "--report", str(output / "wheel-install-results.json"), str(wheel))
     clean_env = dict(os.environ)
     clean_env.pop("PYTHONPATH", None)
-    run(str(python), "-m", "audio_bench", "smoke", "--output", str(output / "installed-smoke"),
-        "--native-build", str(native), "--sdk-prefix", str(prefix), cwd=environment, env=clean_env)
-    run(str(python), "-m", "audio_bench", "validate", str(output / "installed-smoke"), cwd=environment, env=clean_env)
-    run(str(python), "-m", "audio_bench", "report", "build", "--bundle", str(output / "installed-smoke"),
-        "--output", str(output / "installed-report"), cwd=environment, env=clean_env)
+    if not args.skip_benchmarks:
+        run(str(python), "-m", "audio_bench", "smoke", "--output", str(output / "installed-smoke"),
+            "--native-build", str(native), "--sdk-prefix", str(prefix), cwd=environment, env=clean_env)
+        run(str(python), "-m", "audio_bench", "validate", str(output / "installed-smoke"), cwd=environment, env=clean_env)
+        run(str(python), "-m", "audio_bench", "report", "build", "--bundle", str(output / "installed-smoke"),
+            "--output", str(output / "installed-report"), cwd=environment, env=clean_env)
     package = output / "package"
     (package / "bin").mkdir(parents=True)
     for name in ("audio_bench_driver", "audio_bench_collect"):
