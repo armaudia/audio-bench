@@ -29,7 +29,7 @@ def impact_plan(paths: Iterable[str]) -> dict[str, Any]:
         tier = "rebuild_affected_cohorts_and_reexecute"
     elif any(path.startswith(("report/", "src/audio_bench/report")) for path in changed):
         tier = "rebuild_reports"
-    elif all(path.startswith(("docs/", "README", "HANDOFF.md")) for path in changed):
+    elif all(path.startswith(("docs/", "README")) for path in changed):
         tier = "documentation_only"
     else:
         tier = "full_revalidation_and_reexecution"
