@@ -1,0 +1,89 @@
+{
+  "schema_id": "audio-bench/corpus-subset-provenance/1.0",
+  "subset_id": "voices-dev-clean-smoke-v1",
+  "purpose": "integration smoke fixture only; not a ranking or representative quality cohort",
+  "selection": {
+    "speaker_id": "1272",
+    "chapter_id": "135031",
+    "utterance_id": "0000",
+    "source_partition": "dev-clean",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "sample_count": 174160,
+    "duration_seconds": 10.885,
+    "independent_utterance_count": 1,
+    "selection_note": "Five paired VOiCES noisy recordings for one LibriSpeech source utterance; conditions vary but speech content does not."
+  },
+  "licenses": [
+    {
+      "dataset": "VOiCES",
+      "publisher": "IQT Labs",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "source_url": "https://iqtlabs.github.io/voices/",
+      "attribution": "IQT Labs, VOiCES: A Corpus for Learning Voice in Noisy Environments",
+      "notes": "The license does not grant privacy, publicity, or personality rights."
+    },
+    {
+      "dataset": "LibriSpeech",
+      "publisher": "OpenSLR",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "source_url": "https://www.openslr.org/12",
+      "attribution": "LibriSpeech, speaker 1272, chapter 135031, utterance 0000"
+    }
+  ],
+  "sources": {
+    "voices_subset_repository": {
+      "url": "https://github.com/Lab41/VOiCES-subset/tree/6284c9f83d1190c0a5c5054c32bcb666cb3d44a9",
+      "commit": "6284c9f83d1190c0a5c5054c32bcb666cb3d44a9",
+      "archive_note": "Archived 90-degree subset mirror; source chunks were fetched from this immutable commit."
+    },
+    "librispeech": {
+      "url": "https://www.openslr.org/12",
+      "archive_url": "https://www.openslr.org/resources/12/dev-clean.tar.gz",
+      "archive_sha256": "76f87d090650617fca0cac8f88b9416e0ebf80350acb97b343a85fa903728ab3",
+      "archive_bytes": 337926286,
+      "archive_member": "LibriSpeech/dev-clean/1272/135031/1272-135031-0000.flac",
+      "source_file_sha256": "26cbebbdd8954104c936dc38fbb8a80958f2169ada0fa6fe46a89cfa9e3d824c"
+    },
+    "voices_chunks": [
+      {
+        "chunk": "VOiCES_90_1.tar",
+        "url": "https://raw.githubusercontent.com/Lab41/VOiCES-subset/6284c9f83d1190c0a5c5054c32bcb666cb3d44a9/VOiCES_90_1.tar",
+        "sha256": "c4e1d3c4333c4281a1077dc60d1bf5986779f0e1e9dff02bfa67b130652e6128",
+        "member": "Users/mbarrios/Documents/VOICES/IQT_Github_repo/90deg_50-50/part_1/Lab41-SRI-VOiCES-rm2-babb-sp1272-ch135031-sg0000-mc03-stu-mid-dg090.wav"
+      },
+      {
+        "chunk": "VOiCES_90_2.tar",
+        "url": "https://raw.githubusercontent.com/Lab41/VOiCES-subset/6284c9f83d1190c0a5c5054c32bcb666cb3d44a9/VOiCES_90_2.tar",
+        "sha256": "2f8562765ecc2a438854cd292b143ffe3898d63f6322bbd7090c77f7d893fe60",
+        "member": "Users/mbarrios/Documents/VOICES/IQT_Github_repo/90deg_50-50/part_2/Lab41-SRI-VOiCES-rm2-babb-sp1272-ch135031-sg0000-mc05-stu-far-dg090.wav"
+      },
+      {
+        "chunk": "VOiCES_90_4.tar",
+        "url": "https://raw.githubusercontent.com/Lab41/VOiCES-subset/6284c9f83d1190c0a5c5054c32bcb666cb3d44a9/VOiCES_90_4.tar",
+        "sha256": "964ad7bad92f75e80bcdbdcdf81eff0b502f2f133d604910627a3443dbdf4644",
+        "member": "Users/mbarrios/Documents/VOICES/IQT_Github_repo/90deg_50-50/part_4/Lab41-SRI-VOiCES-rm1-none-sp1272-ch135031-sg0000-mc05-stu-far-dg090.wav"
+      },
+      {
+        "chunk": "VOiCES_90_7.tar",
+        "url": "https://raw.githubusercontent.com/Lab41/VOiCES-subset/6284c9f83d1190c0a5c5054c32bcb666cb3d44a9/VOiCES_90_7.tar",
+        "sha256": "3d9e26303b70feeb1efffd4d31b92812c9c8507a0b7231223f490cf4bb179245",
+        "member": "Users/mbarrios/Documents/VOICES/IQT_Github_repo/90deg_50-50/part_7/Lab41-SRI-VOiCES-rm2-tele-sp1272-ch135031-sg0000-mc07-stu-beh-dg090.wav"
+      },
+      {
+        "chunk": "VOiCES_90_8.tar",
+        "url": "https://raw.githubusercontent.com/Lab41/VOiCES-subset/6284c9f83d1190c0a5c5054c32bcb666cb3d44a9/VOiCES_90_8.tar",
+        "sha256": "9f40a1eb3cca2249d792a027d4bc464ef80c9a569423ff16c818abaa10b4dfcb",
+        "member": "Users/mbarrios/Documents/VOICES/IQT_Github_repo/90deg_50-50/part_8/Lab41-SRI-VOiCES-rm1-babb-sp1272-ch135031-sg0000-mc03-stu-mid-dg090.wav"
+      }
+    ]
+  },
+  "use_limits": [
+    "Smoke/integration checks only; do not publish as a quality leaderboard result.",
+    "All noisy cases share one dev-clean utterance and are not independent speech samples.",
+    "Not a hidden test set; the source partition is dev-clean.",
+    "No audio playback feature is authorized by this benchmark subset review."
+  ]
+}

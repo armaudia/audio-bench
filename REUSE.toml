@@ -11,3 +11,9 @@ path = ["manifests/**/*.wav", "src/audio_bench/runtime_data/manifests/**/*.wav"]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 Tsakanyan Hovhannes"
 SPDX-License-Identifier = "LicenseRef-Synthetic-Fixtures"
+
+[[annotations]]
+path = ["manifests/voices/**"]
+precedence = "override"
+SPDX-FileCopyrightText = "IQT Labs and LibriSpeech contributors; see provenance.json for specific attribution"
+SPDX-License-Identifier = "CC-BY-4.0"

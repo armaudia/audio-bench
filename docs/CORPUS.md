@@ -1,40 +1,56 @@
 # Corpus plan for noise-cancellation benchmarks
 
-## Candidate corpus
+## Committed VOiCES smoke subset
 
-VOiCES is the current candidate for real-room noise-cancellation evaluation. Its
-publisher describes noisy room recordings paired with clean source audio and
-publishes the corpus under CC BY 4.0. The published devkit is about 27.5 GiB.
-See the [VOiCES project page](https://iqtlabs.github.io/voices/), its
-[download page](https://iqtlabs.github.io/voices/downloads/), and its
-[corpus README](https://iqtlabs.github.io/voices/Lab41-SRI-VOiCES_README/).
+`manifests/voices/voices-dev-clean-smoke-v1/` contains a small, committed subset
+for local and CI integration checks. It is **not a leaderboard or quality
+benchmark**: all five noisy samples are the same 10.885-second utterance from
+the LibriSpeech `dev-clean` partition. They vary in room, microphone placement,
+and distractor condition, but do not provide independent speech examples. Do not
+describe scores on this subset as representative real-speech performance.
 
-Those published terms are a promising starting point, not a completed
-audio-bench rights review. Before using the corpus, review the dataset and any
-bundled materials for CI evaluation, derived score publication, attribution, and
-redistribution of the selected subset. No VOiCES bytes are currently checked in
-or downloaded by CI.
+The selected clean source is speaker `1272`, chapter `135031`, utterance
+`0000`. Five corresponding 90-degree VOiCES recordings are included: two
+babble recordings in room 2 (far/mid mic), one babble recording in room 1
+(mid mic), one room 1 recording without distractor (far mic), and one room 2
+television-distractor recording (behind mic). The frozen source paths, archive
+hashes, file hashes, sample metadata, and attribution are in
+[`voices-dev-clean-smoke-v1/provenance.json`](../manifests/voices/voices-dev-clean-smoke-v1/provenance.json)
+and [`files.json`](../manifests/voices/voices-dev-clean-smoke-v1/files.json).
 
-## Storage and reproducibility
+Attribution and terms:
 
-Do not put corpus audio in Git or Git LFS. Select a fixed, rights-reviewed test
-shard, keep it at a stable public object-store or archival URL, and commit only
-its versioned manifest to audio-bench. The manifest should list every case,
-speaker/split assignment, input and clean-reference digest, file size, sample
-format, license/attribution record, and the aggregate manifest digest. The shard
-must remain downloadable without credentials for the public audio-bench runner.
+- VOiCES corpus: IQT Labs, *VOiCES: A Corpus for Learning Voice in Noisy
+  Environments*, CC BY 4.0, [project page](https://iqtlabs.github.io/voices/),
+  [download page](https://iqtlabs.github.io/voices/downloads/), and
+  [corpus README](https://iqtlabs.github.io/voices/Lab41-SRI-VOiCES_README/).
+- 90-degree subset files: Lab41, [archived VOiCES-subset repository](https://github.com/Lab41/VOiCES-subset),
+  pinned at commit
+  [`6284c9f83d1190c0a5c5054c32bcb666cb3d44a9`](https://github.com/Lab41/VOiCES-subset/tree/6284c9f83d1190c0a5c5054c32bcb666cb3d44a9).
+- Clean reference: LibriSpeech, speaker `1272`, chapter `135031`, utterance
+  `0000`, from the official [OpenSLR SLR12 distribution](https://www.openslr.org/12),
+  CC BY 4.0.
+- License text: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
 
-Local and CI runs should fetch only the manifest-pinned shard and verify its
-SHA-256 digests before decoding. A cache may avoid repeated downloads, keyed by
-the complete manifest digest, but cached bytes must pass the same digest check.
-Never fetch a moving `latest` URL or use audio supplied in a pull request. For
-private corpora, use the submitter-owned runner and do not publish audio or
-credentials in results.
+The CC BY 4.0 corpus terms permit redistribution with attribution. They do not
+grant rights of privacy, publicity, or personality. This subset is committed
+for benchmark evaluation and reproducibility; the website must not add audio
+playback without a separate review. The clean reference comes from a `dev`
+partition, so this subset must never be used as a hidden test set. See
+[`DATA_LICENSE.md`](../DATA_LICENSE.md) for the repository-wide boundary.
 
-## Current state
+## Larger corpora and storage
 
-No fixed VOiCES shard has been selected, reviewed, mirrored, or hashed. The
-submission schema therefore allows only `synthetic-16k-v1`; VOiCES benchmark
-execution is intentionally unavailable until the shard and its rights evidence
-are added and reviewed. The synthetic suite remains a functional check and must
-not be shown as real-speech quality evidence.
+Do not commit full corpora or multi-gigabyte releases to Git or Git LFS. Keep
+large, reviewed datasets at a stable public object-store or archival URL and
+commit a versioned, hash-pinned manifest. Local and CI runs should fetch only
+the selected assets and verify SHA-256 before decoding. Cache by full manifest
+digest, never by a moving `latest` URL. Private corpora use submitter-owned
+runners; neither audio nor credentials belong in public results.
+
+The official VOiCES devkit is about 27.5 GiB. This repository stores only the
+small five-recording subset above; the other downloaded archive files were
+discarded. A future full evaluation needs a representative, rights-reviewed
+held-out split and separate cohort/protocol approval. The current benchmark
+runtime still executes the synthetic suite only; this subset is not yet an
+enabled scoring cohort.

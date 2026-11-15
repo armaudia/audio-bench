@@ -7,10 +7,21 @@ uploads, evaluation submissions or hosted-service participation.
 The bundled generated harmonic/noise fixtures retain their explicit use grants
 in `manifests/synthetic/synthetic-16k-v1/dataset.json`; see
 `LICENSES/LicenseRef-Synthetic-Fixtures.txt`. They are not representative human
-speech. No third-party corpus or recording rights are asserted.
+speech.
 
-The Pages workflow is configured to publish only repository-reviewed result metadata. It does
-not accept uploads or private source/audio. Automated result ingestion, corpus
-redistribution, public-audio playback, and customer-data processing are not
-enabled. Separate approved terms and consent controls are prerequisites before
-accepting external artifacts or media.
+The repository also includes five VOiCES noisy recordings and their one
+LibriSpeech clean reference under
+`manifests/voices/voices-dev-clean-smoke-v1/`. The VOiCES corpus publisher and
+OpenSLR list the respective corpora under CC BY 4.0. Attribution, immutable
+source references, archive and file SHA-256 digests, and limitations are
+recorded in that subset's `provenance.json` and `docs/CORPUS.md`. This is a
+single-utterance `dev-clean` smoke fixture, not benchmark leaderboard evidence.
+CC BY does not grant privacy, publicity, or personality rights. Public audio
+playback remains disabled pending a separate review of that use and suitable
+consent controls.
+
+The Pages workflow is configured to publish only repository-reviewed result
+metadata. It does not accept uploads or private source/audio. Automated result
+ingestion, public-audio playback, and customer-data processing are not enabled.
+Separate approved terms and consent controls are prerequisites before accepting
+external artifacts or media.

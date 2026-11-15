@@ -1,0 +1,56 @@
+[
+  {
+    "path": "audio/1272-135031-0000.clean.flac",
+    "bytes": 219564,
+    "sha256": "26cbebbdd8954104c936dc38fbb8a80958f2169ada0fa6fe46a89cfa9e3d824c",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "sample_count": 174160,
+    "sample_width_bytes": 2
+  },
+  {
+    "path": "audio/rm1-babble-mid.wav",
+    "bytes": 348364,
+    "sha256": "3c1d4cd1a9c57a294bd79d786d7763609d548f5d7c74dcfd7bd31fb58872c2f0",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "sample_count": 174160,
+    "sample_width_bytes": 2
+  },
+  {
+    "path": "audio/rm1-none-far.wav",
+    "bytes": 348364,
+    "sha256": "fa51f6d403a4018311811eb8574c6d7749b7a1070555011d42142619ec2bd688",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "sample_count": 174160,
+    "sample_width_bytes": 2
+  },
+  {
+    "path": "audio/rm2-babble-far.wav",
+    "bytes": 348364,
+    "sha256": "3fc74cd15baecc4c96b55918b6fec239bc3903ae51510dc88f92d24c40285315",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "sample_count": 174160,
+    "sample_width_bytes": 2
+  },
+  {
+    "path": "audio/rm2-babble-mid.wav",
+    "bytes": 348364,
+    "sha256": "57cda51cd21d565d6a4252ed72e04aa79e7274d0ad75818cf8a7f627aeec7e1b",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "sample_count": 174160,
+    "sample_width_bytes": 2
+  },
+  {
+    "path": "audio/rm2-television-behind.wav",
+    "bytes": 348364,
+    "sha256": "74f922722e1dd063f365d8683f14a6a4696a87581061db811c74fd2f80c4d9c7",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "sample_count": 174160,
+    "sample_width_bytes": 2
+  }
+]
