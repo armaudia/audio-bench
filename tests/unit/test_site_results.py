@@ -46,6 +46,14 @@ def test_result_builder_aggregates_and_keeps_provenance(monkeypatch, tmp_path):
     assert validate_site.validate_index({"schema_id": "audio-bench/site-results/0.1", "updated_at": None, "results": [result]}) == 1
 
 
+def test_result_builder_accepts_smoke_bundle_without_root_manifest(monkeypatch, tmp_path):
+    bundle = make_bundle(tmp_path / "bundle", "f" * 36)
+    (bundle / "manifest.json").unlink()
+    monkeypatch.setattr(publisher, "validate_bundle", lambda path: type("Report", (), {"valid": True, "errors": []})())
+    result = publisher.result_from_bundle(bundle)
+    assert result["evidence"]["bundle_manifest_digest"].startswith("sha256:")
+
+
 def test_index_cumulates_and_deduplicates_runs(monkeypatch, tmp_path):
     first = make_bundle(tmp_path / "first", "b" * 36)
     second = make_bundle(tmp_path / "second", "c" * 36)

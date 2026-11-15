@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from datetime import datetime, timezone
@@ -26,6 +27,19 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
         return canonical.parse_jsonl(path.read_bytes(), path=str(path))
     except (OSError, ValidationError) as exc:
         raise ValueError(f"cannot read benchmark observations: {exc}") from exc
+
+
+def _bundle_manifest_digest(bundle: Path) -> str:
+    """Digest the explicit manifest or, for smoke bundles, their root manifest records."""
+    manifest_path = bundle / "manifest.json"
+    if manifest_path.is_file():
+        return canonical.digest_of(json.loads(manifest_path.read_text(encoding="utf-8")))
+    records = {}
+    for path in sorted((*bundle.glob("*.json"), *bundle.glob("*.jsonl"))):
+        records[path.name] = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+    if not records:
+        raise ValueError(f"bundle has no root manifest records: {bundle}")
+    return canonical.digest_of({"root_manifest_records": records})
 
 
 def result_from_bundle(bundle: Path) -> dict[str, Any]:
@@ -106,7 +120,7 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
             "configuration_id": run["configuration_id"],
             "sdk_package_digest": run["sdk_package_digest"],
             "harness_digest": request["harness_digest"],
-            "bundle_manifest_digest": canonical.digest_of(json.loads((bundle / "manifest.json").read_text(encoding="utf-8"))),
+            "bundle_manifest_digest": _bundle_manifest_digest(bundle),
             "machine_fingerprint": run["machine_fingerprint"],
         },
     }
