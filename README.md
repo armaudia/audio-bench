@@ -1,9 +1,22 @@
 # audio-bench
 
-Local reproducible evaluation and offline evidence reports for audio-sdk contract
-0.1. Implemented scope: two built-in DSP providers, 24 deterministic synthetic
-cases, seven quality/diagnostic metrics, immutable evidence, validation, and a
-static browser report with filters and CSV/JSON downloads.
+Local reproducible evaluation and evidence reports for audio-sdk contract 0.1.
+Implemented benchmark scope: two built-in DSP providers, 24 deterministic
+synthetic cases, seven quality/diagnostic metrics, immutable evidence, validation,
+and an interactive static report. Synthetic cases are functional fixtures, not a
+speech-quality benchmark.
+
+## Submit a pipeline
+
+See [the submission protocol](docs/SUBMISSIONS.md). A submission PR contains only
+metadata and is validated without checking out or executing the referenced code.
+The merged `main` CI runs the built-in synthetic smoke suite. An enabled public
+candidate registration is built and benchmarked by a separate post-merge workflow.
+Successful records are validated and added to the cumulative Pages results at
+<https://armaudia.github.io/audio-bench/>. These are synthetic functional checks,
+not third-party speech-quality rankings. Submitter-owned runs can be performed
+locally and submitted as JSON without exposing private source; they are clearly
+marked unverified.
 
 ## Setup
 
@@ -58,11 +71,15 @@ directory. The wheel does not silently download or execute candidate code.
 
 ## Limits and status
 
-This is synthetic functional evidence, not representative speech evaluation,
-performance ranking or workload qualification. Real corpus acquisition, hostile
-submissions, public export/publication, a listening gallery and production timing
-qualification remain gated. The collector is not an isolation boundary for hostile
-native code. Tiny16 and other neural processors are not included.
+The current score suite uses synthetic fixtures only. Dataset audio is kept out of
+Git and can be acquired through the documented external shard mechanism once a
+corpus has a reviewed CI and publication clearance. Native candidate code is
+arbitrary code and runs only on an ephemeral benchmark job with read-only GitHub
+permissions and no publishing credential; this is not an OS security boundary.
+See [the submission protocol](docs/SUBMISSIONS.md) for supported runner flows.
+Neural models remain gated on their pinned weights and scope-specific rights.
+audio-pro's Tiny16 weights are now recorded by hash, but model evaluation rights
+remain unresolved, so that candidate stays disabled.
 
 [RELEASING.md](RELEASING.md) describes CI and intended GitHub controls.
 GitHub settings readback is retained by the administration script under build/. First-party software is Apache-2.0; synthetic asset terms are separate in DATA_LICENSE.md. The maintainer is Tsakanyan Hovhannes, acting individually.

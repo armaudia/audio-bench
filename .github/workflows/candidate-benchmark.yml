@@ -1,0 +1,119 @@
+name: Candidate benchmark
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'submissions/*.json'
+permissions:
+  contents: read
+concurrency:
+  group: candidates-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r locks/requirements-ci.txt
+      - name: Check out the pinned audio-sdk build dependency
+        id: sdk
+        run: python -c 'import json,os; p=json.load(open("deps/sdk-source.json")); f=open(os.environ["GITHUB_OUTPUT"],"a"); print("revision="+p["revision"],file=f)'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: armaudia/audio-sdk
+          ref: ${{ steps.sdk.outputs.revision }}
+          path: sdk-source
+          persist-credentials: false
+      - run: python scripts/prepare_sdk.py --sdk-source sdk-source
+      - name: Package pinned public providers without publishing permission
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          mkdir -p build
+          mapfile -d '' -t submissions < <(git diff --name-only --diff-filter=ACMR -z "$BEFORE_SHA" "$HEAD_SHA" -- 'submissions/*.json')
+          sdk_prefix="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          lock=json.loads(Path('deps/lock.json').read_text())
+          dep=next(item for item in lock['dependencies'] if item['id']=='audio-sdk-installed-package')
+          print(Path(dep['artifact']).resolve().parent / 'audio-sdk-0.1.0')
+          PY
+          )"
+          python scripts/package_public_candidates.py --sdk-prefix "$sdk_prefix" --output build/candidate-packages "${submissions[@]}"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: audio-bench-candidate-plugins
+          path: build/candidate-packages
+          if-no-files-found: error
+
+  evaluate:
+    needs: package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r locks/requirements-ci.txt
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654a4ef8333 # pinned artifact action
+        with:
+          name: audio-bench-candidate-plugins
+          path: build/candidate-packages
+      - name: Check out the pinned audio-sdk build dependency
+        id: sdk
+        run: python -c 'import json,os; p=json.load(open("deps/sdk-source.json")); f=open(os.environ["GITHUB_OUTPUT"],"a"); print("revision="+p["revision"],file=f)'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: armaudia/audio-sdk
+          ref: ${{ steps.sdk.outputs.revision }}
+          path: sdk-source
+          persist-credentials: false
+      - run: python scripts/prepare_sdk.py --sdk-source sdk-source
+      - name: Build the trusted benchmark harness
+        run: |
+          sdk_prefix="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          lock=json.loads(Path('deps/lock.json').read_text())
+          dep=next(x for x in lock['dependencies'] if x['id']=='audio-sdk-installed-package')
+          print(Path(dep['artifact']).resolve().parent / 'audio-sdk-0.1.0')
+          PY
+          )"
+          cmake -S native -B build/native -DCMAKE_BUILD_TYPE=Release "-DAUDIO_SDK_PREFIX=$sdk_prefix"
+          cmake --build build/native --parallel 2
+      - name: Evaluate plugins without publishing credentials
+        run: |
+          python -m pip install --no-deps --no-build-isolation -e .
+          sdk_prefix="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          lock=json.loads(Path('deps/lock.json').read_text())
+          dep=next(x for x in lock['dependencies'] if x['id']=='audio-sdk-installed-package')
+          print(Path(dep['artifact']).resolve().parent / 'audio-sdk-0.1.0')
+          PY
+          )"
+          python scripts/evaluate_public_candidates.py --packages build/candidate-packages \
+            --sdk-prefix "$sdk_prefix" --native-build build/native --work build/candidate-work \
+            --output build/ci/results.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: audio-bench-results
+          path: build/ci/results.json
+          if-no-files-found: error

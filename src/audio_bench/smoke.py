@@ -177,6 +177,8 @@ def run_sdk_smoke(
     sdk_prefix: Path,
     provider_id: str = "dsp.highpass80.v0",
     repository: Path | None = None,
+    plugin_path: Path | None = None,
+    descriptor_path: Path | None = None,
 ) -> dict[str, Any]:
     """Execute only an explicitly selected pinned built-in provider on synthetic fixtures.
 
@@ -191,9 +193,13 @@ def run_sdk_smoke(
     destination = destination.absolute()
     if destination.exists() or destination.is_symlink():
         raise ValidationError("smoke output destination must be a new path", path=str(destination))
-    allowed = {"speex.ns.v0", "dsp.highpass80.v0"}
-    if provider_id not in allowed:
-        raise ValidationError(f"smoke supports only pinned built-in SDK providers: {sorted(allowed)}")
+    if (plugin_path is None) != (descriptor_path is None):
+        raise ValidationError("candidate plugins require both a library and descriptor")
+    if plugin_path is None and provider_id not in {"speex.ns.v0", "dsp.highpass80.v0"}:
+        raise ValidationError("non-built-in providers require an explicit candidate plugin")
+    if plugin_path is not None:
+        plugin_path = plugin_path.resolve(strict=True)
+        descriptor_path = descriptor_path.resolve(strict=True)
     collector = native_build / "audio_bench_collect"
     driver = native_build / "audio_bench_driver"
     if not collector.is_file() or not driver.is_file():
@@ -206,8 +212,11 @@ def run_sdk_smoke(
     dataset = canonical.require_canonical((manifest / "dataset.json").read_bytes())
     if dataset["rights"]["evaluation"]["decision"] != "allowed":
         raise ValidationError("synthetic fixture does not declare local evaluation allowed")
+    metadata_command = [str(driver), "--provider", provider_id]
+    if plugin_path is not None:
+        metadata_command += ["--plugin", str(plugin_path)]
     effective = subprocess.run(
-        [str(collector), "--effective-config", "--provider", provider_id],
+        [*metadata_command, "--effective-config"],
         check=True, capture_output=True, text=True, timeout=10,
     ).stdout
     if not effective.endswith("\n") or effective.endswith("\n\n") or "\r" in effective:
@@ -221,10 +230,20 @@ def run_sdk_smoke(
     if provider_id not in configured_providers:
         raise ValidationError("effective config provider identity mismatch")
     configuration_id = "sha256:" + hashlib.sha256(effective_config).hexdigest()
-    provider_descriptor = repository / "schemas/sdk/providers" / f"{provider_id}.descriptor.json"
+    provider_descriptor = descriptor_path or (repository / "schemas/sdk/providers" / f"{provider_id}.descriptor.json")
     if not provider_descriptor.is_file():
         raise ValidationError(f"pinned provider descriptor is missing: {provider_id}")
     provider_descriptor_bytes = provider_descriptor.read_bytes()
+    descriptor_record = canonical.require_canonical(provider_descriptor_bytes, path=str(provider_descriptor))
+    if descriptor_record.get("provider_id") != provider_id:
+        raise ValidationError("provider descriptor identity does not match provider_id")
+    if plugin_path is not None:
+        registered = subprocess.run(
+            [*metadata_command, "--descriptor"],
+            check=True, capture_output=True, text=True, timeout=10,
+        ).stdout
+        if not registered.endswith("\n") or registered[:-1].encode("utf-8") != provider_descriptor_bytes:
+            raise ValidationError("candidate library descriptor differs from its pinned descriptor file")
     provider_digest = "sha256:" + hashlib.sha256(provider_descriptor_bytes).hexdigest()
     environment_snapshot = {
         "system": platform.platform(),
@@ -273,6 +292,7 @@ def run_sdk_smoke(
                   for path in (repository / "suites/synthetic-smoke-v1").iterdir() if path.is_file()],
                 Path("schemas/index.json"), Path("deps/lock.json"), Path("toolchain-lock.json"),
                 Path("pyproject.toml"), Path("registry/catalog.json"),
+                Path("native/src/provider_plugin.hpp"),
             ]),
             "registry_snapshot_id": canonical.digest_of(registry),
             "matrix": [{
@@ -315,6 +335,8 @@ def run_sdk_smoke(
         native_output = staging / "collector-output"
         with tempfile.TemporaryDirectory(prefix="audio-bench-smoke-input-") as input_tmp:
             input_dir = Path(input_tmp)
+            config_path = input_dir / "effective-config.json"
+            config_path.write_bytes(effective_config + b"\n")
             input_files = []
             for case_id in case_ids:
                 source = staging / "audio" / f"{case_id}.noisy.wav"
@@ -327,6 +349,9 @@ def run_sdk_smoke(
                 str(collector), "--driver", str(driver), "--provider", provider_id,
                 "--output-dir", str(native_output),
             ]
+            if plugin_path is not None:
+                command += ["--plugin", str(plugin_path), "--config-file", str(config_path),
+                            "--descriptor-file", str(provider_descriptor)]
             for path in input_files:
                 command += ["--input", str(path)]
             subprocess.run(command, check=True, capture_output=True, text=True, timeout=300)
@@ -368,6 +393,7 @@ def run_sdk_smoke(
                 "source_build_digest": canonical.digest_of({
                     "driver_executable": _digest_file(driver),
                     "collector_executable": _digest_file(collector),
+                    "candidate_plugin": _digest_file(plugin_path) if plugin_path is not None else None,
                     "native_sources": _implementation_digest(repository, [
                         Path("native/src/driver.cpp"), Path("native/src/collect.cpp"),
                         Path("native/src/wire.cpp"), Path("native/src/wire.hpp"),
@@ -376,7 +402,7 @@ def run_sdk_smoke(
                 }),
                 "toolchain_lock_digest": _digest_file(toolchain),
                 "environment_digest": canonical.digest_of(environment_snapshot),
-                "machine_fingerprint": f"local {platform.system()} {platform.machine()}; not qualified",
+                "machine_fingerprint": f"{platform.system()} {platform.machine()}; not qualified",
                 "collector_version": "audio-bench-native-collector/0.1 protocol-v1",
                 "started_at": started,
                 "ended_at": now,
@@ -449,7 +475,7 @@ def run_sdk_smoke(
             ledger.sealed_write(attempt / "collector-summary.json", canonical.dumps(collector_summary))
             summary = {
                 "schema_id": "audio-bench/summary/0.1",
-                "label": "synthetic functional integration; local workstation; not qualified",
+                "label": "synthetic functional integration; not qualified",
                 "provider_id": provider_id,
                 "sdk_build_id": collector_summary["sdk_build_id"],
                 "collector": collector_summary,

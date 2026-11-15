@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audio-bench/provider-plugin/0.1",
+  "title": "Audio-bench C provider plugin manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "provider_id", "descriptor_path"],
+  "properties": {
+    "schema_id": {"const": "audio-bench/provider-plugin/0.1"},
+    "provider_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"},
+    "descriptor_path": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"}
+  }
+}

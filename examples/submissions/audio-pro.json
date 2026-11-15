@@ -1,0 +1,23 @@
+{
+  "schema_id": "audio-bench/submission/0.1",
+  "submission_id": "audio-pro-tiny16-example",
+  "display_name": "audio-pro FastEnhancer Tiny16 (submitter-run example)",
+  "task": "noise-cancellation",
+  "runner_mode": "submitter-owned",
+  "source": {
+    "repository": "armaudia/audio-pro",
+    "visibility": "private",
+    "revision": "5920c98e5bbb9e434305bcec980f8b5aa1bc8f60"
+  },
+  "provider_id": "pro.fastenhancer-tiny16.f32.v0",
+  "model_digest": "sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5",
+  "baseline_provider_id": "speex.ns.v0",
+  "benchmark": {
+    "dataset_id": "synthetic-16k-v1",
+    "suite_id": "synthetic-smoke-v1"
+  },
+  "execution": {
+    "enabled": false,
+    "reason": "Disabled example pinned to audio-pro commit 5920c98e5bbb9e434305bcec980f8b5aa1bc8f60 and Tiny16 f32 weights sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5. Model evaluation rights remain unknown, and the real-corpus scoring cohort is not enabled."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audio-bench/submission/0.1",
+  "title": "Audio benchmark submission metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "submission_id", "display_name", "task", "runner_mode", "source", "provider_id", "model_digest", "baseline_provider_id", "benchmark", "execution"],
+  "properties": {
+    "schema_id": {"const": "audio-bench/submission/0.1"},
+    "submission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"},
+    "display_name": {"type": "string", "minLength": 1, "maxLength": 120},
+    "task": {"const": "noise-cancellation"},
+    "runner_mode": {"enum": ["audio-bench", "submitter-owned"]},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "visibility", "revision"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+        "visibility": {"enum": ["public", "private"]},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"}
+      }
+    },
+    "provider_id": {"type": "string", "pattern": "^[a-zA-Z0-9._-]{1,120}$"},
+    "model_digest": {"oneOf": [{"type": "null"}, {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}]},
+    "baseline_provider_id": {"type": "string", "pattern": "^[a-zA-Z0-9._-]{1,120}$"},
+    "benchmark": {
+      "type": "object", "additionalProperties": false,
+      "required": ["dataset_id", "suite_id"],
+      "properties": {
+        "dataset_id": {"const": "synthetic-16k-v1"},
+        "suite_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,80}$"}
+      }
+    },
+    "execution": {
+      "type": "object", "additionalProperties": false,
+      "required": ["enabled", "reason"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "reason": {"type": "string", "maxLength": 500}
+      }
+    }
+  }
+}

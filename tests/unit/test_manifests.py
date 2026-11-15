@@ -59,8 +59,29 @@ def test_unknown_real_corpus_remains_blocked():
 
     status = json.loads(Path("manifests/voicebank.status.json").read_text())
     assert status["status"] == "blocked"
-    assert status["reason"] == "terms_reviewed_assets_unverified"
+    assert status["reason"] == "assets_verified_scope_specific_rights_review_required"
     assert status["provenance_review"]["license"] == "Creative Commons Attribution 4.0 International Public License"
     assert status["archive_sha256"] is None
-    assert status["verified_pair_count"] is None
+    assert status["verified_pair_count"] == 824
+    assert len(status["archive_inventory"]) == 2
     assert status["corpus_evaluation_claim"] == "not_assessed"
+
+
+def test_voicebank_test_manifest_pins_all_official_pairs_without_audio_payloads():
+    import hashlib
+    import json
+    import jsonschema
+
+    root = Path("manifests/voicebank-demand/voicebank-demand-test-v1")
+    provenance = json.loads((root / "provenance.json").read_text())
+    case_manifest = (root / "cases-0000.jsonl").read_bytes()
+    cases = [json.loads(line) for line in case_manifest.decode("utf-8").splitlines()]
+    schema = json.loads(Path("schemas/paired-corpus-provenance.schema.json").read_text())
+    jsonschema.Draft202012Validator(schema).validate(provenance)
+    assert provenance["case_manifest_sha256"] == "sha256:" + hashlib.sha256(case_manifest).hexdigest()
+    assert provenance["counts"]["paired_utterances"] == len(cases) == 824
+    assert provenance["counts"]["distinct_speakers"] == len({case["speaker_id"] for case in cases}) == 2
+    assert len({case["case_id"] for case in cases}) == 824
+    assert all(case["clean"]["bytes"] > 0 and case["noisy"]["bytes"] > 0 for case in cases)
+    assert all(case["clean"]["sha256"].startswith("sha256:") and case["noisy"]["sha256"].startswith("sha256:") for case in cases)
+    assert not list(root.rglob("*.wav"))

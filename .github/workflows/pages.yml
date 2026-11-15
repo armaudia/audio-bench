@@ -1,0 +1,86 @@
+name: Publish benchmark site
+on:
+  workflow_run:
+    workflows: [CI, Candidate benchmark]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # pinned, tested artifact action
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+        with:
+          name: audio-bench-results
+          path: build/ci
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Ensure cumulative result branch is available
+        id: result-branch
+        if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/benchmark-results" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          elif [ "$GITHUB_EVENT_NAME" = "workflow_run" ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/git/refs" -f ref=refs/heads/benchmark-results -f sha="$GITHUB_SHA" >/dev/null
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.result-branch.outputs.exists == 'true'
+        with:
+          ref: benchmark-results
+          path: results-store
+          persist-credentials: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Merge validated CI results into cumulative Pages data
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+        run: |
+          python scripts/build_site_results.py --existing results-store/site/data/results.json --from-index build/ci/results.json --submitter-results submissions/results --output results-store/site/data/results.json
+          cp results-store/site/data/results.json site/data/results.json
+          python scripts/validate_site.py
+          git -C results-store config user.name github-actions[bot]
+          git -C results-store config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          if ! git -C results-store diff --quiet -- site/data/results.json; then
+            git -C results-store add site/data/results.json
+            git -C results-store commit -m "Publish validated benchmark results"
+            git -C results-store push origin HEAD:benchmark-results
+          fi
+      - name: Load cumulative data for a manual redeploy
+        if: github.event_name == 'workflow_dispatch' && steps.result-branch.outputs.exists == 'true'
+        run: cp results-store/site/data/results.json site/data/results.json
+      - run: python scripts/validate_site.py
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: site
+  deploy:
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-24.04
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

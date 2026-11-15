@@ -3,11 +3,23 @@
   "dataset_label": "VoiceBank + DEMAND",
   "mirror_revision": "4497db342d7312978c45690591fda86117831940",
   "status": "blocked",
-  "reason": "terms_reviewed_assets_unverified",
+  "reason": "assets_verified_scope_specific_rights_review_required",
   "archive_sha256": null,
   "archive_bytes": null,
-  "verified_pair_count": null,
-  "expected_inventory_note": "The plan specifies 824 clean/noisy pairs; this is an expected inventory target, not a verified count.",
+  "archive_inventory": [
+    {
+      "filename": "clean_testset_wav.zip",
+      "bytes": 154332064,
+      "sha256": "sha256:b60bfc2b9df38466d8eb45057c087c6e5dee196c67a0ed7bca628ae2a8611c4e"
+    },
+    {
+      "filename": "noisy_testset_wav.zip",
+      "bytes": 170578854,
+      "sha256": "sha256:ba4a893f45b627f15209ba30ab584dd495b3680cd6f216dd08d143a257611993"
+    }
+  ],
+  "verified_pair_count": 824,
+  "inventory_note": "Both official test archives were downloaded and inspected on 2026-11-15; all 824 names pair exactly, every WAV is mono PCM16 at 48 kHz, and clean/noisy sample counts match per pair. Evaluation remains blocked pending scope-specific rights review.",
   "rights": {
     "acquisition": "unknown",
     "evaluation": "unknown",
@@ -22,5 +34,5 @@
   },
   "execution_claim": "excluded",
   "corpus_evaluation_claim": "not_assessed",
-  "next_action": "Complete a scope-specific rights review of the official archive, VCTK/DEMAND inputs, and voice-talent conditions; then acquire the selected official archive, record its exact bytes/hash, and verify all clean/noisy pairs before constructing an official manifest."
+  "next_action": "Complete a named scope-specific rights review of the official archive, VCTK/DEMAND inputs, and voice-talent conditions; then approve or reject evaluation use. Public playback and audio redistribution remain disabled."
 }
