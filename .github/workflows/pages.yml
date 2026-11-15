@@ -51,6 +51,8 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
+      - name: Install locked benchmark dependencies
+        run: python -m pip install -r locks/requirements-ci.txt
       - name: Merge validated CI results into cumulative Pages data
         if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
         run: |
