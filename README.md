@@ -10,13 +10,13 @@ speech-quality benchmark.
 
 See [the submission protocol](docs/SUBMISSIONS.md). A submission PR contains only
 metadata and is validated without checking out or executing the referenced code.
-The merged `main` CI runs the currently supported synthetic smoke suite. After a
-successful run, the Pages workflow validates and publishes cumulative smoke result
-records to <https://armaudia.github.io/audio-bench/>. These are synthetic functional
-checks, not third-party pipeline benchmarks or speech-quality rankings. Submitter-owned
-result JSON can be ingested through a PR without exposing private source, but the
-private runner execution tooling is not yet included. Public candidate-provider
-execution is also not enabled; example manifests are disabled and are not measurements.
+The merged `main` CI runs the built-in synthetic smoke suite. An enabled public
+candidate registration is built and benchmarked by a separate post-merge workflow.
+Successful records are validated and added to the cumulative Pages results at
+<https://armaudia.github.io/audio-bench/>. These are synthetic functional checks,
+not third-party speech-quality rankings. Submitter-owned runs can be performed
+locally and submitted as JSON without exposing private source; they are clearly
+marked unverified.
 
 ## Setup
 
@@ -71,11 +71,13 @@ directory. The wheel does not silently download or execute candidate code.
 
 ## Limits and status
 
-The current runner executes only the two pinned built-in providers. VOiCES or
-another rights-cleared real corpus, arbitrary third-party provider execution,
-submitter-owned result ingestion, and production timing qualification are not
-enabled. The collector is not an isolation boundary for hostile native code.
-Tiny16 and other neural processors are not included.
+The current score suite uses synthetic fixtures only. Dataset audio is kept out of
+Git and can be acquired through the documented external shard mechanism once a
+corpus has a reviewed CI and publication clearance. Native candidate code is
+arbitrary code and runs only on an ephemeral benchmark job with read-only GitHub
+permissions and no publishing credential; this is not an OS security boundary.
+See [the submission protocol](docs/SUBMISSIONS.md) for supported runner flows.
+Tiny16 and other neural models remain gated on weights and scope-specific rights.
 
 [RELEASING.md](RELEASING.md) describes CI and intended GitHub controls.
 GitHub settings readback is retained by the administration script under build/. First-party software is Apache-2.0; synthetic asset terms are separate in DATA_LICENSE.md. The maintainer is Tsakanyan Hovhannes, acting individually.

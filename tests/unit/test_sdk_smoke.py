@@ -45,7 +45,6 @@ def test_installed_cli_requires_explicit_external_sdk_prefix(tmp_path, monkeypat
     assert parsed.sdk_prefix is None
 
 
-@pytest.mark.sdk
 @pytest.mark.skipif(
     not (SDK_PREFIX / "bin/audio_sdk_conformance").is_file()
     or not (NATIVE_BUILD / "audio_bench_collect").is_file(),
@@ -248,3 +247,38 @@ def test_next_recording_after_final_partial_frame_starts_clean_session(tmp_path)
     summary = json.loads((output / "collector-summary.json").read_text())
     assert [case["accepted_samples"] for case in summary["cases"]] == ["161", "320"]
     assert all(case["coverage"] == "complete" for case in summary["cases"])
+
+
+@pytest.mark.skipif(
+    not any((NATIVE_BUILD / ("audio_bench_test_provider" + suffix)).is_file()
+            for suffix in (".so", ".dylib")),
+    reason="test provider plugin is not built",
+)
+def test_external_provider_plugin_runs_in_driver_child(tmp_path):
+    driver = NATIVE_BUILD / "audio_bench_driver"
+    collector = NATIVE_BUILD / "audio_bench_collect"
+    plugin = next(p for p in (NATIVE_BUILD / "audio_bench_test_provider.so",
+                              NATIVE_BUILD / "audio_bench_test_provider.dylib") if p.is_file())
+    provider = "bench.test.pass.v0"
+    config = subprocess.run([str(driver), "--provider", provider, "--plugin", str(plugin),
+                             "--effective-config"], check=True, capture_output=True, text=True).stdout
+    descriptor = subprocess.run([str(driver), "--provider", provider, "--plugin", str(plugin),
+                                 "--descriptor"], check=True, capture_output=True, text=True).stdout
+    config_path, descriptor_path = tmp_path / "config.json", tmp_path / "descriptor.json"
+    config_path.write_text(config)
+    descriptor_path.write_text(descriptor[:-1])
+    source = tmp_path / "input.f32"
+    samples = [((i % 31) - 15) / 32 for i in range(480)]
+    source.write_bytes(b"".join(__import__("struct").pack("<f", x) for x in samples))
+    output = tmp_path / "plugin-output"
+    subprocess.run(
+        [str(collector), "--driver", str(driver), "--provider", provider,
+         "--plugin", str(plugin), "--config-file", str(config_path),
+         "--descriptor-file", str(descriptor_path), "--output-dir", str(output),
+         "--input", str(source)],
+        check=True, capture_output=True, text=True, timeout=15,
+    )
+    assert (output / "input.raw.f32").read_bytes() == source.read_bytes()
+    summary = json.loads((output / "collector-summary.json").read_text())
+    assert summary["provider_id"] == provider
+    assert summary["cases"][0]["coverage"] == "complete"

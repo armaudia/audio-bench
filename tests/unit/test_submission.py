@@ -8,8 +8,10 @@ import pytest
 
 from audio_bench.errors import ValidationError
 from audio_bench.submission import load_submission, normalize_latency, validate_submission
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
 
 
 @pytest.mark.parametrize("name", ["audio-sdk.json", "audio-pro.json"])
@@ -25,11 +27,10 @@ def test_private_source_cannot_select_benchmark_runner():
         validate_submission(value)
 
 
-def test_central_runner_rejects_arbitrary_provider():
+def test_public_submission_accepts_a_provider_plugin_identity():
     value = json.loads((ROOT / "examples/submissions/audio-sdk.json").read_text())
     value["provider_id"] = "attacker.provider"
-    with pytest.raises(ValidationError, match="pinned built-in providers"):
-        validate_submission(value)
+    assert validate_submission(value)["provider_id"] == "attacker.provider"
 
 
 def test_submission_cannot_claim_an_unknown_baseline():
@@ -46,12 +47,25 @@ def test_enabled_submission_requires_model_digest():
         validate_submission(value)
 
 
-def test_submitter_runner_cannot_claim_execution_before_ingestion_exists():
+def test_submitter_runner_manifest_can_be_enabled_after_model_digest_is_pinned():
     value = json.loads((ROOT / "examples/submissions/audio-pro.json").read_text())
     value["model_digest"] = "sha256:" + "0" * 64
     value["execution"]["enabled"] = True
-    with pytest.raises(ValidationError, match="not enabled yet"):
-        validate_submission(value)
+    assert validate_submission(value)["execution"]["enabled"] is True
+
+
+def test_submitter_runner_refuses_disabled_audio_pro_example_before_checkout(tmp_path):
+    from run_submitter_owned import create_result
+
+    with pytest.raises(ValidationError, match="execution is disabled"):
+        create_result(
+            submission_path=ROOT / "examples/submissions/audio-pro.json",
+            candidate_source=tmp_path / "private-source-not-present",
+            sdk_prefix=tmp_path / "sdk-not-present",
+            native_build=tmp_path / "native-not-present",
+            work=tmp_path / "work",
+            reference_index=tmp_path / "results-not-present.json",
+        )
 
 
 def test_latency_normalization_keeps_reference_scale_formula():

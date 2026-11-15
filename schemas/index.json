@@ -61,6 +61,10 @@
       "sha256": "sha256:08d8a211c48cd09242a7c206b8d8288a153e2bc0124e12870c16aae060b8f6e7"
     },
     {
+      "file": "provider-plugin.schema.json",
+      "sha256": "sha256:2da8b0a140e819f00ae810210fc8bd694630c085ad2ea910efdb3b4ccd2b13bc"
+    },
+    {
       "file": "recipe.schema.json",
       "sha256": "sha256:2477be902dead7884385b736af44472bacd74f44900ac31c7a34aa3b45f035b7"
     },

@@ -41,8 +41,6 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
     summary = json.loads((attempt / "summary.json").read_text(encoding="utf-8"))
     observations = _load_jsonl(attempt / "observations.jsonl")
     provider_id = summary.get("provider_id")
-    if provider_id not in {"speex.ns.v0", "dsp.highpass80.v0"}:
-        raise ValueError(f"unsupported provider in smoke bundle: {provider_id!r}")
     if summary.get("label") != "synthetic functional integration; not qualified":
         raise ValueError("bundle is not the supported synthetic functional smoke")
     metrics = []
@@ -64,6 +62,22 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
             "raw_display_value": f"{median:.4g} {unit}".strip(),
             "normalized_display_value": None,
         })
+    collector = summary.get("collector", {})
+    case_frames = sum((int(case["source_samples"]) + 159) // 160
+                      for case in collector.get("cases", []))
+    cpu_ns = int(collector.get("direct_child_cpu_ns", "0"))
+    if case_frames > 0 and cpu_ns > 0:
+        latency = cpu_ns / case_frames / 1_000_000
+        metrics.append({
+            "metric_id": "latency_ms",
+            "label": "CPU time per 10 ms frame",
+            "unit": "ms",
+            "median": latency,
+            "finite_count": case_frames,
+            "display_value": f"{latency:.4g} ms",
+            "raw_display_value": f"{latency:.4g} ms",
+            "normalized_display_value": None,
+        })
     dataset = json.loads((bundle / "dataset.json").read_text(encoding="utf-8"))
     request_files = sorted((bundle / "requests").glob("*.json"))
     request = json.loads(request_files[0].read_text(encoding="utf-8"))
@@ -71,7 +85,8 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
     return {
         "submission_id": f"reference-{provider_id}",
         "result_id": run["run_id"] + ":" + run["attempt_id"],
-        "display_name": "Built-in " + ("Speex noise suppression" if provider_id == "speex.ns.v0" else "High-pass filter"),
+        "display_name": "Built-in " + {"speex.ns.v0": "Speex noise suppression",
+                                           "dsp.highpass80.v0": "High-pass filter"}.get(provider_id, provider_id),
         "task": "Noise cancellation",
         "runner_mode": "audio-bench",
         "result_status": "Synthetic functional check · not qualification",

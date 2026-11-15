@@ -35,23 +35,12 @@ def validate_submission(value: Any) -> dict[str, Any]:
         raise ValidationError("source.revision must be a full lowercase 40-character commit")
     if value["runner_mode"] == "audio-bench" and source["visibility"] != "public":
         raise ValidationError("audio-bench runner submissions must reference public source")
-    if value["runner_mode"] == "audio-bench" and source["repository"] != "armaudia/audio-sdk":
-        raise ValidationError("audio-bench runner currently supports only armaudia/audio-sdk")
-    if value["runner_mode"] == "audio-bench":
-        pin_path = Path(__file__).resolve().parent / "runtime_data" / "deps" / "sdk-source.json"
-        pin = json.loads(pin_path.read_text(encoding="utf-8"))
-        if source["revision"] != pin["revision"]:
-            raise ValidationError("audio-bench runner source revision must match the checked-in SDK pin")
-    if value["runner_mode"] == "audio-bench" and value["provider_id"] not in PUBLIC_PROVIDERS:
-        raise ValidationError("audio-bench runner only accepts the two pinned built-in providers")
     if value["baseline_provider_id"] not in PUBLIC_PROVIDERS:
         raise ValidationError("baseline_provider_id must identify a pinned built-in provider")
     if value["execution"]["enabled"] and value["model_digest"] is None:
         raise ValidationError("enabled model execution requires an immutable model_digest")
-    if value["execution"]["enabled"] and value["runner_mode"] == "submitter-owned":
-        raise ValidationError("submitter-owned execution and result ingestion are not enabled yet")
     if value["execution"]["enabled"] and value["benchmark"]["dataset_id"] != "synthetic-16k-v1":
-        raise ValidationError("this release only has the synthetic-16k-v1 dataset available")
+        raise ValidationError("enabled execution currently supports only synthetic-16k-v1")
     return value
 
 

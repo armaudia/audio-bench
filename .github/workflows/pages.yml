@@ -1,7 +1,7 @@
 name: Publish benchmark site
 on:
   workflow_run:
-    workflows: [CI]
+    workflows: [CI, Candidate benchmark]
     types: [completed]
   workflow_dispatch:
 permissions:
@@ -9,18 +9,19 @@ permissions:
   contents: write
 concurrency:
   group: github-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   build:
-    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
+        if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
         with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           persist-credentials: false
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # pinned, tested artifact action
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
         with:
           name: audio-bench-results
           path: build/ci
@@ -28,7 +29,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
       - name: Ensure cumulative result branch is available
         id: result-branch
-        if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
+        if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -51,7 +52,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Merge validated CI results into cumulative Pages data
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
         run: |
           python scripts/build_site_results.py --existing results-store/site/data/results.json --from-index build/ci/results.json --submitter-results submissions/results --output results-store/site/data/results.json
           cp results-store/site/data/results.json site/data/results.json
