@@ -7,10 +7,10 @@
   "source": {
     "repository": "armaudia/audio-pro",
     "visibility": "private",
-    "revision": "623b31b11b871feb64e9501ff38607e9f1621007"
+    "revision": "5920c98e5bbb9e434305bcec980f8b5aa1bc8f60"
   },
   "provider_id": "pro.fastenhancer-tiny16.f32.v0",
-  "model_digest": null,
+  "model_digest": "sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5",
   "baseline_provider_id": "speex.ns.v0",
   "benchmark": {
     "dataset_id": "synthetic-16k-v1",
@@ -18,6 +18,6 @@
   },
   "execution": {
     "enabled": false,
-    "reason": "Demonstration only. audio-pro has no weights and its rights policy currently blocks real model execution. Replace the placeholder commit and obtain model/data clearance before enabling."
+    "reason": "Disabled example pinned to audio-pro commit 5920c98e5bbb9e434305bcec980f8b5aa1bc8f60 and Tiny16 f32 weights sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5. Model evaluation rights remain unknown, and the real-corpus scoring cohort is not enabled."
   }
 }

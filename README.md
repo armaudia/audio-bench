@@ -77,7 +77,9 @@ corpus has a reviewed CI and publication clearance. Native candidate code is
 arbitrary code and runs only on an ephemeral benchmark job with read-only GitHub
 permissions and no publishing credential; this is not an OS security boundary.
 See [the submission protocol](docs/SUBMISSIONS.md) for supported runner flows.
-Tiny16 and other neural models remain gated on weights and scope-specific rights.
+Neural models remain gated on their pinned weights and scope-specific rights.
+audio-pro's Tiny16 weights are now recorded by hash, but model evaluation rights
+remain unresolved, so that candidate stays disabled.
 
 [RELEASING.md](RELEASING.md) describes CI and intended GitHub controls.
 GitHub settings readback is retained by the administration script under build/. First-party software is Apache-2.0; synthetic asset terms are separate in DATA_LICENSE.md. The maintainer is Tsakanyan Hovhannes, acting individually.

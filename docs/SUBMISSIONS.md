@@ -72,8 +72,9 @@ audio, credentials, or raw recordings. PR validation checks the closed schema,
 finite measurements, and latency formula without fetching or running source. After
 merge, Pages publishes the record with the fixed **Submitter-run · not independently
 verified** label. Quality metrics remain raw and are never hardware-normalized.
-The current audio-pro manifest is intentionally disabled because it has no model
-weights and its rights policy blocks model execution; the runner rejects it.
+The audio-pro manifest is intentionally disabled. The pinned private repository
+now contains ONNX and derived Tiny16 weights, but the model evaluation grant is
+still unknown and the real-corpus cohort is not enabled; the runner rejects it.
 
 ## Public provider plugin contract
 
