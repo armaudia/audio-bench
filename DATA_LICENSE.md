@@ -20,6 +20,15 @@ CC BY does not grant privacy, publicity, or personality rights. Public audio
 playback remains disabled pending a separate review of that use and suitable
 consent controls.
 
+The repository also registers the official 824-pair VoiceBank+DEMAND test
+split in `manifests/voicebank-demand/voicebank-demand-test-v1/`. Its audio stays
+outside Git and is fetched from the official University of Edinburgh DataShare
+record only when requested. DataShare lists CC BY 4.0 and describes VCTK speech
+and DEMAND noise as source components. The manifest pins the exact downloaded
+archives and every clean/noisy member. A named review of source-component and
+voice-talent scope is still required before public benchmark scoring; audio
+redistribution and playback remain disabled. See `docs/CORPUS.md`.
+
 The Pages workflow is configured to publish only repository-reviewed result
 metadata. It does not accept uploads or private source/audio. Automated result
 ingestion, public-audio playback, and customer-data processing are not enabled.

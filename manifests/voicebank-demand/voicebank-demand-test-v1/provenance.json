@@ -1,0 +1,53 @@
+{
+  "archives": [
+    {
+      "bytes": 154332064,
+      "filename": "clean_testset_wav.zip",
+      "id": "clean_testset_wav",
+      "sha256": "sha256:b60bfc2b9df38466d8eb45057c087c6e5dee196c67a0ed7bca628ae2a8611c4e",
+      "url": "https://datashare.ed.ac.uk/bitstreams/dec213d3-bf57-4777-9663-c24bdce92d5e/download"
+    },
+    {
+      "bytes": 170578854,
+      "filename": "noisy_testset_wav.zip",
+      "id": "noisy_testset_wav",
+      "sha256": "sha256:ba4a893f45b627f15209ba30ab584dd495b3680cd6f216dd08d143a257611993",
+      "url": "https://datashare.ed.ac.uk/bitstreams/13c1bfbf-14a6-41db-9b41-8f7310f01ad7/download"
+    }
+  ],
+  "case_manifest_sha256": "sha256:3628343c181709ec744666602f571913f511558b241340c5be086f597647bb0f",
+  "counts": {
+    "channels": 1,
+    "distinct_speakers": 2,
+    "maximum_samples": 468905,
+    "minimum_samples": 59403,
+    "paired_utterances": 824,
+    "sample_rate_hz": 48000,
+    "sample_width_bits": 16
+  },
+  "limitations": [
+    "Only two test speakers; useful as a canonical comparison cohort, not a demographic-generalization claim.",
+    "Noisy signals are prepared mixtures using real noise recordings, not real-room re-recordings.",
+    "The current benchmark runtime does not score this cohort; this is dataset registration and acquisition evidence only.",
+    "Audio bytes are fetched from the official DataShare record and excluded from Git."
+  ],
+  "partition": "official test set",
+  "purpose": "standard paired speech-enhancement test cohort; recorded clean speech with noisy mixtures made using recorded environmental noise",
+  "schema_id": "audio-bench/paired-corpus-provenance/0.1",
+  "source": {
+    "attribution": "Valentini-Botinhao, Cassia. (2017). Noisy speech database for training speech enhancement algorithms and TTS models, 2016 [sound]. University of Edinburgh. CSTR. https://doi.org/10.7488/ds/2117.",
+    "dataset_title": "Noisy speech database for training speech enhancement algorithms and TTS models",
+    "doi": "10.7488/ds/2117",
+    "downloaded_at": "2026-11-15",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "publisher": "University of Edinburgh, CSTR",
+    "record_url": "https://datashare.ed.ac.uk/handle/10283/2791"
+  },
+  "source_components": {
+    "environmental_noise": "DEMAND plus speech-shaped/babble noise",
+    "notes": "The DataShare record identifies VCTK and DEMAND as source components. Retain component attribution and keep the audio evaluation/playback gate closed pending scope review.",
+    "speech": "CSTR VCTK corpus"
+  },
+  "subset_id": "voicebank-demand-test-v1"
+}

@@ -39,6 +39,32 @@ playback without a separate review. The clean reference comes from a `dev`
 partition, so this subset must never be used as a hidden test set. See
 [`DATA_LICENSE.md`](../DATA_LICENSE.md) for the repository-wide boundary.
 
+## VoiceBank+DEMAND paired test cohort
+
+`manifests/voicebank-demand/voicebank-demand-test-v1/` registers the official
+VoiceBank+DEMAND test split. It contains 824 exact clean/noisy pairs from two
+speakers, mono PCM16 at 48 kHz. The noisy recordings combine real speech with
+recorded environmental noise; this is a controlled mixture cohort, not speech
+re-recorded in real rooms. It is useful as a standard comparison result, but
+the two-speaker test set does not support broad demographic claims.
+
+The DataShare record describes a clean/noisy parallel corpus and identifies
+VCTK speech and DEMAND noise among the source components. Attribution, stable
+archive URLs, downloaded archive sizes and SHA-256 digests, and every member's
+size and SHA-256 are recorded in `provenance.json` and `cases-0000.jsonl`.
+Retrieve and verify the data outside the checkout with:
+
+```sh
+python scripts/fetch_voicebank_demand.py
+```
+
+The optional `--cache`, `--archive-dir`, and `--offline` arguments are shown by
+`--help`. Audio files are not stored in Git. Current rights state remains
+blocked pending a named review of component provenance and voice-talent scope;
+the metadata registration is not approval to run public scoring, redistribute
+audio, or add playback. The benchmark runtime is also not yet wired to score
+this cohort.
+
 ## Larger corpora and storage
 
 Do not commit full corpora or multi-gigabyte releases to Git or Git LFS. Keep
@@ -50,7 +76,9 @@ runners; neither audio nor credentials belong in public results.
 
 The official VOiCES devkit is about 27.5 GiB. This repository stores only the
 small five-recording subset above; the other downloaded archive files were
-discarded. A future full evaluation needs a representative, rights-reviewed
-held-out split and separate cohort/protocol approval. The current benchmark
-runtime still executes the synthetic suite only; this subset is not yet an
-enabled scoring cohort.
+discarded. The Lab41 90-degree mirror includes LibriSpeech train and dev source
+partitions but does not provide the official held-out evaluation split, so it
+is not used as a quality cohort. A qualified real-room VOiCES cohort still
+needs a feasible, held-out subset source. The current benchmark runtime still
+executes the synthetic suite only; neither external corpus is an enabled
+scoring cohort.
