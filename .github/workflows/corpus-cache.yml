@@ -58,7 +58,6 @@ jobs:
         if: inputs.dataset == 'dns5'
         env:
           CACHE_ROOT: ${{ runner.temp }}/audio-bench-datasets
-          CACHE_HIT: ${{ steps.dataset-cache.outputs.cache-hit }}
         run: |
           python - <<'PY'
           import json
