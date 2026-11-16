@@ -47,7 +47,7 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ${{ runner.temp }}/audio-bench-datasets
-          key: audio-bench-corpus-${{ inputs.dataset }}-${{ hashFiles('DATA_LICENSE.md', 'scripts/check_corpus_rights.py', 'scripts/prepare_voices_cohort.py', 'scripts/fetch_voicebank_demand.py', 'scripts/fetch_dns5_dev.py', 'manifests/voices/voices-balanced-realroom-v1/selection.json', 'manifests/voices/voices-balanced-realroom-v1/status.json', 'manifests/voicebank-demand/voicebank-demand-test-v1/provenance.json', 'manifests/voicebank.status.json', 'manifests/dns5.status.json') }}
+          key: audio-bench-corpus-${{ inputs.dataset }}-${{ hashFiles('DATA_LICENSE.md', 'scripts/check_corpus_rights.py', 'scripts/prepare_voices_cohort.py', 'scripts/fetch_voicebank_demand.py', 'scripts/fetch_dns5_dev.py', 'src/audio_bench/acquire.py', 'manifests/voices/voices-balanced-realroom-v1/selection.json', 'manifests/voices/voices-balanced-realroom-v1/status.json', 'manifests/voicebank-demand/voicebank-demand-test-v1/provenance.json', 'manifests/voicebank.status.json', 'manifests/dns5.status.json') }}
       - name: Prepare VOiCES balanced test cohort
         if: inputs.dataset == 'voices'
         env:

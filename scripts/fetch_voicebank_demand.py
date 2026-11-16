@@ -93,6 +93,7 @@ def fetch_and_verify(cache_root: Path, *, archive_dir: Path | None = None, offli
                 asset["url"], archive,
                 expected_sha256=asset["sha256"], expected_bytes=asset["bytes"],
                 policy=policy, fetcher=HTTPSFetcher(), max_bytes=asset["bytes"],
+                chunk_size=asset["bytes"],
             )
 
         extraction = dataset_root / asset["id"]
