@@ -1,0 +1,134 @@
+{
+  "baseline": {
+    "metrics": [
+      {
+        "median": 0.0,
+        "metric_id": "clipping_count",
+        "unit": "count"
+      },
+      {
+        "median": 0.36053637146768003,
+        "metric_id": "estoi",
+        "unit": "index"
+      },
+      {
+        "median": 0.3843994140625,
+        "metric_id": "max_abs_sample",
+        "unit": "none"
+      },
+      {
+        "median": 0.8257525765537469,
+        "metric_id": "rms_gain_ratio",
+        "unit": "ratio"
+      },
+      {
+        "median": 6.419978342486386,
+        "metric_id": "si_sdr_db",
+        "unit": "dB"
+      },
+      {
+        "median": 0.8929279061309536,
+        "metric_id": "si_sdr_improvement_db",
+        "unit": "dB"
+      },
+      {
+        "median": 0.6812349507934081,
+        "metric_id": "stoi",
+        "unit": "index"
+      },
+      {
+        "median": 0.012289166666666665,
+        "metric_id": "latency_ms",
+        "unit": "ms"
+      }
+    ],
+    "provider_id": "speex.ns.v0",
+    "run_id": "524c05ae-3f9e-4e9a-b6f6-afc23285db0c:67ae0806-8529-449a-920a-f5103addaf30"
+  },
+  "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
+  "display_name": "audio-pro FastEnhancer Tiny16 (submitter-run example)",
+  "evidence": {
+    "candidate_raw_latency_ms": 0.12743208333333333,
+    "dataset_manifest_digest": "sha256:99725cfd6675154d76e6b9ce625ef19531b4410742e55bb38724086fc2f88702",
+    "harness_digest": "sha256:015c365fa83ea95daf3b2cfe51d22aea79a5f38adbf357b357a59557b9512e03",
+    "harness_revision": "6ad173ecf9d03c9fa8bacb38ebd7303cb98b6a03",
+    "reference_baseline_latency_ms": 0.012189166666666666,
+    "reference_raw_latency_ms": 0.012289166666666665,
+    "runner_fingerprint": "macOS-27.2.1-arm64-arm-64bit / Python 3.12.16",
+    "workflow_attestation_url": null
+  },
+  "metrics": [
+    {
+      "finite_count": 24,
+      "label": "clipping_count",
+      "median": 0.0,
+      "metric_id": "clipping_count",
+      "unit": "count"
+    },
+    {
+      "finite_count": 24,
+      "label": "estoi",
+      "median": 0.31312092069617203,
+      "metric_id": "estoi",
+      "unit": "index"
+    },
+    {
+      "finite_count": 2400,
+      "label": "CPU time per 10 ms frame",
+      "median": 0.12743208333333333,
+      "metric_id": "latency_ms",
+      "normalized_median": 0.1263951368357406,
+      "normalized_unit": "ms",
+      "unit": "ms"
+    },
+    {
+      "finite_count": 24,
+      "label": "max_abs_sample",
+      "median": 0.2261630892753601,
+      "metric_id": "max_abs_sample",
+      "unit": "none"
+    },
+    {
+      "finite_count": 24,
+      "label": "rms_gain_ratio",
+      "median": 0.8749013721068449,
+      "metric_id": "rms_gain_ratio",
+      "unit": "ratio"
+    },
+    {
+      "finite_count": 24,
+      "label": "si_sdr_db",
+      "median": -5.212004552077126,
+      "metric_id": "si_sdr_db",
+      "unit": "dB"
+    },
+    {
+      "finite_count": 24,
+      "label": "si_sdr_improvement_db",
+      "median": -10.753304877889164,
+      "metric_id": "si_sdr_improvement_db",
+      "unit": "dB"
+    },
+    {
+      "finite_count": 24,
+      "label": "stoi",
+      "median": 0.38206558575018323,
+      "metric_id": "stoi",
+      "unit": "index"
+    }
+  ],
+  "model_digest": "sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5",
+  "provider_id": "pro.fastenhancer-tiny16.f32.v0",
+  "result_id": "submitter:audio-pro-tiny16-example:f8650350-25ea-4a82-8c30-f92abe13dbcd",
+  "result_status": "Submitter-run \u00b7 not independently verified",
+  "runner_mode": "submitter-owned",
+  "schema_id": "audio-bench/submitter-result/0.1",
+  "source": {
+    "repository_identity_sha256": "sha256:df3eeaee2b75d30ce5207f55ed1ab3f7dd07c9bb41f213b6337f0f5a4bdde522",
+    "revision": "b2c1e8c4a83171899500b4e0abfca976a8639739",
+    "visibility": "private"
+  },
+  "submission_id": "audio-pro-tiny16-example",
+  "suite_id": "synthetic-smoke-v1",
+  "task": "noise-cancellation"
+}
