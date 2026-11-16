@@ -1,5 +1,7 @@
 # Corpus plan for noise-cancellation benchmarks
 
+Verified cold/warm run timings and scope: [dataset release evidence](DATASET_RELEASE_EVIDENCE.md).
+
 ## Release dataset policy (2026-11-17)
 
 | Track | Selection | Role | Acquisition and persistence |
@@ -131,8 +133,8 @@ enables audio playback in the report site.
 
 The `Prepare corpus data` workflow can prepare this subset on a manual dispatch.
 Each cache miss streams the full 27.5 GiB archive, then retains only the
-selected cohort. Temporary runner storage is the default. The optional public
-Actions cache is approved for this selected cohort and writes a rights notice;
+selected cohort. The manual workflow defaults to an approved public
+Actions cache for this selected cohort and writes a rights notice;
 it never uploads audio artifacts or runs benchmarks. Caches are scoped by
 GitHub to the workflow branch; a cache populated on a topic branch is not
 available to `main` or sibling branches. The workflow is separate from PR
@@ -174,7 +176,7 @@ but not playback. See
 The manual `Prepare corpus data` workflow checks
 `manifests/voicebank.status.json` before acquiring anything. It verifies every
 archive and selected WAV digest and writes a rights notice beside the cohort.
-Temporary runner storage is the default. The opt-in public Actions cache is
+The manual workflow defaults to public Actions caching, which is
 approved for this pinned test cohort with evidence, license references, and
 attribution. Audio playback remains disabled.
 
@@ -217,8 +219,7 @@ For a public GitHub Actions cache, set `public_actions_cache` to `allowed` only
 after the corresponding redistribution decision is also `allowed` and the
 status manifest records source-license evidence, per-component license
 references, and attribution. The workflow checks these fields before invoking
-`actions/cache`; the cache includes a `RIGHTS_NOTICE.json`. The default workflow
-path uses temporary runner storage and does not persist audio. A cache is
+`actions/cache`; the cache includes a `RIGHTS_NOTICE.json`. Disable `use_public_actions_cache` to use temporary runner storage only. A cache is
 branch-scoped: runs on the same branch can reuse it, and eligible branches can restore the
 default branch cache; topic-branch entries are not available to `main`.
 
