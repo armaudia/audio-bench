@@ -51,6 +51,8 @@ class FetchResult:
     body: bytes  # bounded by the fetcher
     location: str | None = None
     range_start: int | None = None
+    content_length: int | None = None
+    content_range: str | None = None
 
 
 class Fetcher(Protocol):
@@ -89,7 +91,17 @@ class HTTPSFetcher:
                     range_start = int(content_range[6:].split("-", 1)[0])
                 except ValueError:
                     raise AcquisitionError("malformed Content-Range response") from None
-            return FetchResult(url, response.status, body, range_start=range_start)
+            raw_length = response.getheader("Content-Length")
+            try:
+                content_length = int(raw_length) if raw_length is not None else None
+            except ValueError:
+                content_length = None
+            return FetchResult(
+                url, response.status, body,
+                range_start=range_start,
+                content_length=content_length,
+                content_range=content_range,
+            )
         finally:
             connection.close()
 
@@ -189,8 +201,10 @@ def acquire(
             # normal verification step below.
             if len(result.body) != expected_bytes:
                 raise AcquisitionError(
-                    "server ignored the resume range request and did not return "
-                    "the complete declared artifact"
+                    "server ignored the resume range request and returned "
+                    f"{len(result.body)} of {expected_bytes} declared bytes "
+                    f"(Content-Length={result.content_length}, "
+                    f"Content-Range={result.content_range!r})"
                 )
             with open(part, "wb") as handle:
                 handle.write(result.body)
