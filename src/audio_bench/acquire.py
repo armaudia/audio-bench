@@ -141,6 +141,7 @@ def acquire(
     fetcher: Fetcher,
     max_bytes: int = 4 * 1024 * 1024 * 1024,
     chunk_size: int = 4 * 1024 * 1024,
+    allow_full_response_fallback: bool = False,
     resolver: Resolver | None = None,
 ) -> Path:
     """Download, verify and atomically publish one immutable artifact."""
@@ -161,7 +162,12 @@ def acquire(
     while offset < expected_bytes:
         validate_url(current, policy, resolver=resolver)
         chunk_bytes = min(chunk_size, expected_bytes - offset)
-        result = fetcher(current, offset=offset, max_bytes=chunk_bytes)
+        # Some archive hosts honor the initial Range request but ignore a later
+        # resume request. Give that response enough room for one complete,
+        # declared-size artifact so we can safely recover without trusting a
+        # truncated or oversized response.
+        request_limit = expected_bytes if offset and allow_full_response_fallback else chunk_bytes
+        result = fetcher(current, offset=offset, max_bytes=request_limit)
         if result.status in (301, 302, 303, 307, 308):
             location = _location_of(result)
             if not location:
@@ -176,6 +182,22 @@ def acquire(
             raise AcquisitionError("fetcher followed an unvalidated redirect")
         if result.status not in (200, 206):
             raise AcquisitionError(f"unexpected HTTP status {result.status}")
+        if offset and result.status == 200 and allow_full_response_fallback:
+            # HTTP 200 to a non-zero Range means the server ignored Range and
+            # returned the whole object. Accept it only when its exact size is
+            # the pinned size; then replace the partial file atomically at the
+            # normal verification step below.
+            if len(result.body) != expected_bytes:
+                raise AcquisitionError(
+                    "server ignored the resume range request and did not return "
+                    "the complete declared artifact"
+                )
+            with open(part, "wb") as handle:
+                handle.write(result.body)
+                handle.flush()
+                os.fsync(handle.fileno())
+            offset = expected_bytes
+            continue
         if offset and result.status != 206:
             raise AcquisitionError("server ignored the resume range request")
         if result.status == 206 and result.range_start != offset:
