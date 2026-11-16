@@ -5,6 +5,7 @@ on:
       dataset:
         description: External corpus to prepare
         required: true
+        default: voicebank-demand
         type: choice
         options:
           - voices
@@ -13,7 +14,7 @@ on:
       use_public_actions_cache:
         description: Persist audio in the public GitHub Actions cache (requires explicit redistribution approval)
         required: true
-        default: false
+        default: true
         type: boolean
 permissions:
   contents: read
@@ -90,10 +91,21 @@ jobs:
           OPERATION=evaluation
           if [ "${{ inputs.use_public_actions_cache }}" = "true" ]; then OPERATION=public-cache; fi
           python scripts/check_corpus_rights.py --dataset dns5 --operation "$OPERATION" --cache-root "$CACHE_ROOT"
-      - name: Record temporary preparation result
+      - name: Verify cache reuse without network
+        env:
+          DATASET: ${{ inputs.dataset }}
+          CACHE_ROOT: ${{ runner.temp }}/audio-bench-datasets
         run: |
+          case "$DATASET" in
+            voices) python scripts/prepare_voices_cohort.py --cache "$CACHE_ROOT" --offline ;;
+            voicebank-demand) python scripts/fetch_voicebank_demand.py --cache "$CACHE_ROOT" --offline ;;
+            dns5) python scripts/fetch_dns5_dev.py --cache "$CACHE_ROOT" --offline ;;
+          esac
+      - name: Record preparation result
+        run: |
+          echo "Dataset: ${{ inputs.dataset }}; exact cache hit: ${{ steps.dataset-cache.outputs.cache-hit }}; offline verification: passed." >> "$GITHUB_STEP_SUMMARY"
           if [ "${{ inputs.use_public_actions_cache }}" = "true" ]; then
-            echo "Corpus assets were stored in the public Actions cache after the explicit redistribution gate passed." >> "$GITHUB_STEP_SUMMARY"
+            echo "Corpus verified. The public cache post-job step will save this cohort on a cache miss; check its completion log." >> "$GITHUB_STEP_SUMMARY"
             echo "The cache includes a RIGHTS_NOTICE.json with attribution and source license references." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Corpus assets were placed in temporary runner storage only." >> "$GITHUB_STEP_SUMMARY"

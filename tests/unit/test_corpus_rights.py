@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from check_corpus_rights import check_corpus_rights  # noqa: E402
 
 
-@pytest.mark.parametrize("dataset", ["voices", "voicebank-demand", "dns5"])
+@pytest.mark.parametrize("dataset", ["voices", "voicebank-demand"])
 def test_current_corpus_rights_allow_evaluation_and_public_cache(dataset):
     assert check_corpus_rights(dataset, "evaluation", root=ROOT)["operation"] == "evaluation"
     notice = check_corpus_rights(dataset, "public-cache", root=ROOT)
@@ -57,3 +57,9 @@ def test_public_cache_rejects_missing_component_license_reference(tmp_path):
     status_path.write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match="must list every source license"):
         check_corpus_rights("dns5", "public-cache", root=tmp_path)
+
+
+def test_dns5_evaluation_approved_but_unmapped_component_cache_is_blocked():
+    assert check_corpus_rights("dns5", "evaluation", root=ROOT)
+    with pytest.raises(ValueError, match="not cleared"):
+        check_corpus_rights("dns5", "public-cache", root=ROOT)

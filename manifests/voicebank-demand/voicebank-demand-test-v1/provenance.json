@@ -5,14 +5,14 @@
       "filename": "clean_testset_wav.zip",
       "id": "clean_testset_wav",
       "sha256": "sha256:b60bfc2b9df38466d8eb45057c087c6e5dee196c67a0ed7bca628ae2a8611c4e",
-      "url": "https://datashare.ed.ac.uk/bitstreams/dec213d3-bf57-4777-9663-c24bdce92d5e/download"
+      "url": "https://datashare.ed.ac.uk/server/api/core/bitstreams/dec213d3-bf57-4777-9663-c24bdce92d5e/content"
     },
     {
       "bytes": 170578854,
       "filename": "noisy_testset_wav.zip",
       "id": "noisy_testset_wav",
       "sha256": "sha256:ba4a893f45b627f15209ba30ab584dd495b3680cd6f216dd08d143a257611993",
-      "url": "https://datashare.ed.ac.uk/bitstreams/13c1bfbf-14a6-41db-9b41-8f7310f01ad7/download"
+      "url": "https://datashare.ed.ac.uk/server/api/core/bitstreams/13c1bfbf-14a6-41db-9b41-8f7310f01ad5/content"
     }
   ],
   "case_manifest_sha256": "sha256:3628343c181709ec744666602f571913f511558b241340c5be086f597647bb0f",

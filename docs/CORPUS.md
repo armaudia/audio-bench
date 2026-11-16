@@ -1,5 +1,68 @@
 # Corpus plan for noise-cancellation benchmarks
 
+## Release dataset policy (2026-11-17)
+
+| Track | Selection | Role | Acquisition and persistence |
+| --- | --- | --- | --- |
+| VoiceBank+DEMAND | Official test split, 824 pairs, 2 speakers | Default paired enhancement cohort | Two official archives, 324,910,918 bytes total; local cache or approved public Actions cache |
+| VOiCES | 40 test speakers, 4 conditions each, 160 cases | Optional real-room robustness cohort | Stream 27.5 GiB devkit once per cache miss; retain selected files only |
+| DNS5 | Track 2 development, 600 noisy clips plus transcript | Optional evaluation; no clean-reference scores | Download 3.02 GiB archive on demand; local/temporary storage only until component mapping is resolved |
+| VOiCES smoke | 5 recordings of 1 utterance | Integration checks only | Existing tiny attributed fixture in Git |
+
+Use the entire frozen VoiceBank test cohort, rather than a hand-picked easy subset.
+Report its two-speaker limitation and training-data overlap declarations. Keep tracks
+separate; do not average their scores into one ranking. For paired enhancement,
+use STOI and SI-SDR improvement over the noisy input, with a frozen resampling,
+alignment, channel, and failure policy before qualifying a leaderboard. DNS5
+requires a separately pinned non-intrusive metric implementation/weights or
+listening protocol; DNSMOS predictions must not be labeled human MOS.
+
+### When and where to fetch
+
+- PR validation: schemas, rights records, downloader tests and code contracts only.
+  No corpus download and no benchmark execution.
+- Manual `Prepare corpus data`: select a cohort before its first evaluation, or
+  warm a cache after eviction. Default is VoiceBank+DEMAND with public caching.
+  DNS5 must use `use_public_actions_cache=false`; its public-cache gate rejects
+  the request before restoring or saving audio.
+- Local and submitter-owned runners: run the matching script with `--cache PATH`
+  or `AUDIO_BENCH_DATA_CACHE`; the default is `~/.cache/audio-bench/datasets`.
+  Keep this directory outside the source checkout. Fetch once, then use `--offline`.
+- GitHub runners: data lives in `${runner.temp}/audio-bench-datasets`. A public
+  Actions cache is an optional disposable acceleration layer, never the source
+  of truth. A miss fetches upstream; an exact hit verifies files offline. No
+  prefix restore keys or unverified fallback data. GitHub eviction is expected.
+  Main-branch caches can be restored by eligible PR branches; treat all public
+  cache contents as public. PRs never populate the trusted main cache.
+- Git contains versioned selection recipes, source URLs, pins, legal notices,
+  and results. New corpus audio does not go in Git, Git LFS, release assets,
+  Pages, or workflow artifacts. The existing five-case smoke fixture is the
+  explicit exception. No private corpus or credentials enter public caches.
+
+VoiceBank verifies both archive SHA-256 values and all 1,648 WAV byte hashes
+against committed provenance. Downloads use bounded ranges and transient-error
+retries; error pages are rejected. A failed hash never publishes an archive.
+Keep `.part` files for a retry; remove a failed/incomplete local extraction
+before reacquiring if needed. `--archive-dir` supports previously downloaded
+matching official ZIPs, without changing source pins. No silent mirror fallback.
+
+A cache entry contains `RIGHTS_NOTICE.json` with attribution, component license
+links, approval evidence and the cohort identity. The workflow checks rights
+before restoring a public cache, verifies offline reuse after preparation, and
+reports the exact cache-hit outcome. Check the post-job cache-save step before
+claiming that a cold run populated GitHub's cache. Audio access can be revoked
+operationally by disabling its status and deleting existing GitHub cache entries;
+changing a status alone does not delete previously distributed copies.
+
+### Release scope
+
+Dataset registration/preparation is implemented independently of scoring. The
+current automatic candidate runner still executes `synthetic-16k-v1` only.
+Preparing these datasets does not enable real-corpus leaderboard scores. A
+release may advertise verified acquisition and caching, but must not advertise
+real-corpus scoring until execution, metric protocol, result provenance and Pages
+presentation are implemented and qualified end to end. See `RELEASING.md`.
+
 ## Committed VOiCES smoke subset
 
 `manifests/voices/voices-dev-clean-smoke-v1/` contains a small, committed subset
@@ -128,15 +191,16 @@ appropriate; use DNSMOS/P.835-style scores and word accuracy as a separate
 non-intrusive track. The development split is intended for model iteration,
 not a hidden leaderboard test. See the [ICASSP 2023 challenge paper](https://arxiv.org/abs/2303.11510).
 
-The repository maintainer approved acquisition, evaluation, public Actions
-caching, and attributed aggregate results for DNS5 Track 2; the recorded scope
+The repository maintainer approved acquisition, evaluation, and attributed
+aggregate results for DNS5 Track 2; public caching is disabled until selected
+clip license mapping is documented; the recorded scope
 is limited to this selected cohort. The source archive is pinned by its official
 Azure ETag, byte length, and Content-MD5; acquisition also records SHA-256 for
 the archive and selected files. The downloader retains the 600 non-enrollment
 speakerphone clips and official transcript TSV in an external cache. It fails
 closed if the source identity or inventory changes. Audio publishing remains
 disabled. The manual workflow defaults to temporary runner storage. Its
-optional public Actions cache is approved for the selected cohort; it records
+public Actions cache is disabled for this cohort. Local evaluation must retain
 the source notices and attribution beside the cached audio. No audio artifacts
 are uploaded.
 
@@ -155,15 +219,15 @@ status manifest records source-license evidence, per-component license
 references, and attribution. The workflow checks these fields before invoking
 `actions/cache`; the cache includes a `RIGHTS_NOTICE.json`. The default workflow
 path uses temporary runner storage and does not persist audio. A cache is
-branch-scoped: runs on the same branch can reuse it, while caches created on
-topic branches are not available to `main` or sibling branches.
+branch-scoped: runs on the same branch can reuse it, and eligible branches can restore the
+default branch cache; topic-branch entries are not available to `main`.
 
 The official VOiCES devkit is about 27.5 GiB. This repository stores only the
 small five-recording smoke subset; the larger cohort is created in an external
 cache from the official test partition. The Lab41 90-degree mirror is not used
 for scoring because it does not establish an independent held-out test
-selection. Evaluation, aggregate reporting, and public Actions caching of the
-selected cohorts are approved for VOiCES, VoiceBank+DEMAND, and DNS5. Playback
+selection. Evaluation and aggregate reporting have maintainer approval for all three
+cohorts. Public caching is enabled for VOiCES and VoiceBank+DEMAND only. Playback
 remains disabled in the status manifests. The benchmark runtime still
 executes the synthetic suite only; real-corpus scoring and Pages publication
 are not yet implemented.

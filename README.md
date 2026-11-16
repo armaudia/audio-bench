@@ -76,7 +76,8 @@ and DNS5 have external-cache preparation paths; their selection, cache, and
 rights decisions are documented in [docs/CORPUS.md](docs/CORPUS.md). The
 repository maintainer has enabled acquisition and evaluation for all three
 corpora, with attribution and aggregate-score publication. Public Actions cache
-use is an opt-in workflow setting approved for the selected cohorts. Cached
+use is enabled by default in manual preparation for the selected VoiceBank and
+VOiCES cohorts; DNS5 public caching is disabled pending component mapping. Cached
 audio stays outside Git, Pages, and result artifacts. Corpus preparation
 does not yet mean real-corpus scores are produced: the benchmark runner remains
 synthetic-only. Native candidate code is
