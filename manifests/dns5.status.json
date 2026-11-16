@@ -7,10 +7,16 @@
   "evaluation": "allowed",
   "public_aggregate_results": "allowed",
   "audio_redistribution": "not_authorized",
+  "public_actions_cache": "not_authorized",
   "public_playback": "not_enabled",
   "reviewed_at": "2026-11-16",
   "reviewer": "repository maintainer (user-confirmed)",
   "scope": "download and cache DNS5 Track 2 speakerphone development recordings for evaluation; publish attributed aggregate metrics and provenance; do not publish audio",
+  "cache_attribution": "Microsoft DNS Challenge 5 (ICASSP 2023), with attribution and notices for all original source datasets.",
+  "cache_license_sources": [
+    {"title": "DNS Challenge 5 Track 2 source terms", "license": "Original component terms; selected-clip license mapping is unresolved", "url": "https://github.com/microsoft/DNS-Challenge/blob/master/README.md"}
+  ],
+  "public_cache_evidence_ref": null,
   "source_pin": {
     "url": "https://dnschallengepublic.blob.core.windows.net/dns5archive/V5_dev_testset.zip",
     "etag": "0x8DAD8BE02A959DB",

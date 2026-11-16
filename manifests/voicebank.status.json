@@ -25,11 +25,19 @@
     "evaluation": "allowed",
     "public_aggregate_results": "allowed",
     "redistribution": "not_authorized",
+    "public_actions_cache": "not_authorized",
     "public_playback": "not_authorized",
     "reviewed_at": "2026-11-16",
     "reviewer": "repository maintainer (user-confirmed)",
-    "scope": "download and cache the official test archives for evaluation; publish attributed aggregate metrics and provenance; do not publish audio"
+    "scope": "download to runner-local storage for evaluation; publish attributed aggregate metrics and provenance; public redistribution, public Actions caching, and playback are not authorized"
   },
+  "cache_attribution": "Valentini-Botinhao, Cassia (2017), University of Edinburgh CSTR; identify VCTK and DEMAND source components and retain each applicable notice.",
+  "cache_license_sources": [
+    {"title": "VoiceBank+DEMAND DataShare record", "license": "CC BY 4.0", "url": "https://datashare.ed.ac.uk/handle/10283/2791"},
+    {"title": "CSTR VCTK source component", "license": "ODC-By 1.0 (source corpus terms; verify selected derivative scope)", "url": "https://datashare.ed.ac.uk/handle/10283/2645"},
+    {"title": "DEMAND source component", "license": "CC BY-SA 3.0 (source corpus terms; verify selected derivative scope)", "url": "https://zenodo.org/records/1227121"}
+  ],
+  "public_cache_evidence_ref": null,
   "provenance_review": {
     "reviewed_at": "2026-11-14",
     "primary_record": "https://doi.org/10.7488/ds/2117",

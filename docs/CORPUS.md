@@ -67,10 +67,11 @@ larger cohort is the candidate real-room evaluation cohort. Neither cohort
 enables audio playback in the report site.
 
 The `Prepare corpus data` workflow can prepare this subset on `main`. It is
-manual because each run streams the full 27.5 GiB archive into temporary runner
-storage. It does not persist an Actions cache, upload audio artifacts, or run
-benchmarks. The public repository avoids persistent audio caches because PR
-workflows could read them. It is separate from PR validation and from the
+manual because each cache miss streams the full 27.5 GiB archive. Temporary
+runner storage is the default. A public Actions cache is an opt-in workflow
+input that first requires both redistribution and cache approval in the status
+manifest; it is currently denied for this cohort. The workflow never uploads
+audio artifacts or runs benchmarks, and is separate from PR validation and the
 merge-triggered benchmark workflow.
 
 VOiCES is real recorded-room audio with source speech references, but acoustic
@@ -106,11 +107,12 @@ approval does not enable audio redistribution or playback. See
 [`voicebank-primary-source-review.md`](task-evidence/artifacts/voicebank-primary-source-review.md).
 
 The manual `Prepare corpus data` workflow checks
-`manifests/voicebank.status.json` before acquiring anything. It fetches the two
-pinned archives into temporary runner storage, verifies every archive and
-selected WAV digest, and deletes them with the runner. It does not persist an
-Actions cache or upload audio as an artifact. Audio redistribution and playback
-remain disabled.
+`manifests/voicebank.status.json` before acquiring anything. It verifies every
+archive and selected WAV digest and writes a rights notice beside the cohort.
+Temporary runner storage is the default. The optional public Actions cache is
+denied until the status record explicitly approves redistribution and caching
+with evidence, license references, and attribution. Audio playback remains
+disabled.
 
 ## DNS Challenge real-world quality cohort
 
@@ -131,8 +133,10 @@ Azure ETag, byte length, and Content-MD5; acquisition also records SHA-256 for
 the archive and selected files. The downloader retains the 600 non-enrollment
 speakerphone clips and official transcript TSV in an external cache. It fails
 closed if the source identity or inventory changes. Audio publishing remains
-disabled. The manual workflow prepares the corpus in temporary runner storage
-without persisting a cache or uploading audio artifacts.
+disabled. The manual workflow defaults to temporary runner storage. Its
+optional public Actions cache remains denied until the status record documents
+redistribution and cache approval for all source components, with evidence and
+attribution. No audio artifacts are uploaded.
 
 ## Larger corpora and storage
 
@@ -143,11 +147,19 @@ the selected assets and verify SHA-256 before decoding. Cache by full manifest
 digest, never by a moving `latest` URL. Private corpora use submitter-owned
 runners; neither audio nor credentials belong in public results.
 
+For a public GitHub Actions cache, set `public_actions_cache` to `allowed` only
+after the corresponding redistribution decision is also `allowed` and the
+status manifest records source-license evidence, per-component license
+references, and attribution. The workflow checks these fields before invoking
+`actions/cache`; the cache includes a `RIGHTS_NOTICE.json`. The default workflow
+path uses temporary runner storage and does not persist audio.
+
 The official VOiCES devkit is about 27.5 GiB. This repository stores only the
 small five-recording smoke subset; the larger cohort is created in an external
 cache from the official test partition. The Lab41 90-degree mirror is not used
 for scoring because it does not establish an independent held-out test
-selection. Rights approval for VOiCES, VoiceBank+DEMAND, and DNS5 is recorded
-in the status manifests, with audio redistribution/playback disabled. The
-benchmark runtime still executes the synthetic suite only; real-corpus scoring
-and Pages publication are not yet implemented.
+selection. Evaluation and aggregate reporting are approved for VOiCES,
+VoiceBank+DEMAND, and DNS5. Public audio redistribution, Actions caching, and
+playback remain disabled in the status manifests. The benchmark runtime still
+executes the synthetic suite only; real-corpus scoring and Pages publication
+are not yet implemented.

@@ -5,8 +5,15 @@
   "evaluation": "allowed",
   "public_aggregate_results": "allowed",
   "audio_redistribution": "not_enabled",
+  "public_actions_cache": "not_enabled",
   "public_playback": "not_enabled",
   "license": "CC-BY-4.0",
   "source": "https://iqtlabs.github.io/voices/",
+  "cache_attribution": "IQT Labs and SRI International, VOiCES corpus; source speech from LibriSpeech/OpenSLR.",
+  "cache_license_sources": [
+    {"title": "VOiCES corpus", "license": "CC BY 4.0", "url": "https://iqtlabs.github.io/voices/"},
+    {"title": "LibriSpeech source speech", "license": "CC BY 4.0", "url": "https://www.openslr.org/12"}
+  ],
+  "public_cache_evidence_ref": null,
   "decision_note": "Use the official VOiCES test partition for evaluation and publish aggregate metrics/provenance only. Keep source audio out of Git, Pages, and result artifacts."
 }
