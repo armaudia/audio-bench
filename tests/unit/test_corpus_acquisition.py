@@ -82,3 +82,29 @@ def test_dns5_rights_gate_fails_closed_before_archive_use(tmp_path, monkeypatch)
 def test_dns5_member_path_rejects_traversal():
     with pytest.raises(AcquisitionError, match="unsafe"):
         dns5._safe_path("V5_dev_testset/../../outside.wav")
+
+
+def test_voicebank_retries_html_error_pages_without_accepting_bytes(monkeypatch):
+    import fetch_voicebank_demand as voicebank
+    from audio_bench.acquire import FetchResult
+    responses = iter([
+        FetchResult("https://datashare.ed.ac.uk/content", 200, b"<!doctype html>unavailable"),
+        FetchResult("https://datashare.ed.ac.uk/content", 206, b"PKzip", range_start=0),
+    ])
+    monkeypatch.setattr(voicebank.HTTPSFetcher, "__call__", lambda *a, **kw: next(responses))
+    monkeypatch.setattr(voicebank.time, "sleep", lambda _: None)
+    result = voicebank._fetch_archive_chunk("https://datashare.ed.ac.uk/content", offset=0, max_bytes=32)
+    assert result.body == b"PKzip"
+
+
+def test_voicebank_transport_failure_is_bounded(monkeypatch):
+    import fetch_voicebank_demand as voicebank
+    calls = []
+    def unavailable(*args, **kwargs):
+        calls.append(1)
+        raise OSError("temporary outage")
+    monkeypatch.setattr(voicebank.HTTPSFetcher, "__call__", unavailable)
+    monkeypatch.setattr(voicebank.time, "sleep", lambda _: None)
+    with pytest.raises(OSError, match="temporary outage"):
+        voicebank._fetch_archive_chunk("https://datashare.ed.ac.uk/content", offset=0, max_bytes=32)
+    assert len(calls) == 3

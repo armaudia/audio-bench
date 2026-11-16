@@ -53,3 +53,16 @@ passing hosted runs for the advertised targets, clean install evidence, remainin
 limitations, and release notes. Local tests or a CI configuration are not a
 production qualification. Do not reclassify pending legal, model, data, parity or
 workload evidence as passing. Historical task handoffs retain their original scope.
+
+## Dataset release checks
+
+Follow the frozen choices and storage policy in [docs/CORPUS.md](docs/CORPUS.md).
+Run the full Python suite and repository CI. Run `Prepare corpus data` on the
+release commit for VoiceBank+DEMAND twice: first verify a cache miss, successful
+acquisition, offline verification and post-job cache save; then verify an exact
+cache hit and offline verification. Record run links, revision, cache key and
+elapsed time. No benchmark runs during PR validation. Repeat acquisition checks
+when source pins, downloader, rights or cache inputs change. Optional VOiCES and
+DNS5 preparation is not evidence of qualified scoring. A stable release claiming
+real-corpus benchmarking remains gated on implementing and validating the scoring
+path; current supported automatic scoring is synthetic only.

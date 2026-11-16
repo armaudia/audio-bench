@@ -16,3 +16,12 @@ The relevant status manifests point here as evidence for the repository's
 maintainer approval. This record does not replace or modify any upstream data
 license; users who retrieve the cache must comply with the referenced upstream
 terms.
+
+## Current release scope (2026-11-17)
+
+The historical maintainer approval above is retained. Operational public-cache
+permission is currently enabled for VOiCES and VoiceBank+DEMAND only. DNS5
+remains approved for evaluation, but its public caching is disabled because the
+status record does not map selected clips to their original component terms.
+The publisher explicitly retains original dataset terms; repository CC BY terms
+are not a blanket grant for all audio. Current status files control operations.

@@ -29,3 +29,11 @@ Fetched 2026-11-14:
 4. <http://parole.loria.fr/DEMAND/> (request failed; no terms observed)
 5. <https://datashare.ed.ac.uk/bitstreams/dec213d3-bf57-4777-9663-c24bdce92d5e/download> (official clean test archive)
 6. <https://datashare.ed.ac.uk/bitstreams/13c1bfbf-14a6-41db-9b41-8f7310f01ad7/download> (official noisy test archive)
+
+## 2026-11-17 source URL correction
+
+The historical noisy-archive link above contains a transcription error (`ad7`).
+The official DataShare record links to bitstream
+`13c1bfbf-14a6-41db-9b41-8f7310f01ad5`. Current provenance uses the
+canonical `/server/api/core/bitstreams/<id>/content` endpoints. Expected
+archive SHA-256 values, WAV hashes and the frozen cohort remain unchanged.

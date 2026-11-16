@@ -21,8 +21,9 @@ rights to redistribute or publicly cache its audio.
 Dataset status manifests are the authority for this repository's approved
 operations. Public redistribution and GitHub Actions caching are separate
 operations and require explicit `allowed` decisions with source-license
-references, attribution, and approval evidence. The selected cohorts currently
-have maintainer approval for public Actions caching, recorded in the status
+references, attribution, and approval evidence. VOiCES and VoiceBank+DEMAND currently have enabled public-cache decisions;
+DNS5 public caching is disabled pending selected-clip license mapping. Historical
+maintainer approval is recorded in the status
 manifests and `task-evidence/artifacts/public-actions-cache-approval.md`. A
 public Actions cache is accessible to people who can open pull requests against
 this public repository. When enabled, the cache includes a `RIGHTS_NOTICE.json`
@@ -53,7 +54,36 @@ remains unauthorized by the current status record.
 See `docs/CORPUS.md` and `manifests/voicebank.status.json`.
 
 The Pages workflow is configured to publish only repository-reviewed result
-metadata. It does not accept uploads or private source/audio. Automated result
-ingestion, public-audio playback, and customer-data processing are not enabled.
+metadata. It does not accept uploads or private source/audio. JSON-only submitter result ingestion is documented in `docs/SUBMISSIONS.md`.
+Public-audio playback and customer-data processing are not enabled.
 Separate approved terms and consent controls are prerequisites before accepting
 external artifacts or media.
+
+## Notices that accompany data and results
+
+Recipients must comply with each applicable upstream license. This notice does
+not add conditions to Apache-2.0 or replace, sublicense, or override dataset
+licenses. Maintainer operational approval is not a warranty of third-party rights.
+Retain creator credit, title, source/DOI, license links, copyright notices and any
+upstream disclaimers. Identify selection and processing changes (for example,
+subset selection, resampling, alignment or enhancement) without implying creator
+endorsement. Preserve applicable share-alike/database notices for components;
+do not describe a mixed collection as entirely Apache-2.0 or CC BY 4.0.
+
+VoiceBank+DEMAND attribution: Valentini-Botinhao, Cassia (2017), *Noisy speech
+database for training speech enhancement algorithms and TTS models, 2016*,
+University of Edinburgh CSTR, https://doi.org/10.7488/ds/2117, CC BY 4.0 per its
+[end-user license](https://datashare.ed.ac.uk/server/api/core/bitstreams/7e7bc32f-e94a-436a-8e97-416a972c7e1a/content).
+This repository selects the official test split without modifying cached audio.
+VCTK and DEMAND component terms and attribution are linked in
+`manifests/voicebank.status.json`. VOiCES/LibriSpeech credit and source links are
+in `docs/CORPUS.md` and the cohort provenance. DNS Challenge datasets retain their
+original component terms; the repository's CC BY license alone does not establish
+licenses for every downloaded clip. See Microsoft's
+[dataset terms](https://github.com/microsoft/DNS-Challenge#dataset-licenses).
+
+Downloaded assets are provided by their upstream publishers under their own
+terms and disclaimers. Dataset licenses do not necessarily grant privacy,
+publicity, trademark or patent rights. Report suspected rights issues using
+`SECURITY.md` or a repository issue without posting disputed/private audio;
+maintainers can suspend downloads and remove hosted cache copies during review.

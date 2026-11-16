@@ -6,15 +6,19 @@
   "source": "https://github.com/microsoft/DNS-Challenge",
   "evaluation": "allowed",
   "public_aggregate_results": "allowed",
-  "audio_redistribution": "allowed",
-  "public_actions_cache": "allowed",
+  "audio_redistribution": "not_enabled",
+  "public_actions_cache": "not_enabled",
   "public_playback": "not_enabled",
   "reviewed_at": "2026-11-16",
   "reviewer": "repository maintainer (user-confirmed)",
-  "scope": "download and cache DNS5 Track 2 speakerphone development recordings for evaluation and public Actions caching; publish attributed aggregate metrics and provenance under cited source terms; do not publish audio on Pages or as workflow artifacts",
+  "scope": "Maintainer-approved local evaluation and attributed aggregate results for DNS5 Track 2. Public caching awaits selected-clip source-license mapping.",
   "cache_attribution": "Microsoft DNS Challenge 5 (ICASSP 2023), with attribution and notices for all original source datasets.",
   "cache_license_sources": [
-    {"title": "DNS Challenge 5 Track 2 source terms", "license": "Original component terms; selected-clip license mapping is unresolved", "url": "https://github.com/microsoft/DNS-Challenge/blob/master/README.md"}
+    {
+      "title": "DNS Challenge 5 Track 2 source terms",
+      "license": "Original component terms; selected-clip license mapping is unresolved",
+      "url": "https://github.com/microsoft/DNS-Challenge/blob/master/README.md"
+    }
   ],
   "public_cache_evidence_ref": "task-evidence/artifacts/public-actions-cache-approval.md",
   "source_pin": {
@@ -34,6 +38,7 @@
     "The repository maintainer has confirmed use for this exact development test cohort after reviewing its terms.",
     "The 2023 development test set is a 3,236,752,796-byte archive; Track 2 contains 600 test recordings, separate enrollment audio, and the official transcript TSV.",
     "No paired clean waveform reference is provided for these recordings. Use non-intrusive quality measures and word accuracy as a separately identified track.",
-    "Publish aggregate scores and attribution only. Keep source audio out of Git, Pages, and workflow artifacts."
+    "Publish aggregate scores and attribution only. Keep source audio out of Git, Pages, and workflow artifacts.",
+    "2026-11-17 release decision: prior maintainer cache approval is retained as historical evidence, but public redistribution is disabled until selected-clip component terms are documented."
   ]
 }

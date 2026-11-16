@@ -12,6 +12,8 @@ import os
 import re
 import shutil
 import sys
+import time
+import http.client
 from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -63,6 +65,23 @@ def _load_cases() -> list[dict]:
     return cases
 
 
+def _fetch_archive_chunk(url: str, *, offset: int, max_bytes: int):
+    """Retry transient transport errors without accepting error pages as audio."""
+    for attempt in range(3):
+        try:
+            result = HTTPSFetcher(timeout=60)(url, offset=offset, max_bytes=max_bytes)
+            if result.status in (200, 206) and result.body.lstrip().lower().startswith((b"<!doctype html", b"<html")):
+                raise AcquisitionError("archive endpoint returned an HTML error page")
+            if result.status in (429, 500, 502, 503, 504):
+                raise AcquisitionError(f"temporary archive HTTP status {result.status}")
+            return result
+        except (OSError, http.client.HTTPException, AcquisitionError):
+            if attempt == 2:
+                raise
+            time.sleep(2 ** attempt)
+    raise AssertionError("unreachable")
+
+
 def fetch_and_verify(cache_root: Path, *, archive_dir: Path | None = None, offline: bool = False) -> Path:
     status = json.loads(RIGHTS_STATUS.read_text(encoding="utf-8"))
     if status.get("status") != "allowed" or status.get("rights", {}).get("evaluation") != "allowed":
@@ -89,12 +108,12 @@ def fetch_and_verify(cache_root: Path, *, archive_dir: Path | None = None, offli
             raise AcquisitionError(f"offline mode: pinned archive is not cached: {asset['filename']}")
         else:
             archive.unlink(missing_ok=True)
+            print(f"Downloading {asset['filename']} ({asset['bytes']} bytes)", flush=True)
             acquire(
                 asset["url"], archive,
                 expected_sha256=asset["sha256"], expected_bytes=asset["bytes"],
-                policy=policy, fetcher=HTTPSFetcher(), max_bytes=asset["bytes"],
-                chunk_size=asset["bytes"],
-                allow_full_response_fallback=True,
+                policy=policy, fetcher=_fetch_archive_chunk, max_bytes=asset["bytes"],
+                chunk_size=4 * 1024 * 1024,
             )
 
         extraction = dataset_root / asset["id"]
@@ -145,7 +164,7 @@ def main() -> None:
     cache = args.cache or Path(os.environ.get("AUDIO_BENCH_DATA_CACHE", Path.home() / ".cache/audio-bench/datasets"))
     try:
         path = fetch_and_verify(cache, archive_dir=args.archive_dir, offline=args.offline)
-    except (AcquisitionError, OSError, ValueError, KeyError) as exc:
+    except (AcquisitionError, OSError, http.client.HTTPException, ValueError, KeyError) as exc:
         raise SystemExit(f"VoiceBank+DEMAND acquisition failed: {exc}") from exc
     print(f"verified 824 clean/noisy pairs in external cache: {path}")
 
