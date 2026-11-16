@@ -62,7 +62,9 @@ def test_voicebank_corpus_rights_status_records_maintainer_approval():
     assert status["rights"]["acquisition"] == "allowed"
     assert status["rights"]["evaluation"] == "allowed"
     assert status["rights"]["public_aggregate_results"] == "allowed"
-    assert status["rights"]["redistribution"] == "not_authorized"
+    assert status["rights"]["redistribution"] == "allowed"
+    assert status["rights"]["public_actions_cache"] == "allowed"
+    assert status["public_cache_evidence_ref"] == "task-evidence/artifacts/public-actions-cache-approval.md"
     assert status["rights"]["public_playback"] == "not_authorized"
     assert status["provenance_review"]["license"] == "Creative Commons Attribution 4.0 International Public License"
     assert status["archive_sha256"] is None

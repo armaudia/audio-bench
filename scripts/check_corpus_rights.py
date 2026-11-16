@@ -32,7 +32,8 @@ def check_corpus_rights(
     if operation == "public-cache":
         rights = status.get("rights", {})
         redistribution = rights.get("redistribution", status.get("audio_redistribution"))
-        if redistribution != "allowed" or status.get("public_actions_cache") != "allowed":
+        cache_permission = status.get("public_actions_cache", rights.get("public_actions_cache"))
+        if redistribution != "allowed" or cache_permission != "allowed":
             raise ValueError(f"{dataset} is not cleared for redistribution through a public Actions cache")
         if not status.get("public_cache_evidence_ref") or not status.get("cache_attribution"):
             raise ValueError(f"{dataset} public-cache approval must include evidence and attribution")

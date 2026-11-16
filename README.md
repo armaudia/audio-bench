@@ -76,8 +76,8 @@ and DNS5 have external-cache preparation paths; their selection, cache, and
 rights decisions are documented in [docs/CORPUS.md](docs/CORPUS.md). The
 repository maintainer has enabled acquisition and evaluation for all three
 corpora, with attribution and aggregate-score publication. Public Actions cache
-use is a separately gated option and is currently disabled for all three. No
-corpus audio is placed in Git, Pages, or result artifacts. Corpus preparation
+use is an opt-in workflow setting approved for the selected cohorts. Cached
+audio stays outside Git, Pages, and result artifacts. Corpus preparation
 does not yet mean real-corpus scores are produced: the benchmark runner remains
 synthetic-only. Native candidate code is
 arbitrary code and runs only on an ephemeral benchmark job with read-only GitHub

@@ -21,10 +21,14 @@ rights to redistribute or publicly cache its audio.
 Dataset status manifests are the authority for this repository's approved
 operations. Public redistribution and GitHub Actions caching are separate
 operations and require explicit `allowed` decisions with source-license
-references, attribution, and approval evidence. A public Actions cache is
-accessible to people who can open pull requests against this public repository;
-do not place audio in it unless the approved scope permits that distribution.
-When enabled, the cache must include a `RIGHTS_NOTICE.json` beside its audio.
+references, attribution, and approval evidence. The selected cohorts currently
+have maintainer approval for public Actions caching, recorded in the status
+manifests and `task-evidence/artifacts/public-actions-cache-approval.md`. A
+public Actions cache is accessible to people who can open pull requests against
+this public repository. When enabled, the cache includes a `RIGHTS_NOTICE.json`
+beside its audio. This approval is scoped to the selected cohort versions and
+does not authorize playback, publication in Git/Pages/artifacts, or unrelated
+corpus versions.
 
 The repository also includes five VOiCES noisy recordings and their one
 LibriSpeech clean reference under
@@ -43,8 +47,9 @@ outside Git and is fetched from the official University of Edinburgh DataShare
 record only when requested. DataShare lists CC BY 4.0 and describes VCTK speech
 and DEMAND noise as source components. The manifest pins the exact downloaded
 archives and every clean/noisy member. Repository approval covers acquisition
-for evaluation and attributed aggregate reporting. Public audio redistribution,
-Actions caching, and playback are not authorized by the current status record.
+for evaluation, attributed aggregate reporting, and public Actions caching of
+the selected test split, subject to component terms and attribution. Playback
+remains unauthorized by the current status record.
 See `docs/CORPUS.md` and `manifests/voicebank.status.json`.
 
 The Pages workflow is configured to publish only repository-reviewed result

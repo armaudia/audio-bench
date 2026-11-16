@@ -66,13 +66,14 @@ manifest. The current five-case committed subset remains a smoke fixture; this
 larger cohort is the candidate real-room evaluation cohort. Neither cohort
 enables audio playback in the report site.
 
-The `Prepare corpus data` workflow can prepare this subset on `main`. It is
-manual because each cache miss streams the full 27.5 GiB archive. Temporary
-runner storage is the default. A public Actions cache is an opt-in workflow
-input that first requires both redistribution and cache approval in the status
-manifest; it is currently denied for this cohort. The workflow never uploads
-audio artifacts or runs benchmarks, and is separate from PR validation and the
-merge-triggered benchmark workflow.
+The `Prepare corpus data` workflow can prepare this subset on a manual dispatch.
+Each cache miss streams the full 27.5 GiB archive, then retains only the
+selected cohort. Temporary runner storage is the default. The optional public
+Actions cache is approved for this selected cohort and writes a rights notice;
+it never uploads audio artifacts or runs benchmarks. Caches are scoped by
+GitHub to the workflow branch; a cache populated on a topic branch is not
+available to `main` or sibling branches. The workflow is separate from PR
+validation and the merge-triggered benchmark workflow.
 
 VOiCES is real recorded-room audio with source speech references, but acoustic
 channel and room response differ from the clean source. Treat its reference
@@ -103,16 +104,16 @@ The optional `--cache`, `--archive-dir`, and `--offline` arguments are shown by
 acquisition, evaluation, and public aggregate results after review of the
 official DataShare CC BY 4.0 record and the named VCTK/DEMAND source components.
 Preserve the corpus attribution and license link in result records. This
-approval does not enable audio redistribution or playback. See
+approval enables public Actions caching of this pinned selected test cohort,
+but not playback. See
 [`voicebank-primary-source-review.md`](task-evidence/artifacts/voicebank-primary-source-review.md).
 
 The manual `Prepare corpus data` workflow checks
 `manifests/voicebank.status.json` before acquiring anything. It verifies every
 archive and selected WAV digest and writes a rights notice beside the cohort.
-Temporary runner storage is the default. The optional public Actions cache is
-denied until the status record explicitly approves redistribution and caching
-with evidence, license references, and attribution. Audio playback remains
-disabled.
+Temporary runner storage is the default. The opt-in public Actions cache is
+approved for this pinned test cohort with evidence, license references, and
+attribution. Audio playback remains disabled.
 
 ## DNS Challenge real-world quality cohort
 
@@ -127,16 +128,17 @@ appropriate; use DNSMOS/P.835-style scores and word accuracy as a separate
 non-intrusive track. The development split is intended for model iteration,
 not a hidden leaderboard test. See the [ICASSP 2023 challenge paper](https://arxiv.org/abs/2303.11510).
 
-The repository maintainer approved acquisition, evaluation, and attributed
-aggregate results for DNS5 Track 2. The source archive is pinned by its official
+The repository maintainer approved acquisition, evaluation, public Actions
+caching, and attributed aggregate results for DNS5 Track 2; the recorded scope
+is limited to this selected cohort. The source archive is pinned by its official
 Azure ETag, byte length, and Content-MD5; acquisition also records SHA-256 for
 the archive and selected files. The downloader retains the 600 non-enrollment
 speakerphone clips and official transcript TSV in an external cache. It fails
 closed if the source identity or inventory changes. Audio publishing remains
 disabled. The manual workflow defaults to temporary runner storage. Its
-optional public Actions cache remains denied until the status record documents
-redistribution and cache approval for all source components, with evidence and
-attribution. No audio artifacts are uploaded.
+optional public Actions cache is approved for the selected cohort; it records
+the source notices and attribution beside the cached audio. No audio artifacts
+are uploaded.
 
 ## Larger corpora and storage
 
@@ -152,14 +154,16 @@ after the corresponding redistribution decision is also `allowed` and the
 status manifest records source-license evidence, per-component license
 references, and attribution. The workflow checks these fields before invoking
 `actions/cache`; the cache includes a `RIGHTS_NOTICE.json`. The default workflow
-path uses temporary runner storage and does not persist audio.
+path uses temporary runner storage and does not persist audio. A cache is
+branch-scoped: runs on the same branch can reuse it, while caches created on
+topic branches are not available to `main` or sibling branches.
 
 The official VOiCES devkit is about 27.5 GiB. This repository stores only the
 small five-recording smoke subset; the larger cohort is created in an external
 cache from the official test partition. The Lab41 90-degree mirror is not used
 for scoring because it does not establish an independent held-out test
-selection. Evaluation and aggregate reporting are approved for VOiCES,
-VoiceBank+DEMAND, and DNS5. Public audio redistribution, Actions caching, and
-playback remain disabled in the status manifests. The benchmark runtime still
+selection. Evaluation, aggregate reporting, and public Actions caching of the
+selected cohorts are approved for VOiCES, VoiceBank+DEMAND, and DNS5. Playback
+remains disabled in the status manifests. The benchmark runtime still
 executes the synthetic suite only; real-corpus scoring and Pages publication
 are not yet implemented.

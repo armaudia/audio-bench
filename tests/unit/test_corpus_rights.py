@@ -14,10 +14,11 @@ from check_corpus_rights import check_corpus_rights  # noqa: E402
 
 
 @pytest.mark.parametrize("dataset", ["voices", "voicebank-demand", "dns5"])
-def test_current_corpus_rights_allow_evaluation_but_deny_public_cache(dataset):
+def test_current_corpus_rights_allow_evaluation_and_public_cache(dataset):
     assert check_corpus_rights(dataset, "evaluation", root=ROOT)["operation"] == "evaluation"
-    with pytest.raises(ValueError, match="not cleared for redistribution"):
-        check_corpus_rights(dataset, "public-cache", root=ROOT)
+    notice = check_corpus_rights(dataset, "public-cache", root=ROOT)
+    assert notice["operation"] == "public-cache"
+    assert notice["public_cache_evidence_ref"] == "task-evidence/artifacts/public-actions-cache-approval.md"
 
 
 def test_public_cache_requires_redistribution_evidence_attribution_and_license_sources(tmp_path):

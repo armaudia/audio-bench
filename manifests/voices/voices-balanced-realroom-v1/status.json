@@ -4,8 +4,8 @@
   "status": "enabled_for_evaluation",
   "evaluation": "allowed",
   "public_aggregate_results": "allowed",
-  "audio_redistribution": "not_enabled",
-  "public_actions_cache": "not_enabled",
+  "audio_redistribution": "allowed",
+  "public_actions_cache": "allowed",
   "public_playback": "not_enabled",
   "license": "CC-BY-4.0",
   "source": "https://iqtlabs.github.io/voices/",
@@ -14,6 +14,6 @@
     {"title": "VOiCES corpus", "license": "CC BY 4.0", "url": "https://iqtlabs.github.io/voices/"},
     {"title": "LibriSpeech source speech", "license": "CC BY 4.0", "url": "https://www.openslr.org/12"}
   ],
-  "public_cache_evidence_ref": null,
-  "decision_note": "Use the official VOiCES test partition for evaluation and publish aggregate metrics/provenance only. Keep source audio out of Git, Pages, and result artifacts."
+  "public_cache_evidence_ref": "task-evidence/artifacts/public-actions-cache-approval.md",
+  "decision_note": "Use the official VOiCES test partition for evaluation, attributed aggregate metrics, and public Actions caching of the selected cohort under the cited source terms. Keep audio out of Git, Pages, and result artifacts."
 }
