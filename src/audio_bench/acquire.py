@@ -140,11 +140,14 @@ def acquire(
     policy: SourcePolicy,
     fetcher: Fetcher,
     max_bytes: int = 4 * 1024 * 1024 * 1024,
+    chunk_size: int = 4 * 1024 * 1024,
     resolver: Resolver | None = None,
 ) -> Path:
     """Download, verify and atomically publish one immutable artifact."""
     if expected_bytes <= 0 or expected_bytes > max_bytes:
         raise AcquisitionError("declared artifact size is outside the allowed range")
+    if chunk_size <= 0:
+        raise AcquisitionError("chunk_size is outside the allowed range")
     if not expected_sha256.startswith("sha256:") or len(expected_sha256) != 71:
         raise AcquisitionError("expected_sha256 must be 'sha256:<64 lowercase hex>'")
     part = destination.with_suffix(destination.suffix + ".part")
@@ -157,7 +160,7 @@ def acquire(
     redirects = 0
     while offset < expected_bytes:
         validate_url(current, policy, resolver=resolver)
-        chunk_bytes = min(4 * 1024 * 1024, expected_bytes - offset)
+        chunk_bytes = min(chunk_size, expected_bytes - offset)
         result = fetcher(current, offset=offset, max_bytes=chunk_bytes)
         if result.status in (301, 302, 303, 307, 308):
             location = _location_of(result)

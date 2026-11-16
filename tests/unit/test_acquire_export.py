@@ -95,6 +95,31 @@ def test_https_acquire_is_bounded_resumable_and_hash_verified(tmp_path):
     assert all(size <= 4 * 1024 * 1024 for _url, _offset, size in requests)
 
 
+def test_https_acquire_supports_one_bounded_request_for_known_archive(tmp_path):
+    content = b"known-size-dataset-archive" * 500_000
+    policy = SourcePolicy(frozenset({"assets.example.test"}))
+    requests = []
+
+    def fake_fetch(url, *, offset, max_bytes):
+        requests.append((offset, max_bytes))
+        return FetchResult(url, 206, content[offset:offset + max_bytes], range_start=offset)
+
+    target = tmp_path / "archive.bin"
+    result = acquire(
+        "https://assets.example.test/archive.bin",
+        target,
+        expected_sha256="sha256:" + hashlib.sha256(content).hexdigest(),
+        expected_bytes=len(content),
+        policy=policy,
+        fetcher=fake_fetch,
+        max_bytes=len(content),
+        chunk_size=len(content),
+        resolver=lambda _host: ["93.184.216.34"],
+    )
+    assert result.read_bytes() == content
+    assert requests == [(0, len(content))]
+
+
 def test_url_policy_rejects_credentials_private_addresses_and_redirect_escape(tmp_path):
     policy = SourcePolicy(frozenset({"assets.example.test"}))
     with pytest.raises(AcquisitionError, match="credentials"):
