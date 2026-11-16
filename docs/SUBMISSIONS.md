@@ -44,11 +44,11 @@ runner reported honest measurements.
 
 The checked-in synthetic suite has 24 cases. Third-party candidate loading and
 submitter-owned JSON ingestion are implemented for synthetic functional checks;
-they do not establish speech quality or production qualification. Real-corpus
-execution and production model evaluation are gated on rights-cleared corpus/model
-assets and qualification criteria. Do not set `execution.enabled` for a production
-result until those rights and benchmark scopes are cleared. A synthetic run is
-functional evidence, not a speech-quality benchmark or qualification.
+they do not establish speech quality or production qualification. Rights-approved
+corpora can be prepared in the external cache, but real-corpus scoring and
+publication are not implemented yet. Production model evaluation remains gated
+on model rights and qualification criteria. A synthetic run is functional
+evidence, not a speech-quality benchmark or qualification.
 
 ## Submitter-owned results
 
@@ -73,8 +73,8 @@ finite measurements, and latency formula without fetching or running source. Aft
 merge, Pages publishes the record with the fixed **Submitter-run · not independently
 verified** label. Quality metrics remain raw and are never hardware-normalized.
 The audio-pro manifest is intentionally disabled. The pinned private repository
-now contains ONNX and derived Tiny16 weights, but the model evaluation grant is
-still unknown and the real-corpus cohort is not enabled; the runner rejects it.
+now contains ONNX and derived Tiny16 weights, but its model evaluation grant is
+not recorded; the runner rejects it. Real-corpus scoring is also not implemented.
 
 ## Public provider plugin contract
 
@@ -107,13 +107,11 @@ independently qualified claim.
 
 ## Dataset files
 
-Audio shards do not belong in Git or result artifacts. Keep only a canonical
-dataset manifest and shard hashes in the repository. A future cleared corpus can
-be downloaded by an acquisition adapter from its official source into a runner-local
-cache, checked against pinned hashes, and deleted with the ephemeral runner. The
-external shard cache keeps corpus bytes out of the repository. No third-party
-corpus is currently enabled because data rights and publication scope remain
-unresolved; see [Corpus plan](CORPUS.md).
+Audio shards do not belong in Git or result artifacts. Keep only corpus
+manifests, source identities, and hashes in the repository. Enabled corpus
+acquisition adapters download to an external runner cache and verify source and
+file hashes; audio stays outside GitHub Pages and workflow artifacts. See the
+rights scope and current scoring support in [Corpus plan](CORPUS.md).
 
 ## Examples and publishing
 

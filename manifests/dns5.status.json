@@ -1,0 +1,39 @@
+{
+  "schema_id": "audio-bench/corpus-status/1.0",
+  "dataset_id": "dns5-speakerphone-dev-v1",
+  "status": "enabled_for_evaluation",
+  "reason": null,
+  "source": "https://github.com/microsoft/DNS-Challenge",
+  "evaluation": "allowed",
+  "public_aggregate_results": "allowed",
+  "audio_redistribution": "allowed",
+  "public_actions_cache": "allowed",
+  "public_playback": "not_enabled",
+  "reviewed_at": "2026-11-16",
+  "reviewer": "repository maintainer (user-confirmed)",
+  "scope": "download and cache DNS5 Track 2 speakerphone development recordings for evaluation and public Actions caching; publish attributed aggregate metrics and provenance under cited source terms; do not publish audio on Pages or as workflow artifacts",
+  "cache_attribution": "Microsoft DNS Challenge 5 (ICASSP 2023), with attribution and notices for all original source datasets.",
+  "cache_license_sources": [
+    {"title": "DNS Challenge 5 Track 2 source terms", "license": "Original component terms; selected-clip license mapping is unresolved", "url": "https://github.com/microsoft/DNS-Challenge/blob/master/README.md"}
+  ],
+  "public_cache_evidence_ref": "task-evidence/artifacts/public-actions-cache-approval.md",
+  "source_pin": {
+    "url": "https://dnschallengepublic.blob.core.windows.net/dns5archive/V5_dev_testset.zip",
+    "etag": "0x8DAD8BE02A959DB",
+    "archive_bytes": 3236752796,
+    "content_md5_base64": "dqoc3aJKECCYaU+rzFfODQ=="
+  },
+  "selection": {
+    "track": "Track2_Speakerphone",
+    "exclude_path_component": "enrol",
+    "audio_files": 600,
+    "transcript": "transcripts/v5_devset_transcripts_track2.tsv"
+  },
+  "notes": [
+    "The challenge repository says datasets are distributed under their original source terms.",
+    "The repository maintainer has confirmed use for this exact development test cohort after reviewing its terms.",
+    "The 2023 development test set is a 3,236,752,796-byte archive; Track 2 contains 600 test recordings, separate enrollment audio, and the official transcript TSV.",
+    "No paired clean waveform reference is provided for these recordings. Use non-intrusive quality measures and word accuracy as a separately identified track.",
+    "Publish aggregate scores and attribution only. Keep source audio out of Git, Pages, and workflow artifacts."
+  ]
+}

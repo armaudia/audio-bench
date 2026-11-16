@@ -2,8 +2,8 @@
   "schema_id": "audio-bench/acquisition-status/0.1",
   "dataset_label": "VoiceBank + DEMAND",
   "mirror_revision": "4497db342d7312978c45690591fda86117831940",
-  "status": "blocked",
-  "reason": "assets_verified_scope_specific_rights_review_required",
+  "status": "allowed",
+  "reason": null,
   "archive_sha256": null,
   "archive_bytes": null,
   "archive_inventory": [
@@ -19,20 +19,32 @@
     }
   ],
   "verified_pair_count": 824,
-  "inventory_note": "Both official test archives were downloaded and inspected on 2026-11-15; all 824 names pair exactly, every WAV is mono PCM16 at 48 kHz, and clean/noisy sample counts match per pair. Evaluation remains blocked pending scope-specific rights review.",
+  "inventory_note": "Both official test archives were downloaded and inspected on 2026-11-15; all 824 names pair exactly, every WAV is mono PCM16 at 48 kHz, and clean/noisy sample counts match per pair.",
   "rights": {
-    "acquisition": "unknown",
-    "evaluation": "unknown",
-    "redistribution": "unknown",
-    "public_playback": "unknown"
+    "acquisition": "allowed",
+    "evaluation": "allowed",
+    "public_aggregate_results": "allowed",
+    "redistribution": "allowed",
+    "public_actions_cache": "allowed",
+    "public_playback": "not_authorized",
+    "reviewed_at": "2026-11-16",
+    "reviewer": "repository maintainer (user-confirmed)",
+    "scope": "download for evaluation, publish attributed aggregate metrics and provenance, and persist the selected test cohort in the public Actions cache under the cited component terms; playback is not authorized"
   },
+  "cache_attribution": "Valentini-Botinhao, Cassia (2017), University of Edinburgh CSTR; identify VCTK and DEMAND source components and retain each applicable notice.",
+  "cache_license_sources": [
+    {"title": "VoiceBank+DEMAND DataShare record", "license": "CC BY 4.0", "url": "https://datashare.ed.ac.uk/handle/10283/2791"},
+    {"title": "CSTR VCTK source component", "license": "ODC-By 1.0 (source corpus terms; verify selected derivative scope)", "url": "https://datashare.ed.ac.uk/handle/10283/2645"},
+    {"title": "DEMAND source component", "license": "CC BY-SA 3.0 (source corpus terms; verify selected derivative scope)", "url": "https://zenodo.org/records/1227121"}
+  ],
+  "public_cache_evidence_ref": "task-evidence/artifacts/public-actions-cache-approval.md",
   "provenance_review": {
     "reviewed_at": "2026-11-14",
     "primary_record": "https://doi.org/10.7488/ds/2117",
     "license": "Creative Commons Attribution 4.0 International Public License",
-    "terms_note": "Official record offers a direct archive download and lists an end-user CC BY 4.0 licence. The licence does not resolve moral, privacy, publicity, source-corpus, or individual-media questions; see docs/task-evidence/artifacts/voicebank-primary-source-review.md."
+    "terms_note": "Official DataShare record lists its end-user CC BY 4.0 licence and identifies VCTK and DEMAND source components. Retain component notices and applicable terms. Public Actions caching of this pinned test cohort is approved by the maintainer; attribution is required and playback remains disabled."
   },
-  "execution_claim": "excluded",
-  "corpus_evaluation_claim": "not_assessed",
-  "next_action": "Complete a named scope-specific rights review of the official archive, VCTK/DEMAND inputs, and voice-talent conditions; then approve or reject evaluation use. Public playback and audio redistribution remain disabled."
+  "execution_claim": "allowed",
+  "corpus_evaluation_claim": "approved_by_maintainer",
+  "next_action": "Keep attribution and provenance attached to public cache entries and aggregate results. Keep source audio out of Git, Pages, artifacts and results."
 }

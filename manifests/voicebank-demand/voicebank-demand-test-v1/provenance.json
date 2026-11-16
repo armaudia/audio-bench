@@ -46,7 +46,7 @@
   },
   "source_components": {
     "environmental_noise": "DEMAND plus speech-shaped/babble noise",
-    "notes": "The DataShare record identifies VCTK and DEMAND as source components. Retain component attribution and keep the audio evaluation/playback gate closed pending scope review.",
+    "notes": "The DataShare record identifies VCTK and DEMAND as source components. The repository maintainer approved acquisition, evaluation, and attributed aggregate reporting on 2026-11-16. Audio redistribution and playback remain disabled; retain source attribution.",
     "speech": "CSTR VCTK corpus"
   },
   "subset_id": "voicebank-demand-test-v1"
