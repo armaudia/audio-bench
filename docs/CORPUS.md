@@ -58,12 +58,13 @@ changing a status alone does not delete previously distributed copies.
 
 ### Release scope
 
-Dataset registration/preparation is implemented independently of scoring. The
-current automatic candidate runner still executes `synthetic-16k-v1` only.
-Preparing these datasets does not enable real-corpus leaderboard scores. A
-release may advertise verified acquisition and caching, but must not advertise
-real-corpus scoring until execution, metric protocol, result provenance and Pages
-presentation are implemented and qualified end to end. See `RELEASING.md`.
+The post-merge public candidate runner and submitter-owned command support the
+full VoiceBank+DEMAND paired test cohort. Its scoring recipe, metrics, aggregation
+and reporting limits are documented in `../suites/voicebank-demand-paired-v1/protocol.json`.
+VOiCES is a separate real-room track and DNS5 lacks paired clean references and
+a pinned no-reference scoring protocol, so neither currently produces comparable
+paired leaderboard scores. Synthetic execution remains functional-only. See
+`SUBMISSIONS.md` for the supported submission scope.
 
 ## Committed VOiCES smoke subset
 

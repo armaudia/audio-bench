@@ -71,6 +71,7 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
             "label": metric_id,
             "unit": unit,
             "median": median,
+            "mean": stats["mean"],
             "finite_count": stats["finite_count"],
             "display_value": f"{median:.4g} {unit}".strip(),
             "raw_display_value": f"{median:.4g} {unit}".strip(),
@@ -137,12 +138,14 @@ def result_from_submitter_file(path: Path) -> dict[str, Any]:
             "label": metric["label"],
             "unit": metric["unit"],
             "median": metric["median"],
+            "mean": metric.get("mean"),
+            "median_interval_95": metric.get("median_interval_95"),
             "finite_count": metric["finite_count"],
             "display_value": f"{metric['median']:.4g} {metric['unit']}".strip(),
             "raw_display_value": f"{metric['median']:.4g} {metric['unit']}".strip(),
             "normalized_display_value": f"{normalized:.4g} ms" if normalized is not None else None,
         })
-    return {
+    row = {
         "submission_id": record["submission_id"],
         "result_id": record["result_id"],
         "display_name": record["display_name"],
@@ -152,6 +155,8 @@ def result_from_submitter_file(path: Path) -> dict[str, Any]:
         "provider_id": record["provider_id"],
         "suite_id": record["suite_id"],
         "dataset_id": record["dataset_id"],
+        "dataset_label": record.get("dataset_label", record["dataset_id"]),
+        "case_count": record.get("case_count"),
         "model_digest": record["model_digest"],
         "source": {
             "visibility": "private",
@@ -162,6 +167,10 @@ def result_from_submitter_file(path: Path) -> dict[str, Any]:
         "baseline": record["baseline"],
         "evidence": record["evidence"],
     }
+    if str(record.get("dataset_label", "")).startswith("VoiceBank+DEMAND"):
+        row["protocol_url"] = "https://github.com/armaudia/audio-bench/blob/main/suites/voicebank-demand-paired-v1/protocol.json"
+        row["dataset_source_url"] = "https://datashare.ed.ac.uk/handle/10283/2791"
+    return row
 
 
 def build_index(bundles: list[Path], existing: Path | None = None) -> dict[str, Any]:

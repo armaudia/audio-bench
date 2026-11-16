@@ -37,10 +37,14 @@ def validate_submission(value: Any) -> dict[str, Any]:
         raise ValidationError("audio-bench runner submissions must reference public source")
     if value["baseline_provider_id"] not in PUBLIC_PROVIDERS:
         raise ValidationError("baseline_provider_id must identify a pinned built-in provider")
-    if value["execution"]["enabled"] and value["model_digest"] is None:
+    if value["execution"]["enabled"] and value["model_digest"] is None and value["provider_id"] not in PUBLIC_PROVIDERS:
         raise ValidationError("enabled model execution requires an immutable model_digest")
-    if value["execution"]["enabled"] and value["benchmark"]["dataset_id"] != "synthetic-16k-v1":
-        raise ValidationError("enabled execution currently supports only synthetic-16k-v1")
+    if value["execution"]["enabled"]:
+        dataset_id, suite_id = value["benchmark"]["dataset_id"], value["benchmark"]["suite_id"]
+        supported = {"synthetic-16k-v1": "synthetic-smoke-v1",
+                     "voicebank-demand-test-v1": "voicebank-demand-paired-v1"}
+        if supported.get(dataset_id) != suite_id:
+            raise ValidationError("enabled execution requires a supported dataset/suite pair")
     return value
 
 

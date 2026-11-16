@@ -66,7 +66,7 @@
     },
     {
       "file": "provider-plugin.schema.json",
-      "sha256": "sha256:2da8b0a140e819f00ae810210fc8bd694630c085ad2ea910efdb3b4ccd2b13bc"
+      "sha256": "sha256:f2384ecf29e7dd498731572df679a74cc22c9f600d8b8c5b32a2d60c01a6d57e"
     },
     {
       "file": "recipe.schema.json",
@@ -102,7 +102,7 @@
     },
     {
       "file": "submitter-result.schema.json",
-      "sha256": "sha256:54a342fb09d9409ec80c1946ce3fbe8bdd9d6463a02168a094f73ab7d3451982"
+      "sha256": "sha256:29bfb8a89f66c2ee41a4b0ca7530b3d6632a524afe6d8177cf191dbf76605a33"
     }
   ],
   "schema_dir_version": "0.1"

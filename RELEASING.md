@@ -46,7 +46,7 @@ The release workflow reruns CI, requires the tag's commit to be on main, require
 approval in the `release` environment, verifies both platform archive checksums,
 and attests the artifacts before publishing them. Assets are attached to a draft
 first, then the release is published with repository release immutability enabled. Only organization owners may create release tags. Separate immutable-tag rules
-without bypass actors prevent those tags from being rewritten or deleted. A corrected release uses a new version. PyPI upload, public third-party execution and model distribution are not enabled by these workflows. `pages.yml` deploys the static results UI and publishes validated synthetic summaries plus JSON-only submitter-owned records from successful main CI runs to the `benchmark-results` branch. Submitter-owned records are labeled unverified; no real-corpus results are available.
+without bypass actors prevent those tags from being rewritten or deleted. A corrected release uses a new version. PyPI upload, public third-party execution and model distribution are not enabled by these workflows. `pages.yml` deploys the static results UI and publishes validated result-only records from successful main CI and candidate runs to the `benchmark-results` branch. Synthetic records remain functional checks. VoiceBank+DEMAND records cover the full 824-pair test cohort and link to the frozen metric protocol. Submitter-owned records are labeled unverified. DNS5 remains acquisition-only and VOiCES remains a separate non-leaderboard real-room track.
 
 Before creating a stable release, record scope-specific source/license decisions,
 passing hosted runs for the advertised targets, clean install evidence, remaining
@@ -63,6 +63,8 @@ acquisition, offline verification and post-job cache save; then verify an exact
 cache hit and offline verification. Record run links, revision, cache key and
 elapsed time. No benchmark runs during PR validation. Repeat acquisition checks
 when source pins, downloader, rights or cache inputs change. Optional VOiCES and
-DNS5 preparation is not evidence of qualified scoring. A stable release claiming
-real-corpus benchmarking remains gated on implementing and validating the scoring
-path; current supported automatic scoring is synthetic only.
+DNS5 preparation is not evidence of qualified scoring. Before advertising the new
+real-corpus path, run the enabled `audio-sdk-speex-voicebank` registration through
+the post-merge candidate workflow, verify all 824 outputs and the published Pages
+record, and run the submitter-owned path on a supported private provider. These
+measurements do not establish general model qualification.

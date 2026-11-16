@@ -28,6 +28,9 @@ def validate_submitter_result(value: Any) -> dict[str, Any]:
         raise ValidationError(f"submitter result schema error at {location}: {error.message}")
 
     evidence = value["evidence"]
+    if value["suite_id"] == "voicebank-demand-paired-v1":
+        if value.get("case_count") != 824 or not str(value.get("dataset_label", "")).startswith("VoiceBank+DEMAND"):
+            raise ValidationError("VoiceBank submitter results must identify the complete 824-pair cohort")
     reference_local = evidence["reference_raw_latency_ms"]
     candidate_local = evidence["candidate_raw_latency_ms"]
     reference_central = evidence["reference_baseline_latency_ms"]
@@ -43,6 +46,11 @@ def validate_submitter_result(value: Any) -> dict[str, Any]:
         seen_metrics.add(metric["metric_id"])
         if not math.isfinite(metric["median"]):
             raise ValidationError(f"metric {metric['metric_id']} median must be finite")
+        if "mean" in metric and not math.isfinite(metric["mean"]):
+            raise ValidationError(f"metric {metric['metric_id']} mean must be finite")
+        interval = metric.get("median_interval_95")
+        if interval is not None and (not all(math.isfinite(value) for value in interval) or interval[0] > interval[1]):
+            raise ValidationError(f"metric {metric['metric_id']} has an invalid 95% interval")
         normalized = metric.get("normalized_median")
         if normalized is not None:
             if metric["unit"] != "ms" or metric.get("normalized_unit") != "ms":

@@ -42,8 +42,25 @@ def test_submission_cannot_claim_an_unknown_baseline():
 
 def test_enabled_submission_requires_model_digest():
     value = json.loads((ROOT / "examples/submissions/audio-sdk.json").read_text())
+    value["provider_id"] = "example.noise-suppressor.v0"
     value["execution"]["enabled"] = True
     with pytest.raises(ValidationError, match="immutable model_digest"):
+        validate_submission(value)
+
+
+def test_enabled_voicebank_sdk_reference_registration_is_supported():
+    value = load_submission(ROOT / "submissions/audio-sdk-speex-voicebank.json")
+    assert value["benchmark"] == {
+        "dataset_id": "voicebank-demand-test-v1",
+        "suite_id": "voicebank-demand-paired-v1",
+    }
+
+
+def test_enabled_submission_rejects_mismatched_dataset_suite_pair():
+    value = json.loads((ROOT / "examples/submissions/audio-sdk.json").read_text())
+    value["execution"]["enabled"] = True
+    value["benchmark"] = {"dataset_id": "voicebank-demand-test-v1", "suite_id": "synthetic-smoke-v1"}
+    with pytest.raises(ValidationError, match="supported dataset/suite pair"):
         validate_submission(value)
 
 
