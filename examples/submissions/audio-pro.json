@@ -18,6 +18,6 @@
   },
   "execution": {
     "enabled": false,
-    "reason": "Disabled example pinned to audio-pro commit 5920c98e5bbb9e434305bcec980f8b5aa1bc8f60 and Tiny16 f32 weights sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5. Model evaluation rights remain unknown, and the real-corpus scoring cohort is not enabled."
+    "reason": "Disabled example pinned to audio-pro commit 5920c98e5bbb9e434305bcec980f8b5aa1bc8f60 and Tiny16 f32 weights sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5. The submitter has not recorded the model evaluation rights needed for this public result, and real-corpus scoring is not implemented yet."
   }
 }

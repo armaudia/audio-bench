@@ -39,6 +39,45 @@ playback without a separate review. The clean reference comes from a `dev`
 partition, so this subset must never be used as a hidden test set. See
 [`DATA_LICENSE.md`](../DATA_LICENSE.md) for the repository-wide boundary.
 
+## VOiCES balanced real-room cohort
+
+`manifests/voices/voices-balanced-realroom-v1/selection.json` freezes a second,
+independent selection recipe over the official VOiCES devkit test partition. It
+selects one utterance for each of 40 speakers (20 male and 20 female in the
+corpus metadata) and four recordings per utterance (no distractor, babble, music,
+and television), rotating the room across the four VOiCES rooms. All cases use
+the 90-degree source position and the far studio microphone. The preparation script checks that the selected noisy audio
+and clean source are mono 16 kHz PCM16 WAV files and records SHA-256 for every
+selected file.
+
+The media is not committed. Run:
+
+```sh
+python scripts/prepare_voices_cohort.py
+```
+
+The script streams the official 27.5 GiB VOiCES devkit archive, writes only the
+selected cohort into `~/.cache/audio-bench/datasets/voices-balanced-realroom-v1`,
+and discards the stream. An existing subset is hash-verified before reuse. Use
+`--archive` to process an official archive already on disk, or `--offline` to
+require an existing verified cache. The archive ETag, source paths, selection
+recipe, per-file hashes, and attribution are recorded in the generated cache
+manifest. The current five-case committed subset remains a smoke fixture; this
+larger cohort is the candidate real-room evaluation cohort. Neither cohort
+enables audio playback in the report site.
+
+The `Prepare corpus data` workflow can prepare this subset on `main`. It is
+manual because each run streams the full 27.5 GiB archive into temporary runner
+storage. It does not persist an Actions cache, upload audio artifacts, or run
+benchmarks. The public repository avoids persistent audio caches because PR
+workflows could read them. It is separate from PR validation and from the
+merge-triggered benchmark workflow.
+
+VOiCES is real recorded-room audio with source speech references, but acoustic
+channel and room response differ from the clean source. Treat its reference
+metrics as a separate real-room track; do not combine those numbers with the
+VoiceBank+DEMAND paired-mixture scores as though the cohorts were equivalent.
+
 ## VoiceBank+DEMAND paired test cohort
 
 `manifests/voicebank-demand/voicebank-demand-test-v1/` registers the official
@@ -59,11 +98,41 @@ python scripts/fetch_voicebank_demand.py
 ```
 
 The optional `--cache`, `--archive-dir`, and `--offline` arguments are shown by
-`--help`. Audio files are not stored in Git. Current rights state remains
-blocked pending a named review of component provenance and voice-talent scope;
-the metadata registration is not approval to run public scoring, redistribute
-audio, or add playback. The benchmark runtime is also not yet wired to score
-this cohort.
+`--help`. Audio files are not stored in Git. The repository maintainer approved
+acquisition, evaluation, and public aggregate results after review of the
+official DataShare CC BY 4.0 record and the named VCTK/DEMAND source components.
+Preserve the corpus attribution and license link in result records. This
+approval does not enable audio redistribution or playback. See
+[`voicebank-primary-source-review.md`](task-evidence/artifacts/voicebank-primary-source-review.md).
+
+The manual `Prepare corpus data` workflow checks
+`manifests/voicebank.status.json` before acquiring anything. It fetches the two
+pinned archives into temporary runner storage, verifies every archive and
+selected WAV digest, and deletes them with the runner. It does not persist an
+Actions cache or upload audio as an artifact. Audio redistribution and playback
+remain disabled.
+
+## DNS Challenge real-world quality cohort
+
+The [official DNS Challenge repository](https://github.com/microsoft/DNS-Challenge)
+provides a speakerphone development set of real 48 kHz
+recordings and challenge-aligned metrics (P.835-style speech, noise, and overall
+quality plus word accuracy). The pinned official archive is 3,236,752,796 bytes
+(about 3.02 GiB). The speakerphone development track contains 600 ten-second
+48 kHz clips, separate enrollment audio, and a transcript TSV. It has no paired clean waveform reference for the
+speakerphone recordings, so reference-based SI-SDR/STOI scores are not
+appropriate; use DNSMOS/P.835-style scores and word accuracy as a separate
+non-intrusive track. The development split is intended for model iteration,
+not a hidden leaderboard test. See the [ICASSP 2023 challenge paper](https://arxiv.org/abs/2303.11510).
+
+The repository maintainer approved acquisition, evaluation, and attributed
+aggregate results for DNS5 Track 2. The source archive is pinned by its official
+Azure ETag, byte length, and Content-MD5; acquisition also records SHA-256 for
+the archive and selected files. The downloader retains the 600 non-enrollment
+speakerphone clips and official transcript TSV in an external cache. It fails
+closed if the source identity or inventory changes. Audio publishing remains
+disabled. The manual workflow prepares the corpus in temporary runner storage
+without persisting a cache or uploading audio artifacts.
 
 ## Larger corpora and storage
 
@@ -75,10 +144,10 @@ digest, never by a moving `latest` URL. Private corpora use submitter-owned
 runners; neither audio nor credentials belong in public results.
 
 The official VOiCES devkit is about 27.5 GiB. This repository stores only the
-small five-recording subset above; the other downloaded archive files were
-discarded. The Lab41 90-degree mirror includes LibriSpeech train and dev source
-partitions but does not provide the official held-out evaluation split, so it
-is not used as a quality cohort. A qualified real-room VOiCES cohort still
-needs a feasible, held-out subset source. The current benchmark runtime still
-executes the synthetic suite only; neither external corpus is an enabled
-scoring cohort.
+small five-recording smoke subset; the larger cohort is created in an external
+cache from the official test partition. The Lab41 90-degree mirror is not used
+for scoring because it does not establish an independent held-out test
+selection. Rights approval for VOiCES, VoiceBank+DEMAND, and DNS5 is recorded
+in the status manifests, with audio redistribution/playback disabled. The
+benchmark runtime still executes the synthetic suite only; real-corpus scoring
+and Pages publication are not yet implemented.

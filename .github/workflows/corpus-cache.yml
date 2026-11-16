@@ -1,0 +1,74 @@
+name: Prepare corpus data
+on:
+  workflow_dispatch:
+    inputs:
+      dataset:
+        description: External corpus to prepare
+        required: true
+        type: choice
+        options:
+          - voices
+          - voicebank-demand
+          - dns5
+permissions:
+  contents: read
+concurrency:
+  group: corpus-cache-${{ inputs.dataset }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r locks/requirements-ci.txt
+      - name: Prepare VOiCES balanced test cohort
+        if: inputs.dataset == 'voices'
+        env:
+          CACHE_ROOT: ${{ runner.temp }}/audio-bench-datasets
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path('manifests/voices/voices-balanced-realroom-v1/status.json').read_text())
+          if status.get('status') != 'enabled_for_evaluation' or status.get('evaluation') != 'allowed':
+              raise SystemExit('VOiCES evaluation is not enabled by its corpus status record')
+          PY
+          python scripts/prepare_voices_cohort.py --cache "$CACHE_ROOT"
+      - name: Prepare VoiceBank+DEMAND paired cohort
+        if: inputs.dataset == 'voicebank-demand'
+        env:
+          CACHE_ROOT: ${{ runner.temp }}/audio-bench-datasets
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path('manifests/voicebank.status.json').read_text())
+          if status.get('status') != 'allowed' or status.get('rights', {}).get('evaluation') != 'allowed':
+              raise SystemExit('VoiceBank+DEMAND evaluation is not enabled by its corpus status record')
+          PY
+          python scripts/fetch_voicebank_demand.py --cache "$CACHE_ROOT"
+      - name: Prepare DNS5 speakerphone development cohort
+        if: inputs.dataset == 'dns5'
+        env:
+          CACHE_ROOT: ${{ runner.temp }}/audio-bench-datasets
+          CACHE_HIT: ${{ steps.dataset-cache.outputs.cache-hit }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path('manifests/dns5.status.json').read_text())
+          if status.get('status') != 'enabled_for_evaluation' or status.get('evaluation') != 'allowed':
+              raise SystemExit('DNS5 evaluation is not enabled by its corpus status record')
+          PY
+          python scripts/fetch_dns5_dev.py --cache "$CACHE_ROOT"
+      - name: Record temporary preparation result
+        run: |
+          echo "Corpus assets were placed in temporary runner storage only." >> "$GITHUB_STEP_SUMMARY"
+          echo "No audio was cached persistently, uploaded as an artifact, committed, or published to Pages." >> "$GITHUB_STEP_SUMMARY"

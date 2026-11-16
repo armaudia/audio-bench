@@ -71,9 +71,14 @@ directory. The wheel does not silently download or execute candidate code.
 
 ## Limits and status
 
-The current score suite uses synthetic fixtures only. Dataset audio is kept out of
-Git and can be acquired through the documented external shard mechanism once a
-corpus has a reviewed CI and publication clearance. Native candidate code is
+The current score suite uses synthetic fixtures only. VOiCES, VoiceBank+DEMAND,
+and DNS5 have external-cache preparation paths; their selection, cache, and
+rights decisions are documented in [docs/CORPUS.md](docs/CORPUS.md). The
+repository maintainer has enabled acquisition and evaluation for all three
+corpora, with attribution and aggregate-score publication; audio redistribution
+and playback remain disabled. No corpus audio is placed in Git, Pages, or result
+artifacts. Corpus preparation does not yet mean real-corpus scores are produced:
+the benchmark runner remains synthetic-only. Native candidate code is
 arbitrary code and runs only on an ephemeral benchmark job with read-only GitHub
 permissions and no publishing credential; this is not an OS security boundary.
 See [the submission protocol](docs/SUBMISSIONS.md) for supported runner flows.

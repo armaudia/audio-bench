@@ -27,6 +27,7 @@ from audio_bench.acquire import (  # noqa: E402
 from audio_bench.errors import AcquisitionError  # noqa: E402
 
 DATASET = ROOT / "manifests/voicebank-demand/voicebank-demand-test-v1"
+RIGHTS_STATUS = ROOT / "manifests/voicebank.status.json"
 
 
 def _sha256(path: Path) -> str:
@@ -63,6 +64,9 @@ def _load_cases() -> list[dict]:
 
 
 def fetch_and_verify(cache_root: Path, *, archive_dir: Path | None = None, offline: bool = False) -> Path:
+    status = json.loads(RIGHTS_STATUS.read_text(encoding="utf-8"))
+    if status.get("status") != "allowed" or status.get("rights", {}).get("evaluation") != "allowed":
+        raise AcquisitionError("VoiceBank+DEMAND acquisition is disabled by its corpus rights status")
     provenance = json.loads((DATASET / "provenance.json").read_text(encoding="utf-8"))
     cases = _load_cases()
     dataset_root = cache_root / "voicebank-demand-test-v1"

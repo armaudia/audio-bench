@@ -1,0 +1,12 @@
+{
+  "schema_id": "audio-bench/corpus-status/1.0",
+  "dataset_id": "voices-balanced-realroom-v1",
+  "status": "enabled_for_evaluation",
+  "evaluation": "allowed",
+  "public_aggregate_results": "allowed",
+  "audio_redistribution": "not_enabled",
+  "public_playback": "not_enabled",
+  "license": "CC-BY-4.0",
+  "source": "https://iqtlabs.github.io/voices/",
+  "decision_note": "Use the official VOiCES test partition for evaluation and publish aggregate metrics/provenance only. Keep source audio out of Git, Pages, and result artifacts."
+}

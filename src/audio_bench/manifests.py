@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Asset/case/cohort manifests, deterministic selection and frozen interval maps.
 
-Everything here is frozen *before* a candidate runs. The VoiceBank real-corpus path is blocked on
-rights and bytes; the synthetic generator produces labelled correctness fixtures only.
+Everything here is frozen *before* a candidate runs. Synthetic fixtures produce
+labelled correctness evidence; external real-corpus preparation is managed by
+the dedicated acquisition scripts and status manifests.
 """
 
 from __future__ import annotations

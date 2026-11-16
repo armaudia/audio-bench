@@ -1,0 +1,14 @@
+{
+  "schema_id": "audio-bench/voices-selection/1.0",
+  "algorithm": "voices-test-90deg-studio-far-four-distractors-v1",
+  "partition": "test",
+  "degrees": 90,
+  "mic_type": "stu",
+  "mic_location": "far",
+  "rooms": ["rm1", "rm2", "rm3", "rm4"],
+  "distractors": ["none", "babb", "musi", "tele"],
+  "speakers": 40,
+  "speaker_balance": {"M": 20, "F": 20},
+  "cases_per_speaker": 4,
+  "selection_rule": "select 20 speakers per recorded gender, spread evenly across sorted eligible speaker IDs; choose one utterance per speaker; rotate rooms; retain all four distractor conditions"
+}

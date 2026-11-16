@@ -54,17 +54,21 @@ def test_tampering_with_case_inventory_fails(tmp_path):
         verify_dataset_identity(result["dataset"], altered)
 
 
-def test_unknown_real_corpus_remains_blocked():
+def test_voicebank_corpus_rights_status_records_maintainer_approval():
     import json
 
     status = json.loads(Path("manifests/voicebank.status.json").read_text())
-    assert status["status"] == "blocked"
-    assert status["reason"] == "assets_verified_scope_specific_rights_review_required"
+    assert status["status"] == "allowed"
+    assert status["rights"]["acquisition"] == "allowed"
+    assert status["rights"]["evaluation"] == "allowed"
+    assert status["rights"]["public_aggregate_results"] == "allowed"
+    assert status["rights"]["redistribution"] == "not_authorized"
+    assert status["rights"]["public_playback"] == "not_authorized"
     assert status["provenance_review"]["license"] == "Creative Commons Attribution 4.0 International Public License"
     assert status["archive_sha256"] is None
     assert status["verified_pair_count"] == 824
     assert len(status["archive_inventory"]) == 2
-    assert status["corpus_evaluation_claim"] == "not_assessed"
+    assert status["corpus_evaluation_claim"] == "approved_by_maintainer"
 
 
 def test_voicebank_test_manifest_pins_all_official_pairs_without_audio_payloads():
