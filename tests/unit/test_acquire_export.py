@@ -120,6 +120,35 @@ def test_https_acquire_supports_one_bounded_request_for_known_archive(tmp_path):
     assert requests == [(0, len(content))]
 
 
+def test_https_acquire_recovers_when_server_ignores_resume_with_full_body(tmp_path):
+    content = b"archive-content-" * 700_000
+    policy = SourcePolicy(frozenset({"assets.example.test"}))
+    requests = []
+
+    def fake_fetch(url, *, offset, max_bytes):
+        requests.append((offset, max_bytes))
+        if offset == 0:
+            return FetchResult(url, 206, content[:4], range_start=0)
+        # Some hosts ignore Range and return the complete object with HTTP 200.
+        return FetchResult(url, 200, content)
+
+    target = tmp_path / "archive.bin"
+    result = acquire(
+        "https://assets.example.test/archive.bin",
+        target,
+        expected_sha256="sha256:" + hashlib.sha256(content).hexdigest(),
+        expected_bytes=len(content),
+        policy=policy,
+        fetcher=fake_fetch,
+        max_bytes=len(content),
+        chunk_size=4,
+        allow_full_response_fallback=True,
+        resolver=lambda _host: ["93.184.216.34"],
+    )
+    assert result.read_bytes() == content
+    assert requests == [(0, 4), (4, len(content))]
+
+
 def test_url_policy_rejects_credentials_private_addresses_and_redirect_escape(tmp_path):
     policy = SourcePolicy(frozenset({"assets.example.test"}))
     with pytest.raises(AcquisitionError, match="credentials"):
