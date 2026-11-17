@@ -8,6 +8,7 @@ import json
 import hashlib
 import os
 import subprocess
+import sys
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -90,6 +91,7 @@ def build_provider_plugin(source: Path, output: Path, sdk_prefix: Path) -> Path:
     subprocess.run([
         "cmake", "-S", str(source), "-B", str(output),
         "-DCMAKE_BUILD_TYPE=Release", f"-DAUDIO_SDK_PREFIX={sdk_prefix}",
+        f"-DPython3_EXECUTABLE={sys.executable}",
     ], check=True, env=env, timeout=300, capture_output=True, text=True)
     subprocess.run(["cmake", "--build", str(output), "--target", "audio_bench_provider", "--parallel", "2"],
                    check=True, env=env, timeout=600, capture_output=True, text=True)
