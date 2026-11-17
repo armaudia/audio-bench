@@ -95,3 +95,39 @@ def test_submitter_owned_results_must_disclose_unverified_status(monkeypatch, tm
         assert "clearly labeled" in str(exc)
     else:
         raise AssertionError("submitter-run result lacked an unverified label")
+
+
+def test_result_removal_requests_prune_exact_cumulative_rows(tmp_path):
+    existing = tmp_path / "existing.json"
+    additions = tmp_path / "additions.json"
+    removals = tmp_path / "removals"
+    removals.mkdir()
+    removed = {"result_id": "run-to-remove", "submission_id": "candidate"}
+    retained = {"result_id": "keep-run", "submission_id": "candidate"}
+    added = {"result_id": "new-run", "submission_id": "candidate"}
+    index = lambda rows: {"schema_id": "audio-bench/site-results/0.1", "updated_at": "x", "results": rows}
+    existing.write_text(json.dumps(index([removed, retained])))
+    additions.write_text(json.dumps(index([removed, added])))
+    (removals / "remove.json").write_text(json.dumps({
+        "schema_id": "audio-bench/result-removal/0.1",
+        "result_id": "run-to-remove",
+        "reason": "Withdrawn at submitter request",
+    }))
+
+    merged = publisher.merge_index_files(existing, additions, removal_paths=[removals])
+    assert {row["result_id"] for row in merged["results"]} == {"keep-run", "new-run"}
+
+
+def test_result_removal_requests_reject_duplicate_targets(tmp_path):
+    removals = tmp_path / "removals"
+    removals.mkdir()
+    request = {"schema_id": "audio-bench/result-removal/0.1",
+               "result_id": "same-run", "reason": "Withdrawn"}
+    (removals / "first.json").write_text(json.dumps(request))
+    (removals / "second.json").write_text(json.dumps(request))
+    try:
+        publisher.load_result_removals([removals])
+    except ValueError as exc:
+        assert "duplicate result removal" in str(exc)
+    else:
+        raise AssertionError("duplicate removal targets were accepted")
