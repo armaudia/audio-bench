@@ -38,7 +38,7 @@
     "candidate_raw_latency_ms": 0.12231853760747574,
     "dataset_manifest_digest": "sha256:cfdc29c6655d195b806c58e75266c05e6cb974ac73c1c1291000af9f386e3f74",
     "harness_digest": "sha256:052d3c2ea639e1f269b990dd69e39cbb27759d0508d50e569caf8636cc07e161",
-    "harness_revision": "ea71e67ceb9275fe2778563669be66b0003b9b7a",
+    "harness_revision": "c8aaa6b2bedb999e77af01edc84e20a9a8189c73",
     "reference_baseline_latency_ms": 0.027150189060957106,
     "reference_raw_latency_ms": 0.011995038655138363,
     "runner_fingerprint": "macOS-27.2.1-arm64-arm-64bit / Python 3.12.16",
@@ -107,7 +107,7 @@
   "model_digest": "sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5",
   "provider_id": "pro.fastenhancer-tiny16.f32.v0",
   "result_id": "submitter:audio-pro-tiny16-voicebank:849756b2-7dba-46d1-8aec-f74abf5d4fb8",
-  "result_status": "Submitter-run \u00b7 not independently verified",
+  "result_status": "Submitter-run · not independently verified",
   "runner_mode": "submitter-owned",
   "schema_id": "audio-bench/submitter-result/0.1",
   "source": {
