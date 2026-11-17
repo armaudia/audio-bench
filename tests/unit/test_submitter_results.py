@@ -105,3 +105,19 @@ def test_result_merge_rejects_conflicting_result_ids(tmp_path):
     additions.write_text(json.dumps({"schema_id": "audio-bench/site-results/0.1", "updated_at": "x", "results": [changed]}))
     with pytest.raises(ValueError, match="conflicting records"):
         publisher.merge_index_files(existing, additions)
+
+
+def test_canonical_submitter_record_refreshes_older_site_projection(tmp_path):
+    source = tmp_path / "submitter.json"
+    source.write_text(json.dumps(record()))
+    current = publisher.result_from_submitter_file(source)
+    legacy = json.loads(json.dumps(current))
+    legacy["metrics"] = [{k: v for k, v in metric.items() if k not in {"mean", "median_interval_95"}}
+                         for metric in legacy["metrics"]]
+    existing = tmp_path / "existing.json"
+    additions = tmp_path / "additions.json"
+    existing.write_text(json.dumps({"schema_id": "audio-bench/site-results/0.1", "updated_at": "x", "results": [legacy]}))
+    additions.write_text(json.dumps({"schema_id": "audio-bench/site-results/0.1", "updated_at": "x", "results": []}))
+    merged = publisher.merge_index_files(existing, additions, [source])
+    refreshed = merged["results"][0]
+    assert refreshed["metrics"] == current["metrics"]
