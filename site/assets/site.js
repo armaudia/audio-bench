@@ -118,7 +118,7 @@ function render() {
 }
 
 async function main() {
-  const response = await fetch('data/results.json', { credentials: 'same-origin' });
+  const response = await fetch(`data/results.json?refresh=${Date.now()}`, { credentials: 'same-origin', cache: 'no-store' });
   if (!response.ok) throw new Error(`Could not load results (${response.status})`);
   const data = await response.json();
   if (data.schema_id !== 'audio-bench/site-results/0.1' || !Array.isArray(data.results)) throw new Error('Results index has an unsupported format.');
