@@ -174,6 +174,116 @@
       "task": "Noise cancellation"
     },
     {
+      "case_count": 824,
+      "dataset_id": "sha256:cfdc29c6655d195b806c58e75266c05e6cb974ac73c1c1291000af9f386e3f74",
+      "dataset_label": "VoiceBank+DEMAND official test split (824 paired utterances)",
+      "dataset_source_url": "https://datashare.ed.ac.uk/handle/10283/2791",
+      "display_name": "audio-sdk Speex noise suppressor",
+      "evidence": {
+        "bundle_manifest_digest": "sha256:b1d841bc4d456645c4f97639bd2ccf48158859c2c13a699d00929153323b4b98",
+        "candidate_package_digest": "sha256:d9e3885622362228d4722b4908411ed694291990f7b7a98e0d2868cccefd9ac7",
+        "case_count": 824,
+        "case_manifest_digest": "sha256:3628343c181709ec744666602f571913f511558b241340c5be086f597647bb0f",
+        "configuration_id": "sha256:de37eff9dc87bd971925cc17f7d0c02366c83947859fa048499368e5838bda29",
+        "dataset_manifest_digest": "sha256:cfdc29c6655d195b806c58e75266c05e6cb974ac73c1c1291000af9f386e3f74",
+        "harness_digest": "sha256:2d46dea89aa359e4a5f8d4c9fde8d05657deb00ace9c84423de04e56580b8eab",
+        "protocol_digest": "sha256:b644b866c4d922e1374ae0d6d84635e3aed98d06ef5ea4329e525fc43cfeb609",
+        "provider_descriptor_digest": "sha256:8dcfbd3ca87ae85f0c1d6390ede34b62b5a44461bef65d52c7bf0cf5c303b733",
+        "provider_plugin_digest": null,
+        "runner_fingerprint": "GitHub Actions ubuntu-24.04",
+        "sdk_package_digest": "sha256:31332110ff8de4a6e79531f269c3f3a136fb24b23325de8f532151aa47c93781",
+        "speaker_count": 2
+      },
+      "metrics": [
+        {
+          "display_value": "9.433 dB",
+          "finite_count": 824,
+          "label": "SI-SDR",
+          "mean": 9.43388118173754,
+          "median": 9.433345731402056,
+          "median_interval_95": [
+            8.786572964728883,
+            10.346728634771683
+          ],
+          "metric_id": "si_sdr_db",
+          "normalized_display_value": null,
+          "raw_display_value": "9.433 dB",
+          "unit": "dB"
+        },
+        {
+          "display_value": "1.219 dB",
+          "finite_count": 824,
+          "label": "SI-SDR improvement (primary)",
+          "mean": 0.9844475180738851,
+          "median": 1.2185131980621966,
+          "median_interval_95": [
+            1.1235688300874247,
+            1.3080929685124345
+          ],
+          "metric_id": "si_sdr_improvement_db",
+          "normalized_display_value": null,
+          "raw_display_value": "1.219 dB",
+          "unit": "dB"
+        },
+        {
+          "display_value": "0.928 index",
+          "finite_count": 824,
+          "label": "STOI",
+          "mean": 0.9083792472452574,
+          "median": 0.9279910079639841,
+          "median_interval_95": [
+            0.9226269639285093,
+            0.9328876433399663
+          ],
+          "metric_id": "stoi",
+          "normalized_display_value": null,
+          "raw_display_value": "0.928 index",
+          "unit": "index"
+        },
+        {
+          "display_value": "0.8054 index",
+          "finite_count": 824,
+          "label": "ESTOI",
+          "mean": 0.7768176512447882,
+          "median": 0.8054127464293648,
+          "median_interval_95": [
+            0.7944632229106166,
+            0.8169656287609239
+          ],
+          "metric_id": "estoi",
+          "normalized_display_value": null,
+          "raw_display_value": "0.8054 index",
+          "unit": "index"
+        },
+        {
+          "display_value": "0.02715 ms",
+          "finite_count": 207605,
+          "label": "CPU time per 10 ms frame",
+          "mean": 0.027150189060957106,
+          "median": 0.027150189060957106,
+          "metric_id": "latency_ms",
+          "normalized_display_value": null,
+          "raw_display_value": "0.02715 ms",
+          "unit": "ms"
+        }
+      ],
+      "model_digest": null,
+      "protocol_url": "https://github.com/armaudia/audio-bench/blob/main/suites/voicebank-demand-paired-v1/protocol.json",
+      "provider_id": "speex.ns.v0",
+      "result_id": "voicebank:speex.ns.v0:7fed703d-3fbf-4058-b169-97daab2dffe9",
+      "result_status": "Measured \u00b7 full paired corpus",
+      "runner_mode": "audio-bench",
+      "source": {
+        "repository": "armaudia/audio-sdk",
+        "revision": "84a102112ce83fb519303a832be15ad88e452d74",
+        "url": "https://github.com/armaudia/audio-sdk",
+        "visibility": "public"
+      },
+      "submission_id": "audio-sdk-speex-voicebank",
+      "suite_id": "voicebank-demand-paired-v1",
+      "task": "Noise cancellation"
+    },
+    {
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -1269,5 +1379,5 @@
     }
   ],
   "schema_id": "audio-bench/site-results/0.1",
-  "updated_at": "2026-11-17T18:53:46Z"
+  "updated_at": "2026-11-17T18:54:30Z"
 }
