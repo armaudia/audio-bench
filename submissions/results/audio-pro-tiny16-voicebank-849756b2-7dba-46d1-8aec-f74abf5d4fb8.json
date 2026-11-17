@@ -1,0 +1,122 @@
+{
+  "baseline": {
+    "metrics": [
+      {
+        "median": 9.433345016302855,
+        "metric_id": "si_sdr_db",
+        "unit": "dB"
+      },
+      {
+        "median": 1.2185137405331528,
+        "metric_id": "si_sdr_improvement_db",
+        "unit": "dB"
+      },
+      {
+        "median": 0.9279909248190684,
+        "metric_id": "stoi",
+        "unit": "index"
+      },
+      {
+        "median": 0.8054126191104984,
+        "metric_id": "estoi",
+        "unit": "index"
+      },
+      {
+        "median": 0.011995038655138363,
+        "metric_id": "latency_ms",
+        "unit": "ms"
+      }
+    ],
+    "provider_id": "speex.ns.v0",
+    "run_id": "voicebank:speex.ns.v0:67a9314f-5958-470c-96f3-00681581c179"
+  },
+  "case_count": 824,
+  "dataset_id": "sha256:cfdc29c6655d195b806c58e75266c05e6cb974ac73c1c1291000af9f386e3f74",
+  "dataset_label": "VoiceBank+DEMAND official test split (824 paired utterances)",
+  "display_name": "audio-pro FastEnhancer Tiny16",
+  "evidence": {
+    "candidate_raw_latency_ms": 0.12231853760747574,
+    "dataset_manifest_digest": "sha256:cfdc29c6655d195b806c58e75266c05e6cb974ac73c1c1291000af9f386e3f74",
+    "harness_digest": "sha256:052d3c2ea639e1f269b990dd69e39cbb27759d0508d50e569caf8636cc07e161",
+    "harness_revision": "ea71e67ceb9275fe2778563669be66b0003b9b7a",
+    "reference_baseline_latency_ms": 0.027150189060957106,
+    "reference_raw_latency_ms": 0.011995038655138363,
+    "runner_fingerprint": "macOS-27.2.1-arm64-arm-64bit / Python 3.12.16",
+    "workflow_attestation_url": null
+  },
+  "metrics": [
+    {
+      "finite_count": 824,
+      "label": "ESTOI",
+      "mean": 0.540177783913143,
+      "median": 0.5511610228159851,
+      "median_interval_95": [
+        0.54573760778487,
+        0.5562639934877172
+      ],
+      "metric_id": "estoi",
+      "unit": "index"
+    },
+    {
+      "finite_count": 207605,
+      "label": "CPU time per 10 ms frame",
+      "mean": 0.12231853760747574,
+      "median": 0.12231853760747574,
+      "metric_id": "latency_ms",
+      "normalized_median": 0.27686208583247374,
+      "normalized_unit": "ms",
+      "unit": "ms"
+    },
+    {
+      "finite_count": 824,
+      "label": "SI-SDR",
+      "mean": -24.77734686206408,
+      "median": -23.340097922289978,
+      "median_interval_95": [
+        -23.893913480242983,
+        -22.421200276087678
+      ],
+      "metric_id": "si_sdr_db",
+      "unit": "dB"
+    },
+    {
+      "finite_count": 824,
+      "label": "SI-SDR improvement (primary)",
+      "mean": -33.22678052572773,
+      "median": -31.586002218060706,
+      "median_interval_95": [
+        -32.693635689312444,
+        -30.978408616747245
+      ],
+      "metric_id": "si_sdr_improvement_db",
+      "unit": "dB"
+    },
+    {
+      "finite_count": 824,
+      "label": "STOI",
+      "mean": 0.6770333412041282,
+      "median": 0.6828678560735104,
+      "median_interval_95": [
+        0.6792121351061831,
+        0.6854572216326487
+      ],
+      "metric_id": "stoi",
+      "unit": "index"
+    }
+  ],
+  "model_digest": "sha256:8673d1633ece6fbc532d6189479e876fed5cd3770c30a826401835474bff5ad5",
+  "provider_id": "pro.fastenhancer-tiny16.f32.v0",
+  "result_id": "submitter:audio-pro-tiny16-voicebank:849756b2-7dba-46d1-8aec-f74abf5d4fb8",
+  "result_status": "Submitter-run \u00b7 not independently verified",
+  "runner_mode": "submitter-owned",
+  "schema_id": "audio-bench/submitter-result/0.1",
+  "source": {
+    "repository_identity_sha256": "sha256:df3eeaee2b75d30ce5207f55ed1ab3f7dd07c9bb41f213b6337f0f5a4bdde522",
+    "revision": "263885896e8793d07f81d802bc4c4f485aa82624",
+    "tree_sha": "ee37be7e65998629f8d8f1153eacb202b674df8f",
+    "visibility": "private"
+  },
+  "submission_id": "audio-pro-tiny16-voicebank",
+  "suite_id": "voicebank-demand-paired-v1",
+  "task": "noise-cancellation"
+}
