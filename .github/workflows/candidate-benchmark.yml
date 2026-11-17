@@ -25,6 +25,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r locks/requirements-ci.txt
+      - run: python -m pip install --no-deps --no-build-isolation -e .
       - name: Check out the pinned audio-sdk build dependency
         id: sdk
         run: python -c 'import json,os; p=json.load(open("deps/sdk-source.json")); f=open(os.environ["GITHUB_OUTPUT"],"a"); print("revision="+p["revision"],file=f)'
@@ -72,6 +73,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r locks/requirements-ci.txt
+      - run: python -m pip install --no-deps --no-build-isolation -e .
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654a4ef8333 # pinned artifact action
         with:
           name: audio-bench-candidate-plugins

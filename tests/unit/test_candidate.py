@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from audio_bench import canonical
 from audio_bench.candidate import load_provider_assets, load_provider_manifest
 from audio_bench.errors import ValidationError
+from audio_bench.candidate import build_provider_plugin
 import evaluate_public_candidates as evaluator
 import package_public_candidates as packager
 
@@ -71,6 +72,26 @@ def test_candidate_manifest_asset_path_cannot_escape_checkout(tmp_path):
     manifest = {"assets": [{"id": "weights", "path": "../weights.f32", "sha256": "sha256:" + "0" * 64}]}
     with pytest.raises(ValidationError, match="must stay within"):
         load_provider_assets(source, manifest, source / "provider.descriptor.json")
+
+
+def test_candidate_build_uses_the_running_python_interpreter(tmp_path, monkeypatch):
+    source = tmp_path / "candidate"
+    source.mkdir()
+    sdk_prefix = tmp_path / "sdk"
+    sdk_prefix.mkdir()
+    commands = []
+
+    def fake_run(command, **kwargs):
+        commands.append(command)
+        if "--build" in command:
+            output = Path(command[command.index("--build") + 1])
+            (output / "libaudio_bench_provider.so").write_bytes(b"test plugin")
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr("audio_bench.candidate.subprocess.run", fake_run)
+    plugin = build_provider_plugin(source, tmp_path / "build", sdk_prefix)
+    assert plugin.name == "libaudio_bench_provider.so"
+    assert f"-DPython3_EXECUTABLE={sys.executable}" in commands[0]
 
 
 def test_disabled_public_example_packages_to_an_empty_marker(tmp_path):
