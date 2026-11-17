@@ -17,7 +17,8 @@
       "properties": {
         "repository": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
         "visibility": {"enum": ["public", "private"]},
-        "revision": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"}
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
       }
     },
     "provider_id": {"type": "string", "pattern": "^[a-zA-Z0-9._-]{1,120}$"},
