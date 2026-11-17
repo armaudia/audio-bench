@@ -47,7 +47,9 @@
         "provider_id": "speex.ns.v0",
         "run_id": "524c05ae-3f9e-4e9a-b6f6-afc23285db0c:67ae0806-8529-449a-920a-f5103addaf30"
       },
+      "case_count": null,
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
+      "dataset_label": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "audio-pro FastEnhancer Tiny16 (submitter-run example)",
       "evidence": {
         "candidate_raw_latency_ms": 0.12743208333333333,
@@ -64,7 +66,9 @@
           "display_value": "0 count",
           "finite_count": 24,
           "label": "clipping_count",
+          "mean": null,
           "median": 0.0,
+          "median_interval_95": null,
           "metric_id": "clipping_count",
           "normalized_display_value": null,
           "raw_display_value": "0 count",
@@ -74,7 +78,9 @@
           "display_value": "0.3131 index",
           "finite_count": 24,
           "label": "estoi",
+          "mean": null,
           "median": 0.31312092069617203,
+          "median_interval_95": null,
           "metric_id": "estoi",
           "normalized_display_value": null,
           "raw_display_value": "0.3131 index",
@@ -84,7 +90,9 @@
           "display_value": "0.1274 ms",
           "finite_count": 2400,
           "label": "CPU time per 10 ms frame",
+          "mean": null,
           "median": 0.12743208333333333,
+          "median_interval_95": null,
           "metric_id": "latency_ms",
           "normalized_display_value": "0.1264 ms",
           "raw_display_value": "0.1274 ms",
@@ -94,7 +102,9 @@
           "display_value": "0.2262 none",
           "finite_count": 24,
           "label": "max_abs_sample",
+          "mean": null,
           "median": 0.2261630892753601,
+          "median_interval_95": null,
           "metric_id": "max_abs_sample",
           "normalized_display_value": null,
           "raw_display_value": "0.2262 none",
@@ -104,7 +114,9 @@
           "display_value": "0.8749 ratio",
           "finite_count": 24,
           "label": "rms_gain_ratio",
+          "mean": null,
           "median": 0.8749013721068449,
+          "median_interval_95": null,
           "metric_id": "rms_gain_ratio",
           "normalized_display_value": null,
           "raw_display_value": "0.8749 ratio",
@@ -114,7 +126,9 @@
           "display_value": "-5.212 dB",
           "finite_count": 24,
           "label": "si_sdr_db",
+          "mean": null,
           "median": -5.212004552077126,
+          "median_interval_95": null,
           "metric_id": "si_sdr_db",
           "normalized_display_value": null,
           "raw_display_value": "-5.212 dB",
@@ -124,7 +138,9 @@
           "display_value": "-10.75 dB",
           "finite_count": 24,
           "label": "si_sdr_improvement_db",
+          "mean": null,
           "median": -10.753304877889164,
+          "median_interval_95": null,
           "metric_id": "si_sdr_improvement_db",
           "normalized_display_value": null,
           "raw_display_value": "-10.75 dB",
@@ -134,7 +150,9 @@
           "display_value": "0.3821 index",
           "finite_count": 24,
           "label": "stoi",
+          "mean": null,
           "median": 0.38206558575018323,
+          "median_interval_95": null,
           "metric_id": "stoi",
           "normalized_display_value": null,
           "raw_display_value": "0.3821 index",
@@ -152,6 +170,121 @@
         "visibility": "private"
       },
       "submission_id": "audio-pro-tiny16-example",
+      "suite_id": "synthetic-smoke-v1",
+      "task": "Noise cancellation"
+    },
+    {
+      "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
+      "display_name": "Built-in High-pass filter",
+      "evidence": {
+        "attempt_id": "28ccc889-bbda-4437-91ce-1d5b26c42e54",
+        "bundle_manifest_digest": "sha256:cef3b0e681a6aee752149c271673beb53150c32bbed12f528bb05d606ce5744e",
+        "configuration_id": "sha256:44c6304e693a8b1a46306e730757de7bc509de4fdb03f4e36282de2cf7d3c8d3",
+        "harness_digest": "sha256:f9329f5df8b754220db259010847e13da7ce5ee3dd6d7da1c1b83754c7efbbf4",
+        "machine_fingerprint": "Linux x86_64; not qualified",
+        "run_id": "35ba462c-7868-4cff-a108-cf20654c0314",
+        "sdk_package_digest": "sha256:31332110ff8de4a6e79531f269c3f3a136fb24b23325de8f532151aa47c93781"
+      },
+      "metrics": [
+        {
+          "display_value": "0 count",
+          "finite_count": 24,
+          "label": "clipping_count",
+          "mean": 0.0,
+          "median": 0.0,
+          "metric_id": "clipping_count",
+          "normalized_display_value": null,
+          "raw_display_value": "0 count",
+          "unit": "count"
+        },
+        {
+          "display_value": "0.3091 index",
+          "finite_count": 24,
+          "label": "estoi",
+          "mean": 0.3191687916610941,
+          "median": 0.30911375219295256,
+          "metric_id": "estoi",
+          "normalized_display_value": null,
+          "raw_display_value": "0.3091 index",
+          "unit": "index"
+        },
+        {
+          "display_value": "0.44 none",
+          "finite_count": 24,
+          "label": "max_abs_sample",
+          "mean": 0.4452347010374069,
+          "median": 0.43995440006256104,
+          "metric_id": "max_abs_sample",
+          "normalized_display_value": null,
+          "raw_display_value": "0.44 none",
+          "unit": "none"
+        },
+        {
+          "display_value": "0.9579 ratio",
+          "finite_count": 24,
+          "label": "rms_gain_ratio",
+          "mean": 0.9570228464997185,
+          "median": 0.9579104952087936,
+          "metric_id": "rms_gain_ratio",
+          "normalized_display_value": null,
+          "raw_display_value": "0.9579 ratio",
+          "unit": "ratio"
+        },
+        {
+          "display_value": "-3.351 dB",
+          "finite_count": 24,
+          "label": "si_sdr_db",
+          "mean": -3.3030833093474636,
+          "median": -3.3513612227799077,
+          "metric_id": "si_sdr_db",
+          "normalized_display_value": null,
+          "raw_display_value": "-3.351 dB",
+          "unit": "dB"
+        },
+        {
+          "display_value": "-8.85 dB",
+          "finite_count": 24,
+          "label": "si_sdr_improvement_db",
+          "mean": -8.826397352340452,
+          "median": -8.850420437054616,
+          "metric_id": "si_sdr_improvement_db",
+          "normalized_display_value": null,
+          "raw_display_value": "-8.85 dB",
+          "unit": "dB"
+        },
+        {
+          "display_value": "0.8116 index",
+          "finite_count": 24,
+          "label": "stoi",
+          "mean": 0.8084634306890965,
+          "median": 0.8115832835760134,
+          "metric_id": "stoi",
+          "normalized_display_value": null,
+          "raw_display_value": "0.8116 index",
+          "unit": "index"
+        },
+        {
+          "display_value": "0.0157 ms",
+          "finite_count": 2400,
+          "label": "CPU time per 10 ms frame",
+          "median": 0.01569875,
+          "metric_id": "latency_ms",
+          "normalized_display_value": null,
+          "raw_display_value": "0.0157 ms",
+          "unit": "ms"
+        }
+      ],
+      "model_digest": null,
+      "provider_id": "dsp.highpass80.v0",
+      "result_id": "35ba462c-7868-4cff-a108-cf20654c0314:28ccc889-bbda-4437-91ce-1d5b26c42e54",
+      "result_status": "Synthetic functional check \u00b7 not qualification",
+      "runner_mode": "audio-bench",
+      "source": {
+        "repository": "armaudia/audio-sdk",
+        "revision": "84a102112ce83fb519303a832be15ad88e452d74",
+        "url": "https://github.com/armaudia/audio-sdk"
+      },
+      "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
       "task": "Noise cancellation"
     },
@@ -1018,8 +1151,123 @@
       "submission_id": "reference-speex.ns.v0",
       "suite_id": "synthetic-smoke-v1",
       "task": "Noise cancellation"
+    },
+    {
+      "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
+      "display_name": "Built-in Speex noise suppression",
+      "evidence": {
+        "attempt_id": "085b2b53-7604-4fe2-8804-9b8154cc5680",
+        "bundle_manifest_digest": "sha256:a2933da0f4d2eb4be3325ca9fa3a5a2287fcaa7d64b7790e842d88f56cc917a8",
+        "configuration_id": "sha256:de37eff9dc87bd971925cc17f7d0c02366c83947859fa048499368e5838bda29",
+        "harness_digest": "sha256:f9329f5df8b754220db259010847e13da7ce5ee3dd6d7da1c1b83754c7efbbf4",
+        "machine_fingerprint": "Linux x86_64; not qualified",
+        "run_id": "eb648a29-58c0-4315-8cde-15a5750b86fe",
+        "sdk_package_digest": "sha256:31332110ff8de4a6e79531f269c3f3a136fb24b23325de8f532151aa47c93781"
+      },
+      "metrics": [
+        {
+          "display_value": "0 count",
+          "finite_count": 24,
+          "label": "clipping_count",
+          "mean": 0.0,
+          "median": 0.0,
+          "metric_id": "clipping_count",
+          "normalized_display_value": null,
+          "raw_display_value": "0 count",
+          "unit": "count"
+        },
+        {
+          "display_value": "0.3605 index",
+          "finite_count": 24,
+          "label": "estoi",
+          "mean": 0.37017691561091404,
+          "median": 0.36053715015104604,
+          "metric_id": "estoi",
+          "normalized_display_value": null,
+          "raw_display_value": "0.3605 index",
+          "unit": "index"
+        },
+        {
+          "display_value": "0.3844 none",
+          "finite_count": 24,
+          "label": "max_abs_sample",
+          "mean": 0.3887786865234375,
+          "median": 0.3843994140625,
+          "metric_id": "max_abs_sample",
+          "normalized_display_value": null,
+          "raw_display_value": "0.3844 none",
+          "unit": "none"
+        },
+        {
+          "display_value": "0.8258 ratio",
+          "finite_count": 24,
+          "label": "rms_gain_ratio",
+          "mean": 0.8254324064941981,
+          "median": 0.8257525736028989,
+          "metric_id": "rms_gain_ratio",
+          "normalized_display_value": null,
+          "raw_display_value": "0.8258 ratio",
+          "unit": "ratio"
+        },
+        {
+          "display_value": "6.42 dB",
+          "finite_count": 24,
+          "label": "si_sdr_db",
+          "mean": 6.4142946304164115,
+          "median": 6.419978555600009,
+          "metric_id": "si_sdr_db",
+          "normalized_display_value": null,
+          "raw_display_value": "6.42 dB",
+          "unit": "dB"
+        },
+        {
+          "display_value": "0.8929 dB",
+          "finite_count": 24,
+          "label": "si_sdr_improvement_db",
+          "mean": 0.8909805874234232,
+          "median": 0.8929282593464238,
+          "metric_id": "si_sdr_improvement_db",
+          "normalized_display_value": null,
+          "raw_display_value": "0.8929 dB",
+          "unit": "dB"
+        },
+        {
+          "display_value": "0.6812 index",
+          "finite_count": 24,
+          "label": "stoi",
+          "mean": 0.6829688048300205,
+          "median": 0.6812345983289658,
+          "metric_id": "stoi",
+          "normalized_display_value": null,
+          "raw_display_value": "0.6812 index",
+          "unit": "index"
+        },
+        {
+          "display_value": "0.01387 ms",
+          "finite_count": 2400,
+          "label": "CPU time per 10 ms frame",
+          "median": 0.01387375,
+          "metric_id": "latency_ms",
+          "normalized_display_value": null,
+          "raw_display_value": "0.01387 ms",
+          "unit": "ms"
+        }
+      ],
+      "model_digest": null,
+      "provider_id": "speex.ns.v0",
+      "result_id": "eb648a29-58c0-4315-8cde-15a5750b86fe:085b2b53-7604-4fe2-8804-9b8154cc5680",
+      "result_status": "Synthetic functional check \u00b7 not qualification",
+      "runner_mode": "audio-bench",
+      "source": {
+        "repository": "armaudia/audio-sdk",
+        "revision": "84a102112ce83fb519303a832be15ad88e452d74",
+        "url": "https://github.com/armaudia/audio-sdk"
+      },
+      "submission_id": "reference-speex.ns.v0",
+      "suite_id": "synthetic-smoke-v1",
+      "task": "Noise cancellation"
     }
   ],
   "schema_id": "audio-bench/site-results/0.1",
-  "updated_at": "2026-11-16T20:10:23Z"
+  "updated_at": "2026-11-17T18:53:46Z"
 }
