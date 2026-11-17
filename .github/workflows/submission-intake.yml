@@ -39,5 +39,7 @@ jobs:
         run: python scripts/validate_submission.py submissions/*.json examples/submissions/*.json
       - name: Validate submitter-owned result records
         run: python scripts/validate_submitter_results.py submissions/results
+      - name: Validate published result removal requests
+        run: python scripts/validate_result_removals.py submissions/removals
       - name: Test submission and result policy
         run: python -m pytest tests/unit/test_submission.py tests/unit/test_submitter_results.py tests/unit/test_external_dataset.py tests/unit/test_site_results.py -q

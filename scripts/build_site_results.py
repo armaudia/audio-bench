@@ -189,7 +189,39 @@ def build_index(bundles: list[Path], existing: Path | None = None) -> dict[str, 
     return _index(rows)
 
 
-def merge_index_files(existing: Path, additions: Path, submitter_paths: list[Path] | None = None) -> dict[str, Any]:
+def load_result_removals(paths: list[Path] | None = None) -> set[str]:
+    """Load persistent removal requests that suppress exact published result IDs."""
+    targets: set[str] = set()
+    for item in paths or []:
+        files = sorted(item.glob("*.json")) if item.is_dir() else [item]
+        for path in files:
+            if path.name.startswith("_"):
+                continue
+
+            def reject_constant(token: str) -> None:
+                raise ValueError(f"invalid JSON numeric constant {token}")
+
+            try:
+                request = json.loads(path.read_text(encoding="utf-8"), parse_constant=reject_constant)
+            except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+                raise ValueError(f"cannot read result removal request {path}: {exc}") from exc
+            if not isinstance(request, dict) or set(request) != {"schema_id", "result_id", "reason"}:
+                raise ValueError(f"result removal request has unsupported fields: {path}")
+            if request["schema_id"] != "audio-bench/result-removal/0.1":
+                raise ValueError(f"result removal request has unsupported schema_id: {path}")
+            result_id = request["result_id"]
+            reason = request["reason"]
+            if not isinstance(result_id, str) or not result_id or result_id != result_id.strip() or len(result_id) > 512:
+                raise ValueError(f"result removal request has an invalid result_id: {path}")
+            if not isinstance(reason, str) or not reason.strip() or len(reason) > 500:
+                raise ValueError(f"result removal request has an invalid reason: {path}")
+            if result_id in targets:
+                raise ValueError(f"duplicate result removal request for {result_id!r}")
+            targets.add(result_id)
+    return targets
+
+
+def merge_index_files(existing: Path, additions: Path, submitter_paths: list[Path] | None = None, removal_paths: list[Path] | None = None) -> dict[str, Any]:
     rows: dict[str, dict[str, Any]] = {}
     for path in (existing, additions):
         if not path.exists():
@@ -217,6 +249,8 @@ def merge_index_files(existing: Path, additions: Path, submitter_paths: list[Pat
                 raise ValueError(f"conflicting records use result_id {row['result_id']!r}")
             # The validated submitter record is canonical; re-convert it when the display schema evolves.
             rows[row["result_id"]] = row
+    for result_id in load_result_removals(removal_paths):
+        rows.pop(result_id, None)
     return _index(rows)
 
 
@@ -234,6 +268,7 @@ def main() -> None:
     parser.add_argument("--existing", type=Path, help="merge with a prior cumulative Pages index")
     parser.add_argument("--from-index", type=Path, help="merge rows from a generated result index")
     parser.add_argument("--submitter-results", type=Path, nargs="*", default=[], help="validated submitter result files or directories")
+    parser.add_argument("--remove-results", type=Path, nargs="*", default=[], help="persistent exact-result removal request files or directories")
     parser.add_argument("--output", type=Path, default=ROOT / "site/data/results.json")
     parser.add_argument("bundles", type=Path, nargs="*")
     args = parser.parse_args()
@@ -241,7 +276,7 @@ def main() -> None:
         if args.from_index:
             if args.bundles or not args.existing:
                 parser.error("--from-index requires --existing and does not accept bundle arguments")
-            index = merge_index_files(args.existing, args.from_index, args.submitter_results)
+            index = merge_index_files(args.existing, args.from_index, args.submitter_results, args.remove_results)
         else:
             if not args.bundles:
                 parser.error("provide one or more bundles, or use --from-index")

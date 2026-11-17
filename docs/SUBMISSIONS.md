@@ -97,6 +97,26 @@ submitter has cleared model and corpus rights, enable its manifest locally and r
 VoiceBank protocol with `--dataset-cache`. Submit only the result record; private source,
 weights, and corpus audio stay on the submitter's runner.
 
+## Removing a published result
+
+To remove one exact row from the public report, copy
+[`submissions/removals/_template.json`](../submissions/removals/_template.json) to
+`submissions/removals/<short-description>.json`, then set:
+
+- `result_id` to the exact result ID shown in the row's measurement provenance or in
+  the downloadable results JSON;
+- `reason` to a short, public explanation, without private or sensitive details.
+
+Open a PR with that request. PR checks validate the request but do not alter the
+report. After merge, the Pages publisher applies the persistent removal request to
+the cumulative result index and deploys the updated report. The request file stays
+in the repository so later benchmark runs cannot restore that result accidentally.
+A separate request is needed for each result ID.
+
+This removes the row from the current report and downloadable index; it does not
+rewrite Git history or old result-store commits. For wrongly published confidential
+data, also follow the repository's incident and history-removal process.
+
 ## Public provider plugin contract
 
 At the pinned source commit, provide a CMake target named
