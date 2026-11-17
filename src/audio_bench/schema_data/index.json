@@ -37,6 +37,10 @@
       "sha256": "sha256:106befd45ec57c3cedd1fe9c76f96e68d492c28824042b192f0e5d7505069335"
     },
     {
+      "file": "external-dataset.schema.json",
+      "sha256": "sha256:d75a65175f0991909fbe251c9c05db8bfcabbd338a8f894019900dcbaa47e51a"
+    },
+    {
       "file": "impact-plan.schema.json",
       "sha256": "sha256:fccd67ef2f6b7146d4ef306e049572f78ba7162d794f7c797b2a1e927b1e7c8f"
     },
@@ -57,8 +61,12 @@
       "sha256": "sha256:08d8a211c48cd09242a7c206b8d8288a153e2bc0124e12870c16aae060b8f6e7"
     },
     {
+      "file": "paired-corpus-provenance.schema.json",
+      "sha256": "sha256:16969974f34dfd6cfddc64bf8f2187e04eef3494500e2820c7f5fe8895087fda"
+    },
+    {
       "file": "provider-plugin.schema.json",
-      "sha256": "sha256:2da8b0a140e819f00ae810210fc8bd694630c085ad2ea910efdb3b4ccd2b13bc"
+      "sha256": "sha256:f2384ecf29e7dd498731572df679a74cc22c9f600d8b8c5b32a2d60c01a6d57e"
     },
     {
       "file": "recipe.schema.json",
@@ -91,6 +99,10 @@
     {
       "file": "sdk/effective-config.schema.json",
       "sha256": "sha256:55956e149b3b8c420599c1a115e2b880ba4659c562128c207f89842b79cc5eea"
+    },
+    {
+      "file": "submitter-result.schema.json",
+      "sha256": "sha256:967a4d420d80d716498a0650a9d14ca782a0125d572fbfb8a7ea424288c8e855"
     }
   ],
   "schema_dir_version": "0.1"
