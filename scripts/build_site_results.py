@@ -213,8 +213,9 @@ def merge_index_files(existing: Path, additions: Path, submitter_paths: list[Pat
                 continue
             row = result_from_submitter_file(path)
             previous = rows.get(row["result_id"])
-            if previous is not None and previous != row:
+            if previous is not None and previous.get("submission_id") != row["submission_id"]:
                 raise ValueError(f"conflicting records use result_id {row['result_id']!r}")
+            # The validated submitter record is canonical; re-convert it when the display schema evolves.
             rows[row["result_id"]] = row
     return _index(rows)
 

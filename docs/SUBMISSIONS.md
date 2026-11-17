@@ -90,6 +90,8 @@ audio, credentials, or raw recordings. PR validation checks the closed schema,
 finite measurements, and latency formula without fetching or running source. After
 merge, Pages publishes the record with the fixed **Submitter-run · not independently
 verified** label. Quality metrics remain raw and are never hardware-normalized.
+On each deploy, Pages regenerates the displayed row from the validated result file,
+so cumulative data picks up presentation-schema changes without duplicating runs.
 The audio-pro manifest example is disabled by default. For a private candidate whose
 submitter has cleared model and corpus rights, enable its manifest locally and run the
 VoiceBank protocol with `--dataset-cache`. Submit only the result record; private source,
