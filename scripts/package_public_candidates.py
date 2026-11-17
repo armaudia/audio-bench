@@ -18,7 +18,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from audio_bench.candidate import build_provider_plugin, load_provider_manifest  # noqa: E402
+from audio_bench.candidate import (build_provider_plugin, load_provider_assets,
+                                   load_provider_manifest)  # noqa: E402
 from audio_bench.errors import ValidationError  # noqa: E402
 from audio_bench.submission import load_submission  # noqa: E402
 
@@ -57,13 +58,33 @@ def package(submission_paths: list[Path], sdk_prefix: Path, output: Path) -> int
                                       check=True, capture_output=True, text=True).stdout.strip()
             if revision != source["revision"]:
                 raise ValidationError("public source checkout does not match its pinned commit")
-            provider_manifest, descriptor = load_provider_manifest(checkout, submission["provider_id"])
-            build = Path(td) / "build"
-            plugin = build_provider_plugin(checkout, build, sdk_prefix)
+            builtin = submission["provider_id"] in {"speex.ns.v0", "dsp.highpass80.v0"}
+            if builtin:
+                provider_manifest = {"provider_id": submission["provider_id"]}
+                descriptor = ROOT / "schemas/sdk/providers" / f"{submission['provider_id']}.descriptor.json"
+                plugin = None
+                assets = {}
+            else:
+                provider_manifest, descriptor = load_provider_manifest(checkout, submission["provider_id"])
+                build = Path(td) / "build"
+                plugin = build_provider_plugin(checkout, build, sdk_prefix)
+                assets = load_provider_assets(checkout, provider_manifest, descriptor)
             destination = output / submission["submission_id"]
             destination.mkdir()
-            shutil.copyfile(plugin, destination / plugin.name)
             shutil.copyfile(descriptor, destination / "provider.descriptor.json")
+            plugin_name = None
+            plugin_hash = None
+            if plugin is not None:
+                shutil.copyfile(plugin, destination / plugin.name)
+                plugin_name = plugin.name
+                plugin_hash = _sha(destination / plugin.name)
+            packaged_assets = []
+            for asset_id, asset_path in sorted(assets.items()):
+                relative = Path("assets") / asset_id
+                target = destination / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(asset_path, target)
+                packaged_assets.append({"id": asset_id, "file": relative.as_posix(), "sha256": _sha(target)})
             (destination / "submission.json").write_text(
                 json.dumps(submission, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             (destination / "package.json").write_text(json.dumps({
@@ -71,8 +92,10 @@ def package(submission_paths: list[Path], sdk_prefix: Path, output: Path) -> int
                 "submission_id": submission["submission_id"],
                 "source_revision": revision,
                 "provider_id": provider_manifest["provider_id"],
-                "plugin_file": plugin.name,
-                "plugin_sha256": _sha(destination / plugin.name),
+                "builtin_provider": builtin,
+                "plugin_file": plugin_name,
+                "plugin_sha256": plugin_hash,
+                "assets": packaged_assets,
                 "descriptor_sha256": _sha(destination / "provider.descriptor.json"),
             }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             count += 1

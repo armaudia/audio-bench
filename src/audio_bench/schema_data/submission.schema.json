@@ -27,7 +27,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["dataset_id", "suite_id"],
       "properties": {
-        "dataset_id": {"const": "synthetic-16k-v1"},
+        "dataset_id": {"enum": ["synthetic-16k-v1", "voicebank-demand-test-v1"]},
         "suite_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,80}$"}
       }
     },

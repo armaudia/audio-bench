@@ -8,6 +8,18 @@
   "properties": {
     "schema_id": {"const": "audio-bench/provider-plugin/0.1"},
     "provider_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"},
-    "descriptor_path": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"}
+    "descriptor_path": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"},
+    "assets": {
+      "type": "array", "maxItems": 16,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "path", "sha256"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,128}$"},
+          "path": {"type": "string", "pattern": "^[A-Za-z0-9._/-]+$"},
+          "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+        }
+      }
+    }
   }
 }

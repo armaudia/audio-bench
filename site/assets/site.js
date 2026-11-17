@@ -47,6 +47,14 @@ function render() {
     const metricList = document.createElement('dl'); metricList.className = 'metrics';
     for (const metric of (row.metrics || [])) {
       metricList.append(text('dt', metric.label || metric.metric_id), text('dd', metric.raw_display_value ?? metric.display_value ?? '—'));
+      if (Number.isFinite(metric.mean)) {
+        metricList.append(text('dt', `${metric.label || metric.metric_id} · mean`, ''), text('dd', `${metric.mean.toPrecision(4)} ${metric.unit || ''}`.trim(), 'muted'));
+      }
+      if (Array.isArray(metric.median_interval_95) && metric.median_interval_95.length === 2) {
+        const [low, high] = metric.median_interval_95;
+        metricList.append(text('dt', 'Within-cohort 95% interval', ''),
+          text('dd', `${low.toPrecision(4)} to ${high.toPrecision(4)} ${metric.unit || ''}`.trim(), 'muted'));
+      }
       if (metric.normalized_display_value) {
         metricList.append(text('dt', 'Estimated on audio-bench runner'), text('dd', metric.normalized_display_value));
       }
@@ -62,7 +70,16 @@ function render() {
       meta.append(text('span', `Source ${row.source?.revision || '—'}`));
     }
     meta.append(text('span', `Model ${row.model_digest || 'not applicable'}`));
-    meta.append(text('span', `Dataset ${row.dataset_id || '—'}`));
+    meta.append(text('span', `Dataset ${row.dataset_label || row.dataset_id || '—'}`));
+    if (row.case_count) meta.append(text('span', `${row.case_count} paired utterances`));
+    const protocolUrl = safeHttpUrl(row.protocol_url);
+    if (protocolUrl) {
+      const link = document.createElement('a'); link.href = protocolUrl; link.rel = 'noreferrer'; link.textContent = 'View scoring protocol →'; meta.append(link);
+    }
+    const datasetUrl = safeHttpUrl(row.dataset_source_url);
+    if (datasetUrl) {
+      const link = document.createElement('a'); link.href = datasetUrl; link.rel = 'noreferrer'; link.textContent = 'Dataset source →'; meta.append(link);
+    }
     if (row.runner_mode === 'submitter-owned') meta.append(text('span', 'Not independently verified', 'warning'));
     const sourceUrl = row.source?.visibility === 'private' ? null : safeHttpUrl(row.source?.url);
     if (sourceUrl) {
@@ -81,6 +98,11 @@ function render() {
         ['SDK package', row.evidence.sdk_package_digest],
         ['Harness', row.evidence.harness_digest],
         ['Dataset manifest', row.evidence.dataset_manifest_digest],
+        ['Case manifest', row.evidence.case_manifest_digest],
+        ['Scoring protocol', row.evidence.protocol_digest],
+        ['Candidate package', row.evidence.candidate_package_digest],
+        ['Provider plugin', row.evidence.provider_plugin_digest],
+        ['Provider descriptor', row.evidence.provider_descriptor_digest],
         ['Configuration', row.evidence.configuration_id],
         ['Bundle', row.evidence.bundle_manifest_digest],
         ['Runner', row.evidence.runner_fingerprint],

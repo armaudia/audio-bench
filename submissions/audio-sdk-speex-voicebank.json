@@ -1,0 +1,23 @@
+{
+  "schema_id": "audio-bench/submission/0.1",
+  "submission_id": "audio-sdk-speex-voicebank",
+  "display_name": "audio-sdk Speex noise suppressor",
+  "task": "noise-cancellation",
+  "runner_mode": "audio-bench",
+  "source": {
+    "repository": "armaudia/audio-sdk",
+    "visibility": "public",
+    "revision": "84a102112ce83fb519303a832be15ad88e452d74"
+  },
+  "provider_id": "speex.ns.v0",
+  "model_digest": null,
+  "baseline_provider_id": "speex.ns.v0",
+  "benchmark": {
+    "dataset_id": "voicebank-demand-test-v1",
+    "suite_id": "voicebank-demand-paired-v1"
+  },
+  "execution": {
+    "enabled": true,
+    "reason": "Run the pinned audio-sdk Speex reference across the complete rights-approved VoiceBank+DEMAND official test cohort after merge. Publish aggregate measurements and pinned provenance only."
+  }
+}

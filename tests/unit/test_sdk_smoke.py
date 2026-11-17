@@ -33,6 +33,49 @@ def test_frozen_metric_environment_rejects_missing_or_different_versions(tmp_pat
         _verify_python_environment(tmp_path)
 
 
+@pytest.mark.sdk
+@pytest.mark.skipif(not (NATIVE_BUILD / "audio_bench_asset_test_provider.so").is_file(),
+                    reason="native asset provider fixture is not built")
+def test_native_collector_passes_pinned_model_assets_to_provider_create(tmp_path):
+    import numpy as np
+
+    driver = NATIVE_BUILD / "audio_bench_driver"
+    collector = NATIVE_BUILD / "audio_bench_collect"
+    plugin = NATIVE_BUILD / "audio_bench_asset_test_provider.so"
+    asset = tmp_path / "weights.bin"
+    asset.write_bytes(b"audio-bench-asset-test-v1")
+    input_file = tmp_path / "input.f32"
+    np.zeros(1600, dtype="<f4").tofile(input_file)
+    config = tmp_path / "effective-config.json"
+    descriptor = tmp_path / "provider.descriptor.json"
+    generated = subprocess.run([str(driver), "--provider", "bench.test.asset.v0",
+                                "--plugin", str(plugin), "--effective-config"],
+                               check=True, capture_output=True).stdout
+    descriptor_bytes = subprocess.run([str(driver), "--provider", "bench.test.asset.v0",
+                                       "--plugin", str(plugin), "--descriptor"],
+                                      check=True, capture_output=True).stdout
+    config.write_bytes(generated)
+    descriptor.write_bytes(descriptor_bytes[:-1])
+    output = tmp_path / "valid-output"
+    subprocess.run([str(collector), "--driver", str(driver), "--provider", "bench.test.asset.v0",
+                    "--plugin", str(plugin), "--config-file", str(config),
+                    "--descriptor-file", str(descriptor), "--asset", f"benchmark-test-asset={asset}",
+                    "--output-dir", str(output), "--input", str(input_file)],
+                   check=True, capture_output=True, text=True)
+    summary = json.loads((output / "collector-summary.json").read_text())
+    assert summary["cases"][0]["coverage"] == "complete"
+
+    corrupt = tmp_path / "corrupt.bin"
+    corrupt.write_bytes(b"audio-bench-asset-test-X")
+    bad_output = tmp_path / "invalid-output"
+    failure = subprocess.run([str(collector), "--driver", str(driver), "--provider", "bench.test.asset.v0",
+                              "--plugin", str(plugin), "--config-file", str(config),
+                              "--descriptor-file", str(descriptor), "--asset", f"benchmark-test-asset={corrupt}",
+                              "--output-dir", str(bad_output), "--input", str(input_file)],
+                             capture_output=True, text=True)
+    assert failure.returncode != 0
+
+
 def test_installed_cli_requires_explicit_external_sdk_prefix(tmp_path, monkeypatch):
     fake_module = tmp_path / "venv/lib/python3.12/site-packages/audio_bench/__main__.py"
     fake_module.parent.mkdir(parents=True)

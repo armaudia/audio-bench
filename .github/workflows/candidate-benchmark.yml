@@ -60,7 +60,7 @@ jobs:
   evaluate:
     needs: package
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 120
     permissions:
       contents: read
     steps:
@@ -76,6 +76,40 @@ jobs:
         with:
           name: audio-bench-candidate-plugins
           path: build/candidate-packages
+      - name: Detect real-corpus submissions
+        id: corpus
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          found = any(json.loads(path.read_text()).get('benchmark', {}).get('dataset_id') == 'voicebank-demand-test-v1'
+                      for path in Path('build/candidate-packages').glob('*/submission.json'))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write(f"voicebank={str(found).lower()}\n")
+          PY
+      - name: Verify VoiceBank evaluation rights
+        if: steps.corpus.outputs.voicebank == 'true'
+        run: python scripts/check_corpus_rights.py --dataset voicebank-demand --operation evaluation
+      - name: Restore or initialize the VoiceBank corpus cache
+        if: steps.corpus.outputs.voicebank == 'true'
+        id: dataset-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ runner.temp }}/audio-bench-datasets
+          key: audio-bench-corpus-voicebank-demand-${{ hashFiles('DATA_LICENSE.md', 'scripts/check_corpus_rights.py', 'scripts/prepare_voices_cohort.py', 'scripts/fetch_voicebank_demand.py', 'scripts/fetch_dns5_dev.py', 'src/audio_bench/acquire.py', 'manifests/voices/voices-balanced-realroom-v1/selection.json', 'manifests/voices/voices-balanced-realroom-v1/status.json', 'manifests/voicebank-demand/voicebank-demand-test-v1/provenance.json', 'manifests/voicebank.status.json', 'manifests/dns5.status.json') }}
+      - name: Verify VoiceBank cache or download and verify its pinned cohort
+        if: steps.corpus.outputs.voicebank == 'true'
+        env:
+          CACHE_ROOT: ${{ runner.temp }}/audio-bench-datasets
+          CACHE_HIT: ${{ steps.dataset-cache.outputs.cache-hit }}
+        run: |
+          if [ "$CACHE_HIT" = "true" ]; then
+            python scripts/fetch_voicebank_demand.py --cache "$CACHE_ROOT" --offline
+          else
+            python scripts/fetch_voicebank_demand.py --cache "$CACHE_ROOT"
+          fi
+          python scripts/check_corpus_rights.py --dataset voicebank-demand --operation public-cache --cache-root "$CACHE_ROOT"
+          python scripts/fetch_voicebank_demand.py --cache "$CACHE_ROOT" --offline
       - name: Check out the pinned audio-sdk build dependency
         id: sdk
         run: python -c 'import json,os; p=json.load(open("deps/sdk-source.json")); f=open(os.environ["GITHUB_OUTPUT"],"a"); print("revision="+p["revision"],file=f)'
@@ -111,6 +145,7 @@ jobs:
           )"
           python scripts/evaluate_public_candidates.py --packages build/candidate-packages \
             --sdk-prefix "$sdk_prefix" --native-build build/native --work build/candidate-work \
+            --dataset-cache "${{ runner.temp }}/audio-bench-datasets" \
             --output build/ci/results.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

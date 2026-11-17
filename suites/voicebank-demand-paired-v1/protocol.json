@@ -1,0 +1,17 @@
+{
+  "aggregation": "per-utterance mean and median; deterministic 5000-draw bootstrap of the median, resampled within speaker; interval describes variation within this fixed cohort, not population uncertainty",
+  "bootstrap_draws": 5000,
+  "cohort": "official VoiceBank+DEMAND test split; all 824 paired utterances",
+  "dataset_id": "voicebank-demand-test-v1",
+  "metrics": {
+    "estoi": "pystoi 0.4.1 extended STOI",
+    "si_sdr_db": "zero-mean scale-invariant SDR(output)",
+    "si_sdr_improvement_db": "primary: zero-mean scale-invariant SDR(output) minus SI-SDR(noisy input)",
+    "stoi": "pystoi 0.4.1 standard STOI"
+  },
+  "protocol_id": "voicebank-demand-paired-v1",
+  "resampling": "scipy.signal.resample_poly(up=1, down=3, window=('kaiser', 5.0), padtype='constant')",
+  "sample_rate_hz": 16000,
+  "scored_interval": "complete aligned utterance; no crop, VAD, loudness normalization, or silence trimming",
+  "seed": 20261117
+}

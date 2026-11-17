@@ -48,12 +48,23 @@ def validate_index(index):
             raise ValueError(f"source revision must be a full commit in {row['result_id']}")
         if row.get("model_digest") is not None and not re.fullmatch(r"sha256:[0-9a-f]{64}", row["model_digest"]):
             raise ValueError(f"invalid model digest in {row['result_id']}")
+        if row.get("case_count") is not None and (isinstance(row["case_count"], bool) or
+                not isinstance(row["case_count"], int) or row["case_count"] < 1):
+            raise ValueError(f"invalid case count in {row['result_id']}")
+        for field in ("protocol_url", "dataset_source_url"):
+            url = row.get(field)
+            if url is not None and (not isinstance(url, str) or not url.startswith("https://")):
+                raise ValueError(f"invalid {field} in {row['result_id']}")
         evidence = row.get("evidence")
         if not isinstance(evidence, dict):
             raise ValueError(f"missing evidence provenance in {row['result_id']}")
         fields = ("configuration_id", "sdk_package_digest", "harness_digest", "bundle_manifest_digest") if row["runner_mode"] == "audio-bench" else ("harness_digest", "dataset_manifest_digest")
         for field in fields:
             if not isinstance(evidence.get(field), str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", evidence[field]):
+                raise ValueError(f"invalid evidence {field} in {row['result_id']}")
+        for field, value in evidence.items():
+            if field.endswith("_digest") and value is not None and (not isinstance(value, str) or
+                    not re.fullmatch(r"sha256:[0-9a-f]{64}", value)):
                 raise ValueError(f"invalid evidence {field} in {row['result_id']}")
         if row["runner_mode"] == "submitter-owned":
             for field in ("reference_raw_latency_ms", "candidate_raw_latency_ms", "reference_baseline_latency_ms"):
@@ -73,6 +84,14 @@ def validate_index(index):
                 value = metric.get(field)
                 if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)):
                     raise ValueError(f"invalid metric {field} in {row['result_id']}")
+            mean = metric.get("mean")
+            if mean is not None and (isinstance(mean, bool) or not isinstance(mean, (int, float)) or not math.isfinite(mean)):
+                raise ValueError(f"invalid metric mean in {row['result_id']}")
+            interval = metric.get("median_interval_95")
+            if interval is not None and (not isinstance(interval, list) or len(interval) != 2 or
+                    any(isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)
+                        for value in interval) or interval[0] > interval[1]):
+                raise ValueError(f"invalid metric interval in {row['result_id']}")
             if metric.get("normalized_display_value") is not None and not isinstance(metric["normalized_display_value"], str):
                 raise ValueError(f"invalid normalized display value in {row['result_id']}")
         if row["runner_mode"] == "submitter-owned" and not any(token in row["result_status"].lower() for token in ("submitter", "unverified")):

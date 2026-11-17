@@ -16,6 +16,8 @@
     "provider_id": {"type": "string", "pattern": "^[a-zA-Z0-9._-]{1,120}$"},
     "suite_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,80}$"},
     "dataset_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "dataset_label": {"type": "string", "minLength": 1, "maxLength": 180},
+    "case_count": {"type": "integer", "minimum": 1},
     "model_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
     "source": {
       "type": "object", "additionalProperties": false,
@@ -36,6 +38,8 @@
           "label": {"type": "string", "minLength": 1, "maxLength": 100},
           "unit": {"enum": ["dB", "ratio", "count", "index", "none", "ms"]},
           "median": {"type": "number"},
+          "mean": {"type": "number"},
+          "median_interval_95": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
           "finite_count": {"type": "integer", "minimum": 1},
           "normalized_median": {"type": ["number", "null"]},
           "normalized_unit": {"enum": ["ms", "dB", "ratio", "count", "index", "none"]}
