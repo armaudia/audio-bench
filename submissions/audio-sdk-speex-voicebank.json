@@ -18,6 +18,6 @@
   },
   "execution": {
     "enabled": true,
-    "reason": "Run the pinned audio-sdk Speex reference across the complete rights-approved VoiceBank+DEMAND official test cohort after merge. Publish aggregate measurements and pinned provenance only. Re-trigger after fixing SDK preparation in the candidate workflow."
+    "reason": "Run the pinned audio-sdk Speex reference across the complete rights-approved VoiceBank+DEMAND official test cohort after merge. Publish aggregate measurements and pinned provenance only. Re-trigger after fixing SDK preparation and the pinned artifact downloader SHA."
   }
 }

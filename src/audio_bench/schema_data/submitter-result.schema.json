@@ -25,7 +25,8 @@
       "properties": {
         "visibility": {"const": "private"},
         "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "repository_identity_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+        "repository_identity_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
       }
     },
     "metrics": {

@@ -42,6 +42,11 @@ def _git(source: Path, *args: str) -> str:
                           capture_output=True, text=True, timeout=30).stdout.strip()
 
 
+def _verify_source_checkout(source: dict, checkout_revision: str, checkout_tree: str) -> None:
+    if checkout_revision != source["revision"] and checkout_tree != source.get("tree_sha"):
+        raise ValidationError("candidate checkout must match the pinned commit or its declared Git tree")
+
+
 def _metric_map(row: dict) -> dict[str, dict]:
     return {item["metric_id"]: item for item in row["metrics"]}
 
@@ -75,9 +80,10 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
     if not submission["execution"]["enabled"]:
         raise ValidationError("submission execution is disabled; clear the specific data/model rights gate first")
     candidate_source = candidate_source.resolve(strict=True)
-    source_revision = _git(candidate_source, "rev-parse", "HEAD")
-    if source_revision != submission["source"]["revision"]:
-        raise ValidationError("candidate checkout HEAD does not match the pinned manifest revision")
+    checkout_revision = _git(candidate_source, "rev-parse", "HEAD")
+    source_tree = _git(candidate_source, "rev-parse", "HEAD^{tree}")
+    source_revision = submission["source"]["revision"]
+    _verify_source_checkout(submission["source"], checkout_revision, source_tree)
     manifest, descriptor = load_provider_manifest(candidate_source, submission["provider_id"])
     assets = load_provider_assets(candidate_source, manifest, descriptor)
     work = work.resolve()
@@ -161,7 +167,7 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
         **({"dataset_label": candidate_row["dataset_label"], "case_count": candidate_row["case_count"]} if voicebank else {}),
         "model_digest": submission["model_digest"],
         "source": {"visibility": "private", "revision": source_revision,
-                   "repository_identity_sha256": source_identity},
+                   "repository_identity_sha256": source_identity, "tree_sha": source_tree},
         "metrics": chosen_metrics,
         "baseline": {"provider_id": submission["baseline_provider_id"],
                      "run_id": baseline_result_id,

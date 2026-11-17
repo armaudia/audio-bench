@@ -72,14 +72,14 @@ eligible for the paired leaderboard.
 
 Keep private source, weights, and corpus audio in your own repository or runner.
 The submitter runner reads the private checkout locally, checks it against the
-manifest's pinned commit, runs the built-in reference and candidate with identical
+manifest's pinned commit or the exact Git tree of that commit, runs the built-in reference and candidate with identical
 harness/dataset/settings, and writes a result-only JSON file. It never uploads
 anything. Submit the result under `submissions/results/<submission-id>-<run-id>.json`.
 
 The record contains only:
 
 - a SHA-256 identity for the private repository (`sha256(owner/repository)`),
-  the full source commit, and model digest;
+  the full source commit, its Git tree hash, and model digest;
 - dataset, harness, and runner fingerprints;
 - candidate metrics and a same-run baseline's raw metrics; and
 - raw candidate/reference latencies plus the central reference latency used for

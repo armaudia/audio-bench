@@ -85,6 +85,16 @@ def test_submitter_runner_refuses_disabled_audio_pro_example_before_checkout(tmp
         )
 
 
+def test_submitter_runner_accepts_exact_tree_when_git_commit_object_differs():
+    from run_submitter_owned import _verify_source_checkout
+
+    revision = "a" * 40
+    tree = "b" * 40
+    _verify_source_checkout({"revision": revision, "tree_sha": tree}, "c" * 40, tree)
+    with pytest.raises(ValidationError, match="pinned commit or its declared Git tree"):
+        _verify_source_checkout({"revision": revision, "tree_sha": tree}, "c" * 40, "d" * 40)
+
+
 def test_latency_normalization_keeps_reference_scale_formula():
     assert normalize_latency(candidate_ns=40, reference_ns=10, local_reference_ns=20) == 20
 
