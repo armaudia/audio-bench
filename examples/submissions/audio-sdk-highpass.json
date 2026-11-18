@@ -1,0 +1,24 @@
+{
+  "schema_id": "audio-bench/submission/0.1",
+  "submission_id": "audio-sdk-highpass-reference",
+  "display_name": "audio-sdk high-pass filter",
+  "task": "filtering",
+  "category_id": "real-time-processing",
+  "runner_mode": "audio-bench",
+  "source": {
+    "repository": "armaudia/audio-sdk",
+    "visibility": "public",
+    "revision": "84a102112ce83fb519303a832be15ad88e452d74"
+  },
+  "provider_id": "dsp.highpass80.v0",
+  "model_digest": null,
+  "baseline_provider_id": "dsp.highpass80.v0",
+  "benchmark": {
+    "dataset_id": "synthetic-16k-v1",
+    "suite_id": "realtime-throughput-v1"
+  },
+  "execution": {
+    "enabled": false,
+    "reason": "Example registration only. Runs the performance-only real-time profile on deterministic synthetic fixtures; it does not claim speech-quality qualification."
+  }
+}

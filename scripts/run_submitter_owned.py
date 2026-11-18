@@ -31,6 +31,7 @@ from audio_bench.submission import load_submission, normalize_latency  # noqa: E
 from audio_bench.submitter_results import validate_submitter_result  # noqa: E402
 from build_site_results import result_from_bundle  # noqa: E402
 from evaluate_voicebank import DATASET_ID as VOICEBANK_DATASET_ID, run_voicebank_candidate  # noqa: E402
+from evaluate_realtime import run_realtime_candidate  # noqa: E402
 
 
 def _sha_bytes(data: bytes) -> str:
@@ -61,7 +62,7 @@ def _published_reference(index_path: Path, provider_id: str, suite_id: str, data
     matches = [row for row in index["results"]
                if row.get("runner_mode") == "audio-bench" and row.get("provider_id") == provider_id
                and row.get("suite_id") == suite_id and row.get("dataset_id") == dataset_id
-               and row.get("result_status", "").startswith(("Synthetic functional", "Measured · full paired corpus"))]
+               and row.get("result_status", "").startswith(("Synthetic functional", "Measured · full paired corpus", "Measured · real-time load"))]
     if not matches:
         raise ValidationError("no published central synthetic reference matches this provider, suite, and dataset")
     matches.sort(key=lambda row: row.get("result_id", ""))
@@ -93,6 +94,7 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
     plugin = build_provider_plugin(candidate_source, work / "candidate-build", sdk_prefix)
 
     voicebank = submission["benchmark"]["dataset_id"] == VOICEBANK_DATASET_ID
+    realtime = submission["category_id"] == "real-time-processing"
     if voicebank:
         if dataset_cache is None:
             raise ValidationError("VoiceBank submitter run requires --dataset-cache")
@@ -104,6 +106,14 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
             descriptor_path=descriptor, assets=assets, work=work / "candidate-voicebank")
         provenance = json.loads((ROOT / "manifests/voicebank-demand/voicebank-demand-test-v1/provenance.json").read_text())
         dataset_manifest = canonical.dumps(provenance)
+        baseline_result_id = baseline_row["result_id"]
+    elif realtime:
+        baseline_row = run_realtime_candidate(native_build=native_build, sdk_prefix=sdk_prefix,
+            provider_id=submission["baseline_provider_id"], work=work / "reference-realtime")
+        candidate_row = run_realtime_candidate(native_build=native_build, sdk_prefix=sdk_prefix,
+            provider_id=submission["provider_id"], plugin_path=plugin, descriptor_path=descriptor,
+            assets=assets, work=work / "candidate-realtime")
+        dataset_manifest = (ROOT / "manifests/synthetic/synthetic-16k-v1/dataset.json").read_bytes()
         baseline_result_id = baseline_row["result_id"]
     else:
         baseline_bundle = work / "reference-bundle"
@@ -143,7 +153,7 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
     dataset = canonical.require_canonical(dataset_manifest) if not voicebank else None
     source_identity = _sha_bytes(submission["source"]["repository"].encode("utf-8"))
     harness_revision = _git(ROOT, "rev-parse", "HEAD")
-    request = (None if voicebank else json.loads(next((baseline_bundle / "requests").glob("*.json")).read_text(encoding="utf-8")))
+    request = (None if voicebank or realtime else json.loads(next((baseline_bundle / "requests").glob("*.json")).read_text(encoding="utf-8")))
     chosen_metrics = []
     for metric_id, metric in sorted(candidate_metrics.items()):
         item = {key: metric[key] for key in ("metric_id", "label", "unit", "median", "finite_count")}
@@ -158,7 +168,8 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
         "submission_id": submission["submission_id"],
         "result_id": f"submitter:{submission['submission_id']}:{uuid.uuid4()}",
         "display_name": submission["display_name"],
-        "task": "noise-cancellation",
+        "task": submission["task"],
+        "category_id": submission["category_id"],
         "runner_mode": "submitter-owned",
         "result_status": "Submitter-run · not independently verified",
         "provider_id": submission["provider_id"],
@@ -175,7 +186,7 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
                                   "unit": item["unit"]} for item in baseline_row["metrics"]]},
         "evidence": {
             "harness_revision": harness_revision,
-            "harness_digest": candidate_row["harness_digest"] if voicebank else request["harness_digest"],
+            "harness_digest": candidate_row["harness_digest"] if voicebank or realtime else request["harness_digest"],
             "dataset_manifest_digest": _sha_bytes(dataset_manifest),
             "runner_fingerprint": f"{platform.platform()} / Python {platform.python_version()}",
             "reference_raw_latency_ms": local_baseline_latency,

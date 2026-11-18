@@ -10,7 +10,8 @@
     "submission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"},
     "result_id": {"type": "string", "pattern": "^[a-zA-Z0-9._:-]{8,180}$"},
     "display_name": {"type": "string", "minLength": 1, "maxLength": 120},
-    "task": {"const": "noise-cancellation"},
+    "task": {"enum": ["noise-cancellation", "filtering"]},
+    "category_id": {"enum": ["speech-enhancement", "real-time-processing"]},
     "runner_mode": {"const": "submitter-owned"},
     "result_status": {"const": "Submitter-run · not independently verified"},
     "provider_id": {"type": "string", "pattern": "^[a-zA-Z0-9._-]{1,120}$"},
@@ -37,7 +38,7 @@
         "properties": {
           "metric_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"},
           "label": {"type": "string", "minLength": 1, "maxLength": 100},
-          "unit": {"enum": ["dB", "ratio", "count", "index", "none", "ms"]},
+          "unit": {"enum": ["dB", "ratio", "count", "index", "none", "ms", "bytes", "cores", "s/s", "x real time"]},
           "median": {"type": "number"},
           "mean": {"type": "number"},
           "median_interval_95": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},

@@ -4,12 +4,13 @@
   "title": "Audio benchmark submission metadata",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_id", "submission_id", "display_name", "task", "runner_mode", "source", "provider_id", "model_digest", "baseline_provider_id", "benchmark", "execution"],
+  "required": ["schema_id", "submission_id", "display_name", "task", "category_id", "runner_mode", "source", "provider_id", "model_digest", "baseline_provider_id", "benchmark", "execution"],
   "properties": {
     "schema_id": {"const": "audio-bench/submission/0.1"},
     "submission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"},
     "display_name": {"type": "string", "minLength": 1, "maxLength": 120},
-    "task": {"const": "noise-cancellation"},
+    "task": {"enum": ["noise-cancellation", "filtering"]},
+    "category_id": {"enum": ["speech-enhancement", "real-time-processing"]},
     "runner_mode": {"enum": ["audio-bench", "submitter-owned"]},
     "source": {
       "type": "object", "additionalProperties": false,

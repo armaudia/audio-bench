@@ -22,6 +22,7 @@ from audio_bench.errors import ValidationError  # noqa: E402
 from audio_bench.smoke import run_sdk_smoke  # noqa: E402
 from audio_bench.submission import validate_submission  # noqa: E402
 from evaluate_voicebank import DATASET_ID as VOICEBANK_DATASET_ID, run_voicebank_candidate  # noqa: E402
+from evaluate_realtime import run_realtime_candidate  # noqa: E402
 from build_site_results import result_from_bundle  # noqa: E402
 import validate_site  # noqa: E402
 
@@ -66,7 +67,27 @@ def evaluate(package_root: Path, *, sdk_prefix: Path, native_build: Path,
                 or package["provider_id"] != submission["provider_id"]):
             raise ValidationError(f"candidate package metadata mismatch: {package_dir.name}")
         canonical.require_canonical(descriptor.read_bytes(), path=str(descriptor))
-        if submission["benchmark"]["dataset_id"] == VOICEBANK_DATASET_ID:
+        if submission["category_id"] == "real-time-processing":
+            measured = run_realtime_candidate(
+                native_build=native_build, sdk_prefix=sdk_prefix,
+                provider_id=submission["provider_id"], plugin_path=plugin,
+                descriptor_path=None if builtin else descriptor, assets=asset_paths,
+                work=work / f"{submission['submission_id']}-realtime")
+            row = {
+                "submission_id": submission["submission_id"], "result_id": measured["result_id"],
+                "display_name": submission["display_name"], "task": "Filtering",
+                "category_id": submission["category_id"], "runner_mode": "audio-bench",
+                "result_status": "Measured · real-time load; synthetic input",
+                "provider_id": submission["provider_id"], "suite_id": measured["suite_id"],
+                "dataset_id": measured["dataset_id"], "dataset_label": measured["dataset_label"],
+                "case_count": measured["case_count"], "model_digest": submission["model_digest"],
+                "metrics": measured["metrics"],
+                "evidence": {**measured["evidence"],
+                    "candidate_package_digest": canonical.digest_of(package),
+                    "provider_plugin_digest": package.get("plugin_sha256"),
+                    "provider_descriptor_digest": package["descriptor_sha256"]},
+            }
+        elif submission["benchmark"]["dataset_id"] == VOICEBANK_DATASET_ID:
             if dataset_cache is None:
                 raise ValidationError("VoiceBank evaluation requires --dataset-cache")
             measured = run_voicebank_candidate(
@@ -79,6 +100,7 @@ def evaluate(package_root: Path, *, sdk_prefix: Path, native_build: Path,
             row = {
                 "submission_id": submission["submission_id"], "result_id": measured["result_id"],
                 "display_name": submission["display_name"], "task": "Noise cancellation",
+                "category_id": submission["category_id"],
                 "runner_mode": "audio-bench", "result_status": "Measured · full paired corpus",
                 "provider_id": submission["provider_id"], "suite_id": measured["suite_id"],
                 "dataset_id": measured["dataset_id"], "dataset_label": measured["dataset_label"],
@@ -112,7 +134,7 @@ def evaluate(package_root: Path, *, sdk_prefix: Path, native_build: Path,
                           repository=ROOT, provider_id=submission["provider_id"],
                           plugin_path=plugin,
                           descriptor_path=None if builtin else descriptor)
-            row = result_from_bundle(bundle)
+            row = result_from_bundle(bundle, submission["category_id"])
         source = submission["source"]
         row.update({
             "submission_id": submission["submission_id"],

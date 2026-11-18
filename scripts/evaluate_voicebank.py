@@ -220,6 +220,20 @@ def run_voicebank_candidate(*, native_build: Path, sdk_prefix: Path, cache_root:
                             "finite_count": frame_count, "display_value": f"{latency_ms:.4g} ms",
                             "raw_display_value": f"{latency_ms:.4g} ms",
                             "normalized_display_value": None})
+        accepted_samples = sum(int(item["accepted_samples"]) for item in collector_summary["cases"])
+        wall_ns = int(collector_summary["wall_ns"])
+        audio_seconds = accepted_samples / 16000
+        for metric_id, label, value, unit in (
+            ("cpu_occupancy_cores", "CPU use", cpu_ns / wall_ns, "cores"),
+            ("cpu_seconds_per_audio_second", "CPU seconds per audio second", cpu_ns / 1e9 / audio_seconds, "s/s"),
+            ("throughput_audio_seconds_per_wall_second", "Audio seconds processed per wall second", audio_seconds / (wall_ns / 1e9), "x real time"),
+            ("peak_worker_rss_bytes", "Worker peak memory", int(collector_summary["direct_child_max_rss_bytes"]), "bytes"),
+        ):
+            metric_rows.append({"metric_id": metric_id, "label": label, "unit": unit,
+                                "median": value, "mean": value, "finite_count": 1,
+                                "display_value": f"{value:.4g} {unit}",
+                                "raw_display_value": f"{value:.4g} {unit}",
+                                "normalized_display_value": None})
         sdk_archive = sdk_prefix.parent / "audio-sdk-0.1.0.tar.gz"
         if not sdk_archive.is_file():
             raise ValidationError("pinned SDK package archive is missing")

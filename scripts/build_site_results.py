@@ -42,7 +42,7 @@ def _bundle_manifest_digest(bundle: Path) -> str:
     return canonical.digest_of({"root_manifest_records": records})
 
 
-def result_from_bundle(bundle: Path) -> dict[str, Any]:
+def result_from_bundle(bundle: Path, category_id: str | None = None) -> dict[str, Any]:
     """Create a public summary row from an intact, valid bundle; never copy its audio."""
     report = validate_bundle(bundle)
     if not report.valid:
@@ -55,6 +55,7 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
     summary = json.loads((attempt / "summary.json").read_text(encoding="utf-8"))
     observations = _load_jsonl(attempt / "observations.jsonl")
     provider_id = summary.get("provider_id")
+    category_id = category_id or ("real-time-processing" if provider_id == "dsp.highpass80.v0" else "speech-enhancement")
     if summary.get("label") != "synthetic functional integration; not qualified":
         raise ValueError("bundle is not the supported synthetic functional smoke")
     metrics = []
@@ -93,6 +94,29 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
             "raw_display_value": f"{latency:.4g} ms",
             "normalized_display_value": None,
         })
+    if category_id == "real-time-processing":
+        metrics = [item for item in metrics if item["metric_id"] == "latency_ms"]
+    accepted_samples = sum(int(case.get("accepted_samples", case["source_samples"]))
+                           for case in collector.get("cases", []))
+    wall_ns = int(collector.get("wall_ns", "0"))
+    rss_bytes = int(collector.get("direct_child_max_rss_bytes", "0"))
+    if accepted_samples > 0 and wall_ns > 0 and cpu_ns > 0:
+        audio_seconds = accepted_samples / 16000
+        operational = [
+            ("cpu_occupancy_cores", "CPU use", cpu_ns / wall_ns, "cores"),
+            ("cpu_seconds_per_audio_second", "CPU seconds per audio second", cpu_ns / 1e9 / audio_seconds, "s/s"),
+            ("throughput_audio_seconds_per_wall_second", "Audio seconds processed per wall second", audio_seconds / (wall_ns / 1e9), "x real time"),
+        ]
+        metrics.extend({"metric_id": metric_id, "label": label, "unit": unit,
+                        "median": value, "mean": value, "finite_count": 1,
+                        "display_value": f"{value:.4g} {unit}", "raw_display_value": f"{value:.4g} {unit}",
+                        "normalized_display_value": None}
+                       for metric_id, label, value, unit in operational)
+    if rss_bytes > 0:
+        metrics.append({"metric_id": "peak_worker_rss_bytes", "label": "Worker peak memory",
+                        "unit": "bytes", "median": rss_bytes, "mean": rss_bytes, "finite_count": 1,
+                        "display_value": f"{rss_bytes / (1024 * 1024):.3g} MiB",
+                        "raw_display_value": f"{rss_bytes} bytes", "normalized_display_value": None})
     dataset = json.loads((bundle / "dataset.json").read_text(encoding="utf-8"))
     request_files = sorted((bundle / "requests").glob("*.json"))
     request = json.loads(request_files[0].read_text(encoding="utf-8"))
@@ -102,7 +126,8 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
         "result_id": run["run_id"] + ":" + run["attempt_id"],
         "display_name": "Built-in " + {"speex.ns.v0": "Speex noise suppression",
                                            "dsp.highpass80.v0": "High-pass filter"}.get(provider_id, provider_id),
-        "task": "Noise cancellation",
+        "task": "Filtering" if category_id == "real-time-processing" else "Noise cancellation",
+        "category_id": category_id,
         "runner_mode": "audio-bench",
         "result_status": "Synthetic functional check · not qualification",
         "provider_id": provider_id,
@@ -130,6 +155,7 @@ def result_from_bundle(bundle: Path) -> dict[str, Any]:
 def result_from_submitter_file(path: Path) -> dict[str, Any]:
     """Convert an explicitly unverified submitter record to the Pages presentation shape."""
     record = load_submitter_result(path)
+    category_id = record.get("category_id", "real-time-processing" if record["task"] == "filtering" else "speech-enhancement")
     metrics = []
     for metric in record["metrics"]:
         normalized = metric.get("normalized_median")
@@ -149,7 +175,8 @@ def result_from_submitter_file(path: Path) -> dict[str, Any]:
         "submission_id": record["submission_id"],
         "result_id": record["result_id"],
         "display_name": record["display_name"],
-        "task": "Noise cancellation",
+        "task": "Filtering" if category_id == "real-time-processing" else "Noise cancellation",
+        "category_id": category_id,
         "runner_mode": "submitter-owned",
         "result_status": record["result_status"],
         "provider_id": record["provider_id"],
@@ -255,6 +282,11 @@ def merge_index_files(existing: Path, additions: Path, submitter_paths: list[Pat
 
 
 def _index(rows: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    for row in rows.values():
+        if "category_id" not in row:
+            realtime = row.get("task", "").lower() == "filtering" or row.get("provider_id") == "dsp.highpass80.v0"
+            row["category_id"] = "real-time-processing" if realtime else "speech-enhancement"
+            row["task"] = "Filtering" if realtime else "Noise cancellation"
     ordered = sorted(rows.values(), key=lambda row: (row["submission_id"], row["result_id"]))
     return {
         "schema_id": "audio-bench/site-results/0.1",
