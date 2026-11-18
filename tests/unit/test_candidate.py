@@ -94,9 +94,9 @@ def test_candidate_build_uses_the_running_python_interpreter(tmp_path, monkeypat
     assert f"-DPython3_EXECUTABLE={sys.executable}" in commands[0]
 
 
-def test_disabled_public_example_packages_to_an_empty_marker(tmp_path):
+def test_disabled_submission_template_packages_to_an_empty_marker(tmp_path):
     output = tmp_path / "packages"
-    count = packager.package([ROOT / "examples/submissions/audio-sdk.json"],
+    count = packager.package([ROOT / "submissions/_template.json"],
                              sdk_prefix=tmp_path / "sdk", output=output)
     assert count == 0
     assert json.loads((output / "no-enabled-public-submissions.json").read_text()) == {}
@@ -104,6 +104,11 @@ def test_disabled_public_example_packages_to_an_empty_marker(tmp_path):
 
 def test_enabled_pinned_sdk_provider_packages_as_builtin_without_candidate_checkout(monkeypatch, tmp_path):
     revision = "84a102112ce83fb519303a832be15ad88e452d74"
+    submission = json.loads((ROOT / "submissions/_template.json").read_text())
+    submission["source"]["revision"] = revision
+    submission["execution"]["enabled"] = True
+    manifest = tmp_path / "submission.json"
+    manifest.write_text(json.dumps(submission))
 
     def fake_run(command, **kwargs):
         if command[-2:] == ["rev-parse", "HEAD"]:
@@ -112,9 +117,9 @@ def test_enabled_pinned_sdk_provider_packages_as_builtin_without_candidate_check
 
     monkeypatch.setattr(packager.subprocess, "run", fake_run)
     output = tmp_path / "packages"
-    assert packager.package([ROOT / "submissions/audio-sdk-speex-voicebank.json"],
+    assert packager.package([manifest],
                             sdk_prefix=tmp_path / "sdk", output=output) == 1
-    package_dir = output / "audio-sdk-speex-voicebank"
+    package_dir = output / submission["submission_id"]
     package = json.loads((package_dir / "package.json").read_text())
     assert package["builtin_provider"] is True
     assert package["plugin_file"] is None

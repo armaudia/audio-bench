@@ -67,7 +67,7 @@
         "runner_fingerprint": {"type": "string", "minLength": 1, "maxLength": 300},
         "reference_raw_latency_ms": {"type": "number", "exclusiveMinimum": 0},
         "candidate_raw_latency_ms": {"type": "number", "exclusiveMinimum": 0},
-        "reference_baseline_latency_ms": {"type": "number", "exclusiveMinimum": 0},
+        "reference_baseline_latency_ms": {"type": ["number", "null"], "exclusiveMinimum": 0},
         "workflow_attestation_url": {"type": ["string", "null"], "pattern": "^https://[^\\s]+$"}
       }
     }

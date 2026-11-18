@@ -21,7 +21,7 @@ jobs:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           persist-credentials: false
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Candidate benchmark' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
         with:
           name: audio-bench-results
           path: build/ci
@@ -55,8 +55,14 @@ jobs:
         run: python -m pip install -r locks/requirements-ci.txt
       - name: Merge validated CI results into cumulative Pages data
         if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && contains(fromJSON('["CI", "Candidate benchmark"]'), github.event.workflow_run.name) && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+        env:
+          SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
         run: |
-          python scripts/build_site_results.py --existing results-store/site/data/results.json --from-index build/ci/results.json --submitter-results submissions/results --remove-results submissions/removals --output results-store/site/data/results.json
+          args=()
+          if [ "$SOURCE_WORKFLOW" = "Candidate benchmark" ]; then
+            args+=(--from-index build/ci/results.json)
+          fi
+          python scripts/build_site_results.py --existing results-store/site/data/results.json "${args[@]}" --submitter-results submissions/results --remove-results submissions/removals --output results-store/site/data/results.json
           cp results-store/site/data/results.json site/data/results.json
           python scripts/validate_site.py
           git -C results-store config user.name github-actions[bot]

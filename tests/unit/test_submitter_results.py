@@ -19,7 +19,7 @@ import build_site_results as publisher
 def record():
     return {
         "schema_id": "audio-bench/submitter-result/0.1",
-        "submission_id": "audio-pro-tiny16",
+        "submission_id": "private-pipeline",
         "result_id": "private-run-20261115-001",
         "display_name": "Private pipeline example",
         "task": "noise-cancellation",
@@ -91,6 +91,19 @@ def test_submitter_result_requires_unverified_label():
     value["result_status"] = "Audio-bench verified"
     with pytest.raises(ValidationError, match="result_status"):
         validate_submitter_result(value)
+
+
+def test_realtime_submitter_result_can_disclose_raw_latency_without_central_calibration():
+    value = record()
+    value["task"] = "filtering"
+    value["category_id"] = "real-time-processing"
+    value["suite_id"] = "realtime-throughput-v1"
+    value["metrics"] = [
+        {"metric_id": "latency_ms", "label": "CPU time per frame", "unit": "ms",
+         "median": 20.0, "finite_count": 24}
+    ]
+    value["evidence"]["reference_baseline_latency_ms"] = None
+    assert validate_submitter_result(value)["metrics"][0].get("normalized_median") is None
 
 
 def test_result_merge_rejects_conflicting_result_ids(tmp_path):

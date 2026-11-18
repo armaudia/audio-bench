@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import platform
 import subprocess
 import sys
@@ -52,28 +53,31 @@ def _metric_map(row: dict) -> dict[str, dict]:
     return {item["metric_id"]: item for item in row["metrics"]}
 
 
-def _published_reference(index_path: Path, provider_id: str, suite_id: str, dataset_id: str) -> dict:
+def _runner_calibration(path: Path, provider_id: str, suite_id: str, dataset_id: str) -> float | None:
     try:
-        index = json.loads(index_path.read_text(encoding="utf-8"))
+        calibration = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
-        raise ValidationError(f"cannot read published reference index: {exc}", path=str(index_path)) from exc
-    if index.get("schema_id") != "audio-bench/site-results/0.1" or not isinstance(index.get("results"), list):
-        raise ValidationError("published reference index has an unsupported schema")
-    matches = [row for row in index["results"]
-               if row.get("runner_mode") == "audio-bench" and row.get("provider_id") == provider_id
-               and row.get("suite_id") == suite_id and row.get("dataset_id") == dataset_id
-               and row.get("result_status", "").startswith(("Synthetic functional", "Measured · full paired corpus", "Measured · real-time load"))]
+        raise ValidationError(f"cannot read runner calibration: {exc}", path=str(path)) from exc
+    if (calibration.get("schema_id") != "audio-bench/runner-calibration/0.1"
+            or not isinstance(calibration.get("calibrations"), list)):
+        raise ValidationError("runner calibration has an unsupported schema")
+    matches = [row for row in calibration["calibrations"]
+               if row.get("baseline_provider_id") == provider_id
+               and row.get("suite_id") == suite_id and row.get("dataset_id") == dataset_id]
     if not matches:
-        raise ValidationError("no published central synthetic reference matches this provider, suite, and dataset")
-    matches.sort(key=lambda row: row.get("result_id", ""))
-    metric = _metric_map(matches[-1]).get("latency_ms")
-    if not metric or not isinstance(metric.get("median"), (int, float)) or metric["median"] <= 0:
-        raise ValidationError("published central reference has no positive latency_ms measurement")
-    return matches[-1]
+        if suite_id == "realtime-throughput-v1":
+            return None
+        raise ValidationError("no audio-bench runner calibration matches this provider, suite, and dataset")
+    if len(matches) != 1:
+        raise ValidationError("runner calibration contains duplicate anchors for this provider, suite, and dataset")
+    latency = matches[0].get("latency_ms")
+    if isinstance(latency, bool) or not isinstance(latency, (int, float)) or not math.isfinite(latency) or latency <= 0:
+        raise ValidationError("runner calibration has no finite positive latency_ms")
+    return float(latency)
 
 
 def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: Path,
-                  native_build: Path, work: Path, reference_index: Path,
+                  native_build: Path, work: Path, reference_calibration: Path,
                   dataset_cache: Path | None = None) -> dict:
     submission = load_submission(submission_path)
     if submission["runner_mode"] != "submitter-owned" or submission["source"]["visibility"] != "private":
@@ -133,21 +137,20 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
             or candidate_row["suite_id"] != baseline_row["suite_id"]
             or baseline_row["dataset_id"] != candidate_row["dataset_id"]):
         raise ValidationError("actual run suite/dataset does not match the submission")
-    central = _published_reference(reference_index, submission["baseline_provider_id"],
-                                   baseline_row["suite_id"], baseline_row["dataset_id"])
+    central_latency = _runner_calibration(reference_calibration, submission["baseline_provider_id"],
+                                          baseline_row["suite_id"], baseline_row["dataset_id"])
     baseline_metrics = _metric_map(baseline_row)
     candidate_metrics = _metric_map(candidate_row)
     local_baseline_latency = baseline_metrics.get("latency_ms", {}).get("median")
     candidate_latency = candidate_metrics.get("latency_ms", {}).get("median")
-    central_latency = _metric_map(central)["latency_ms"]["median"]
-    if not all(isinstance(x, (int, float)) and x > 0 for x in
-               (local_baseline_latency, candidate_latency, central_latency)):
-        raise ValidationError("both local runs and the central reference must have positive latency")
-    normalized_latency = normalize_latency(candidate_latency, central_latency, local_baseline_latency)
+    if not all(isinstance(x, (int, float)) and x > 0 for x in (local_baseline_latency, candidate_latency)):
+        raise ValidationError("both local runs must have positive latency")
+    normalized_latency = (normalize_latency(candidate_latency, central_latency, local_baseline_latency)
+                          if central_latency is not None else None)
     metrics = []
     for metric_id, metric in sorted(candidate_metrics.items()):
         item = {key: metric[key] for key in ("metric_id", "label", "unit", "median", "finite_count")}
-        if metric_id == "latency_ms":
+        if metric_id == "latency_ms" and normalized_latency is not None:
             item.update(normalized_median=normalized_latency, normalized_unit="ms")
         metrics.append(item)
     dataset = canonical.require_canonical(dataset_manifest) if not voicebank else None
@@ -160,7 +163,7 @@ def create_result(*, submission_path: Path, candidate_source: Path, sdk_prefix: 
         for key in ("mean", "median_interval_95"):
             if key in metric and metric[key] is not None:
                 item[key] = metric[key]
-        if metric_id == "latency_ms":
+        if metric_id == "latency_ms" and normalized_latency is not None:
             item.update(normalized_median=normalized_latency, normalized_unit="ms")
         chosen_metrics.append(item)
     result = {
@@ -205,14 +208,15 @@ def main() -> None:
     parser.add_argument("--sdk-prefix", type=Path, required=True)
     parser.add_argument("--native-build", type=Path, required=True)
     parser.add_argument("--work", type=Path, required=True)
-    parser.add_argument("--reference-index", type=Path, default=ROOT / "site/data/results.json")
+    parser.add_argument("--reference-calibration", type=Path,
+                        default=ROOT / "qualification/runner-calibration.json")
     parser.add_argument("--dataset-cache", type=Path, help="external verified VoiceBank cache root")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
         record = create_result(submission_path=args.submission, candidate_source=args.candidate_source,
                                sdk_prefix=args.sdk_prefix, native_build=args.native_build,
-                               work=args.work, reference_index=args.reference_index,
+                               work=args.work, reference_calibration=args.reference_calibration,
                                dataset_cache=args.dataset_cache)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(record, indent=2, sort_keys=True, allow_nan=False) + "\n",

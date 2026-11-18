@@ -1,0 +1,5 @@
+{
+  "schema_id": "audio-bench/result-removal/0.1",
+  "result_id": "submitter:audio-pro-tiny16-voicebank:849756b2-7dba-46d1-8aec-f74abf5d4fb8",
+  "reason": "Clean release slate: remove prior published benchmark rows."
+}
