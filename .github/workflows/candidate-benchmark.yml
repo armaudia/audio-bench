@@ -42,7 +42,14 @@ jobs:
           HEAD_SHA: ${{ github.sha }}
         run: |
           mkdir -p build
-          mapfile -d '' -t submissions < <(git diff --name-only --diff-filter=ACMR -z "$BEFORE_SHA" "$HEAD_SHA" -- 'submissions/*.json')
+          mapfile -d '' -t changed_paths < <(git diff --name-only --diff-filter=ACMR -z "$BEFORE_SHA" "$HEAD_SHA" -- submissions)
+          submissions=()
+          for path in "${changed_paths[@]}"; do
+            manifest="${path#submissions/}"
+            if [[ "$manifest" == *.json && "$manifest" != */* ]]; then
+              submissions+=("$path")
+            fi
+          done
           sdk_prefix="$(python - <<'PY'
           import json
           from pathlib import Path
