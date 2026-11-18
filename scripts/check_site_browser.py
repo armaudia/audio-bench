@@ -18,7 +18,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--results", type=Path, help="exercise populated result cards using this validated index")
+parser.add_argument("--results", type=Path, help="exercise the results table using this validated index")
 args = parser.parse_args()
 with tempfile.TemporaryDirectory(prefix="audio-bench-site-") as temporary:
     site = Path(temporary) / "site"
@@ -41,14 +41,14 @@ with tempfile.TemporaryDirectory(prefix="audio-bench-site-") as temporary:
             assert page.get_by_role("link", name="How to submit").is_visible()
             assert page.locator("#result-count").inner_text() == str(expected)
             if expected:
-                assert page.locator(".result-card").count() == expected
-                assert page.get_by_text("Measurement provenance").first.is_visible()
+                assert page.locator(".results-table tbody tr").count() == expected
+                assert page.get_by_text("Provenance").first.is_visible()
                 page.get_by_role("searchbox", name="Search pipelines").fill("speex")
-                assert page.locator(".result-card").count() < expected
+                assert page.locator(".results-table tbody tr").count() < expected
                 page.get_by_role("button", name="Clear filters").click()
-                assert page.locator(".result-card").count() == expected
+                assert page.locator(".results-table tbody tr").count() == expected
             else:
-                assert page.get_by_text("No validated main-branch benchmark run has been published yet.").is_visible()
+                assert page.get_by_text("No validated benchmark run has been published yet.").is_visible()
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
             assert page.locator("#search").is_visible()
