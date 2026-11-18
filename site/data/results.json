@@ -48,6 +48,7 @@
         "run_id": "524c05ae-3f9e-4e9a-b6f6-afc23285db0c:67ae0806-8529-449a-920a-f5103addaf30"
       },
       "case_count": null,
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "dataset_label": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "audio-pro FastEnhancer Tiny16 (submitter-run example)",
@@ -206,6 +207,7 @@
         "run_id": "voicebank:speex.ns.v0:67a9314f-5958-470c-96f3-00681581c179"
       },
       "case_count": 824,
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:cfdc29c6655d195b806c58e75266c05e6cb974ac73c1c1291000af9f386e3f74",
       "dataset_label": "VoiceBank+DEMAND official test split (824 paired utterances)",
       "dataset_source_url": "https://datashare.ed.ac.uk/handle/10283/2791",
@@ -311,6 +313,7 @@
     },
     {
       "case_count": 824,
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:cfdc29c6655d195b806c58e75266c05e6cb974ac73c1c1291000af9f386e3f74",
       "dataset_label": "VoiceBank+DEMAND official test split (824 paired utterances)",
       "dataset_source_url": "https://datashare.ed.ac.uk/handle/10283/2791",
@@ -420,6 +423,7 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -532,9 +536,10 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -647,9 +652,10 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -755,9 +761,10 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -870,9 +877,93 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "real-time-processing",
+      "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
+      "display_name": "Built-in High-pass filter",
+      "evidence": {
+        "attempt_id": "5c6df034-9fb9-40c0-b735-aae69dabff8d",
+        "bundle_manifest_digest": "sha256:cef3b0e681a6aee752149c271673beb53150c32bbed12f528bb05d606ce5744e",
+        "configuration_id": "sha256:44c6304e693a8b1a46306e730757de7bc509de4fdb03f4e36282de2cf7d3c8d3",
+        "harness_digest": "sha256:fef2d337dbb3e396c75ef0cdf665084dd67e582ddae76da67a4543905f5b4c7d",
+        "machine_fingerprint": "Linux x86_64; not qualified",
+        "run_id": "54a06502-3bb1-45f1-a360-1e24ec1ed38e",
+        "sdk_package_digest": "sha256:31332110ff8de4a6e79531f269c3f3a136fb24b23325de8f532151aa47c93781"
+      },
+      "metrics": [
+        {
+          "display_value": "0.01279 ms",
+          "finite_count": 2400,
+          "label": "CPU time per 10 ms frame",
+          "median": 0.0127925,
+          "metric_id": "latency_ms",
+          "normalized_display_value": null,
+          "raw_display_value": "0.01279 ms",
+          "unit": "ms"
+        },
+        {
+          "display_value": "0.3248 cores",
+          "finite_count": 1,
+          "label": "CPU use",
+          "mean": 0.32482236389385394,
+          "median": 0.32482236389385394,
+          "metric_id": "cpu_occupancy_cores",
+          "normalized_display_value": null,
+          "raw_display_value": "0.3248 cores",
+          "unit": "cores"
+        },
+        {
+          "display_value": "0.001279 s/s",
+          "finite_count": 1,
+          "label": "CPU seconds per audio second",
+          "mean": 0.00127925,
+          "median": 0.00127925,
+          "metric_id": "cpu_seconds_per_audio_second",
+          "normalized_display_value": null,
+          "raw_display_value": "0.001279 s/s",
+          "unit": "s/s"
+        },
+        {
+          "display_value": "253.9 x real time",
+          "finite_count": 1,
+          "label": "Audio seconds processed per wall second",
+          "mean": 253.91625084530307,
+          "median": 253.91625084530307,
+          "metric_id": "throughput_audio_seconds_per_wall_second",
+          "normalized_display_value": null,
+          "raw_display_value": "253.9 x real time",
+          "unit": "x real time"
+        },
+        {
+          "display_value": "4.21 MiB",
+          "finite_count": 1,
+          "label": "Worker peak memory",
+          "mean": 4419584,
+          "median": 4419584,
+          "metric_id": "peak_worker_rss_bytes",
+          "normalized_display_value": null,
+          "raw_display_value": "4419584 bytes",
+          "unit": "bytes"
+        }
+      ],
+      "model_digest": null,
+      "provider_id": "dsp.highpass80.v0",
+      "result_id": "54a06502-3bb1-45f1-a360-1e24ec1ed38e:5c6df034-9fb9-40c0-b735-aae69dabff8d",
+      "result_status": "Synthetic functional check \u00b7 not qualification",
+      "runner_mode": "audio-bench",
+      "source": {
+        "repository": "armaudia/audio-sdk",
+        "revision": "84a102112ce83fb519303a832be15ad88e452d74",
+        "url": "https://github.com/armaudia/audio-sdk"
+      },
+      "submission_id": "reference-dsp.highpass80.v0",
+      "suite_id": "synthetic-smoke-v1",
+      "task": "Filtering"
+    },
+    {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -978,9 +1069,10 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -1086,9 +1178,10 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -1194,9 +1287,10 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -1309,9 +1403,10 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "real-time-processing",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in High-pass filter",
       "evidence": {
@@ -1424,9 +1519,10 @@
       },
       "submission_id": "reference-dsp.highpass80.v0",
       "suite_id": "synthetic-smoke-v1",
-      "task": "Noise cancellation"
+      "task": "Filtering"
     },
     {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -1535,6 +1631,7 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -1643,6 +1740,7 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -1758,6 +1856,167 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "speech-enhancement",
+      "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
+      "display_name": "Built-in Speex noise suppression",
+      "evidence": {
+        "attempt_id": "ca53c625-0d54-483d-85f6-8d565243762e",
+        "bundle_manifest_digest": "sha256:a2933da0f4d2eb4be3325ca9fa3a5a2287fcaa7d64b7790e842d88f56cc917a8",
+        "configuration_id": "sha256:de37eff9dc87bd971925cc17f7d0c02366c83947859fa048499368e5838bda29",
+        "harness_digest": "sha256:fef2d337dbb3e396c75ef0cdf665084dd67e582ddae76da67a4543905f5b4c7d",
+        "machine_fingerprint": "Linux x86_64; not qualified",
+        "run_id": "63634f1c-e67c-4710-bf2e-51f992e0fbc0",
+        "sdk_package_digest": "sha256:31332110ff8de4a6e79531f269c3f3a136fb24b23325de8f532151aa47c93781"
+      },
+      "metrics": [
+        {
+          "display_value": "0 count",
+          "finite_count": 24,
+          "label": "clipping_count",
+          "mean": 0.0,
+          "median": 0.0,
+          "metric_id": "clipping_count",
+          "normalized_display_value": null,
+          "raw_display_value": "0 count",
+          "unit": "count"
+        },
+        {
+          "display_value": "0.3605 index",
+          "finite_count": 24,
+          "label": "estoi",
+          "mean": 0.370176915610914,
+          "median": 0.36053715015104604,
+          "metric_id": "estoi",
+          "normalized_display_value": null,
+          "raw_display_value": "0.3605 index",
+          "unit": "index"
+        },
+        {
+          "display_value": "0.3844 none",
+          "finite_count": 24,
+          "label": "max_abs_sample",
+          "mean": 0.3887786865234375,
+          "median": 0.3843994140625,
+          "metric_id": "max_abs_sample",
+          "normalized_display_value": null,
+          "raw_display_value": "0.3844 none",
+          "unit": "none"
+        },
+        {
+          "display_value": "0.8258 ratio",
+          "finite_count": 24,
+          "label": "rms_gain_ratio",
+          "mean": 0.8254324064941981,
+          "median": 0.8257525736028989,
+          "metric_id": "rms_gain_ratio",
+          "normalized_display_value": null,
+          "raw_display_value": "0.8258 ratio",
+          "unit": "ratio"
+        },
+        {
+          "display_value": "6.42 dB",
+          "finite_count": 24,
+          "label": "si_sdr_db",
+          "mean": 6.4142946304164115,
+          "median": 6.419978555600009,
+          "metric_id": "si_sdr_db",
+          "normalized_display_value": null,
+          "raw_display_value": "6.42 dB",
+          "unit": "dB"
+        },
+        {
+          "display_value": "0.8929 dB",
+          "finite_count": 24,
+          "label": "si_sdr_improvement_db",
+          "mean": 0.8909805874234232,
+          "median": 0.8929282593464238,
+          "metric_id": "si_sdr_improvement_db",
+          "normalized_display_value": null,
+          "raw_display_value": "0.8929 dB",
+          "unit": "dB"
+        },
+        {
+          "display_value": "0.6812 index",
+          "finite_count": 24,
+          "label": "stoi",
+          "mean": 0.6829688048300205,
+          "median": 0.6812345983289658,
+          "metric_id": "stoi",
+          "normalized_display_value": null,
+          "raw_display_value": "0.6812 index",
+          "unit": "index"
+        },
+        {
+          "display_value": "0.02801 ms",
+          "finite_count": 2400,
+          "label": "CPU time per 10 ms frame",
+          "median": 0.028005416666666668,
+          "metric_id": "latency_ms",
+          "normalized_display_value": null,
+          "raw_display_value": "0.02801 ms",
+          "unit": "ms"
+        },
+        {
+          "display_value": "0.5041 cores",
+          "finite_count": 1,
+          "label": "CPU use",
+          "mean": 0.5040787873352172,
+          "median": 0.5040787873352172,
+          "metric_id": "cpu_occupancy_cores",
+          "normalized_display_value": null,
+          "raw_display_value": "0.5041 cores",
+          "unit": "cores"
+        },
+        {
+          "display_value": "0.002801 s/s",
+          "finite_count": 1,
+          "label": "CPU seconds per audio second",
+          "mean": 0.0028005416666666665,
+          "median": 0.0028005416666666665,
+          "metric_id": "cpu_seconds_per_audio_second",
+          "normalized_display_value": null,
+          "raw_display_value": "0.002801 s/s",
+          "unit": "s/s"
+        },
+        {
+          "display_value": "180 x real time",
+          "finite_count": 1,
+          "label": "Audio seconds processed per wall second",
+          "mean": 179.9933181980452,
+          "median": 179.9933181980452,
+          "metric_id": "throughput_audio_seconds_per_wall_second",
+          "normalized_display_value": null,
+          "raw_display_value": "180 x real time",
+          "unit": "x real time"
+        },
+        {
+          "display_value": "4.56 MiB",
+          "finite_count": 1,
+          "label": "Worker peak memory",
+          "mean": 4784128,
+          "median": 4784128,
+          "metric_id": "peak_worker_rss_bytes",
+          "normalized_display_value": null,
+          "raw_display_value": "4784128 bytes",
+          "unit": "bytes"
+        }
+      ],
+      "model_digest": null,
+      "provider_id": "speex.ns.v0",
+      "result_id": "63634f1c-e67c-4710-bf2e-51f992e0fbc0:ca53c625-0d54-483d-85f6-8d565243762e",
+      "result_status": "Synthetic functional check \u00b7 not qualification",
+      "runner_mode": "audio-bench",
+      "source": {
+        "repository": "armaudia/audio-sdk",
+        "revision": "84a102112ce83fb519303a832be15ad88e452d74",
+        "url": "https://github.com/armaudia/audio-sdk"
+      },
+      "submission_id": "reference-speex.ns.v0",
+      "suite_id": "synthetic-smoke-v1",
+      "task": "Noise cancellation"
+    },
+    {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -1873,6 +2132,7 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -1981,6 +2241,7 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -2089,6 +2350,7 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -2204,6 +2466,7 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -2319,6 +2582,7 @@
       "task": "Noise cancellation"
     },
     {
+      "category_id": "speech-enhancement",
       "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
       "display_name": "Built-in Speex noise suppression",
       "evidence": {
@@ -2435,5 +2699,5 @@
     }
   ],
   "schema_id": "audio-bench/site-results/0.1",
-  "updated_at": "2026-11-17T20:25:46Z"
+  "updated_at": "2026-11-18T17:29:06Z"
 }
