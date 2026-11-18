@@ -1,34 +1,38 @@
 # audio-bench
 
-Local reproducible evaluation and evidence reports for audio-sdk contract 0.1.
-Implemented benchmark scope: two built-in DSP providers, 24 deterministic
-synthetic cases, seven quality/diagnostic metrics, immutable evidence, validation,
-and an interactive static report. Synthetic cases are functional fixtures, not a
-speech-quality benchmark.
+Audio-bench provides reproducible benchmarks for C audio pipelines. It currently
+supports two result categories:
+
+- **Speech enhancement:** paired quality and runtime measurements on the frozen
+  824-pair VoiceBank+DEMAND test cohort, plus synthetic integration checks.
+- **Real-time processing:** paced synthetic-load measurements of stream capacity,
+  CPU use, memory, throughput, and frame-completion lateness.
+
+The public report is [armaudia.github.io/audio-bench](https://armaudia.github.io/audio-bench/).
+This repository is being released with a clean report: there are no active
+submission manifests, submitter result records, removal requests, or published
+result rows. The blank report is intentional; the first accepted benchmark will
+populate it.
 
 ## Submit a pipeline
 
-See [the submission protocol](docs/SUBMISSIONS.md). A submission PR contains only
-metadata and is validated without checking out or executing the referenced code.
-The merged `main` CI runs the built-in synthetic smoke suite. An enabled public
-candidate registration is built and benchmarked by a separate post-merge workflow.
-Successful records are validated and added to the cumulative Pages results at
-<https://armaudia.github.io/audio-bench/>. These are synthetic functional checks,
-not third-party speech-quality rankings. Submitter-owned runs can be performed
-locally and submitted as JSON without exposing private source; they are clearly
-marked unverified.
+Start with [`submissions/_template.json`](submissions/_template.json) and follow
+the [submission guide](docs/SUBMISSIONS.md). A submission PR contains metadata
+and immutable source/model identities only. PR checks validate metadata and do
+not download corpora or execute candidate code. For a public source repository,
+the benchmark runs only after the registration is merged to `main`. Private
+source stays on a submitter-owned runner; only a reviewed JSON result can be
+submitted to this public repository.
 
-Submissions declare a category: speech enhancement combines paired quality scores
-with runtime metrics, while real-time processing uses the paced `realtime-throughput-v1`
-profile to measure the largest tested stream count meeting its 10 ms p99 completion
-budget, along with CPU, memory, and aggregate throughput. The Pages results table
-filters by category and supports sorting each displayed metric.
+Results appear in one sortable, filterable table. Public-run and submitter-owned
+measurements have distinct provenance labels. Submitter-owned measurements are
+marked as not independently verified. Removal requests and cumulative publication
+are documented in the [submission guide](docs/SUBMISSIONS.md).
 
-## Setup
+## Development
 
-Use Python 3.12 and a C/C++ compiler. Clone the public SDK repository at the exact
-revision recorded in `deps/sdk-source.json`; the preparation command rejects a
-mismatched or modified SDK checkout.
+Use Python 3.12 and a C/C++ compiler. Clone the public SDK at the immutable
+revision in `deps/sdk-source.json`, then prepare the pinned SDK and run CI:
 
 ```sh
 python3.12 -m venv .venv
@@ -38,17 +42,13 @@ python3.12 -m venv .venv
 .venv/bin/python scripts/ci.py
 ```
 
-The preparation command builds/tests/installs the source-pinned SDK and refreshes
-the local artifact lock and packaged resources for this host. It is an explicit
-dependency update, not a bypass of hash checking. Both commands require new build
-output directories. The complete check tests the native collector, requires all
-unit/integration tests to run without skips, exercises both providers, and tests
-a fresh dependency and wheel installation outside the checkout. CI records pip
-installation reports; the original macOS wheel hash locks remain historical.
+The full check builds the native collector, runs unit and integration checks,
+executes the 24-case synthetic smoke suite, and tests a fresh wheel install. CI
+uses Linux (`ubuntu-24.04`). Main-branch CI runs are quality checks; they do not
+publish their built-in smoke measurements. Candidate results are published by
+the separate post-merge workflow.
 
-## Run an evaluation
-
-After the complete check, use its verified native binaries and SDK:
+To run one local smoke evaluation and build an interactive report:
 
 ```sh
 .venv/bin/python -m audio_bench smoke --output /path/to/new-bundle \
@@ -59,40 +59,18 @@ After the complete check, use its verified native binaries and SDK:
 .venv/bin/python -m http.server 8000 --bind 127.0.0.1 --directory /path/to/new-report
 ```
 
-Open `http://127.0.0.1:8000` for interactive filtering and downloads. A local file
-URL does not support the report's JSON fetches reliably. Reports show execution,
-review, reproduction and qualification separately. They contain no preview media;
-listening controls are disabled when media is unavailable.
+Open `http://127.0.0.1:8000`. See the
+[corpus policy](docs/CORPUS.md) for pinned sources, acquisition, caching, rights,
+and scoring scope. Audio files are not included in Actions artifacts or Git,
+except the attributed five-clip VOiCES smoke fixture; selected real cohorts are
+downloaded to verified local or eligible GitHub Actions caches.
 
-Other commands: `synthetic build --output NEW`, `catalog registry/catalog.json`,
-and `schemas --index`. Run `python -m audio_bench --help` for details. Synthetic
-generation supports speaker count, pairs and duration; smoke uses the frozen suite.
+## Release status
 
-## Distributed package
-
-`build/ci/dist/` contains a platform ZIP with the wheel, native binaries and the
-exact SDK archive/install tree. Extract it, install its wheel with Python 3.12,
-then pass `--native-build bin --sdk-prefix sdk/audio-sdk-0.1.0` to smoke from that
-directory. The wheel does not silently download or execute candidate code.
-
-## Limits and status
-
-The current score suite uses synthetic fixtures only. VOiCES, VoiceBank+DEMAND,
-and DNS5 have external-cache preparation paths; their selection, cache, and
-rights decisions are documented in [docs/CORPUS.md](docs/CORPUS.md). The
-repository maintainer has enabled acquisition and evaluation for all three
-corpora, with attribution and aggregate-score publication. Public Actions cache
-use is enabled by default in manual preparation for the selected VoiceBank and
-VOiCES cohorts; DNS5 public caching is disabled pending component mapping. Cached
-audio stays outside Git, Pages, and result artifacts. Corpus preparation
-does not yet mean real-corpus scores are produced: the benchmark runner remains
-synthetic-only. Native candidate code is
-arbitrary code and runs only on an ephemeral benchmark job with read-only GitHub
-permissions and no publishing credential; this is not an OS security boundary.
-See [the submission protocol](docs/SUBMISSIONS.md) for supported runner flows.
-Neural models remain gated on their pinned weights and scope-specific rights.
-audio-pro's Tiny16 weights are now recorded by hash, but model evaluation rights
-remain unresolved, so that candidate stays disabled.
-
-[RELEASING.md](RELEASING.md) describes CI and intended GitHub controls.
-GitHub settings readback is retained by the administration script under build/. First-party software is Apache-2.0; synthetic asset terms are separate in DATA_LICENSE.md. The maintainer is Tsakanyan Hovhannes, acting individually.
+The code supports VoiceBank+DEMAND scoring and real-time throughput profiles,
+but target-specific qualification criteria have not been approved. DNS5 is
+acquisition-only until its source-component mapping and scoring protocol are
+complete. See [release preparation](RELEASING.md) and
+[archived implementation evidence](docs/task-evidence/README.md). The Apache-2.0
+software license does not replace any dataset or model license; see
+[`DATA_LICENSE.md`](DATA_LICENSE.md).

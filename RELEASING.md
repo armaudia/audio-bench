@@ -1,70 +1,95 @@
 # Release and maintenance policy
 
-## Branches and ownership
+## Current release state
 
-`main` accepts squash merges through pull requests. The intended GitHub rules
-require a fresh code-owner approval, approval of the last push, resolved review
-threads, and the `quality` check from GitHub Actions with an up-to-date branch.
-Force pushes, deletion and merge commits are blocked, without ruleset bypass
-actors. A second reviewer is therefore required when the owner authors a change.
-CODEOWNERS names the initial maintainer; change it through a reviewed PR.
+This cleanup establishes an empty public leaderboard and removes all in-tree
+submission and result records. The report is intentionally blank until a new
+submission is reviewed and merged. Existing Git history is retained; removing a
+row from the current report does not rewrite prior commits or Actions logs.
 
-To audit the complete source history and inspect the exact destination:
+The repository supports Linux x86-64 (`ubuntu-24.04`) CI and one Linux release
+archive. It does not currently claim Windows or macOS support. Numeric workload
+qualification is not assessed: there are no approved target-specific deadlines,
+quality margins, or workload requirements. Do not describe functional CI or
+benchmark results as product qualification.
+
+## Pull requests and repository controls
+
+`main` accepts reviewed pull requests. The intended GitHub rules require a fresh
+code-owner approval, approval of the last push, resolved review threads, and the
+`quality` check with an up-to-date branch. Force pushes, branch deletion, and
+merge commits should be blocked. Verify the live settings; configuration files
+alone do not prove that GitHub enforces them.
+
+To audit repository publication controls:
 
 ```sh
 python scripts/publish_repository.py
-```
-
-With an authenticated GitHub CLI, add `--apply` to create the repository with its
-requested visibility and push the audited commit to main. It refuses a dirty
-working tree, an unexpected origin, model/key files or common secret patterns in
-history, and a mismatched existing repository visibility. It never force-pushes.
-
-After the initial push and passing CI, an organization administrator runs:
-
-```sh
 python scripts/github_admin.py --repo audio-bench
 ```
 
-Replace audio-bench with this repository's name. The script requires an
-already authenticated GitHub CLI, checks admin access, verifies the current
-commit's real CI status, applies the settings and reads them back. Actual
-readback is saved under `build/github-settings.json`. Configuration files alone
-are not proof that GitHub enforces a policy. Private-repository protection and
-environment support depend on the organization's GitHub plan; an API refusal
-must be resolved rather than described as enforced.
+The publication audit refuses a dirty working tree, unexpected origin, common
+secret patterns in history, model/key files, and mismatched repository
+visibility. The administration script requires an authenticated GitHub CLI and
+administrator access, checks current CI status, applies settings, and reads them
+back to `build/github-settings.json`. Private-repository protection and release
+environment controls depend on the organization plan and must be verified with
+live readback.
 
-## CI and publishing
+## CI, benchmark execution, and Pages
 
-CI uses immutable GitHub Action commits, read-only tokens, clean Linux/macOS
-runners, and an aggregate `quality` check that fails if any required job fails or
-is cancelled. Workflow changes are reviewed as code. Dependabot proposes action
-updates. Repository Actions must not approve their own pull requests.
+CI runs on Linux. PR checks validate code, metadata, policies, and browser
+behavior; they do not download real corpora or execute candidate submissions.
+Main-branch CI also exercises the built-in synthetic fixtures but does not send
+those measurements to the public results index. The candidate workflow runs
+after an enabled public submission manifest is merged. It checks out the pinned
+public source and executes the candidate without a publishing credential.
 
-Public release tags are `v0.1.0` or `v0.1.0-rc.1` (and alpha/beta equivalents).
-The release workflow reruns CI, requires the tag's commit to be on main, requires
-approval in the `release` environment, verifies both platform archive checksums,
-and attests the artifacts before publishing them. Assets are attached to a draft
-first, then the release is published with repository release immutability enabled. Only organization owners may create release tags. Separate immutable-tag rules
-without bypass actors prevent those tags from being rewritten or deleted. A corrected release uses a new version. PyPI upload, public third-party execution and model distribution are not enabled by these workflows. `pages.yml` deploys the static results UI and publishes validated result-only records from successful main CI and candidate runs to the `benchmark-results` branch. Synthetic records remain functional checks. VoiceBank+DEMAND records cover the full 824-pair test cohort and link to the frozen metric protocol. Submitter-owned records are labeled unverified. DNS5 remains acquisition-only and VOiCES remains a separate non-leaderboard real-room track.
+The Pages publisher merges candidate-run results, reviewed submitter-owned JSON
+records, and exact-result removal requests into the `benchmark-results` branch.
+It then deploys the cumulative result table. A removal request affects the
+current report, not historical commits or workflow artifacts. The empty report
+is the intended release starting point.
 
-Before creating a stable release, record scope-specific source/license decisions,
-passing hosted runs for the advertised targets, clean install evidence, remaining
-limitations, and release notes. Local tests or a CI configuration are not a
-production qualification. Do not reclassify pending legal, model, data, parity or
-workload evidence as passing. Historical task handoffs retain their original scope.
+Candidate code is arbitrary native code. The isolated build/evaluation jobs and
+read-only permissions reduce exposure but do not form an operating-system
+sandbox. Keep secrets, private credentials, and source out of public-runner
+jobs. Private source must be benchmarked on a submitter-owned runner.
 
-## Dataset release checks
+## Data and model scope
 
-Follow the frozen choices and storage policy in [docs/CORPUS.md](docs/CORPUS.md).
-Run the full Python suite and repository CI. Run `Prepare corpus data` on the
-release commit for VoiceBank+DEMAND twice: first verify a cache miss, successful
-acquisition, offline verification and post-job cache save; then verify an exact
-cache hit and offline verification. Record run links, revision, cache key and
-elapsed time. No benchmark runs during PR validation. Repeat acquisition checks
-when source pins, downloader, rights or cache inputs change. Optional VOiCES and
-DNS5 preparation is not evidence of qualified scoring. Before advertising the new
-real-corpus path, run the enabled `audio-sdk-speex-voicebank` registration through
-the post-merge candidate workflow, verify all 824 outputs and the published Pages
-record, and run the submitter-owned path on a supported private provider. These
-measurements do not establish general model qualification.
+The supported paired speech-enhancement cohort is the full VoiceBank+DEMAND
+official test split (824 pairs). Its frozen metrics and limits are documented
+in [`docs/CORPUS.md`](docs/CORPUS.md) and
+[`suites/voicebank-demand-paired-v1/protocol.json`](suites/voicebank-demand-paired-v1/protocol.json).
+The 24-case synthetic suite is a functional check. Real-time processing uses a
+separate paced synthetic workload and reports the tested stream levels, lateness,
+CPU, memory, and throughput; it does not claim unmeasured in-process SDK thread
+scaling. VOiCES is a separate real-room track. DNS5 has no paired clean reference
+and has no frozen score protocol here; it is not a leaderboard dataset.
+
+Every submitter is responsible for rights to their source, model weights, and
+data. Corpus rights and cache decisions are scoped to the versions and
+operations recorded in the status manifests. Dataset audio remains outside the
+public Git repository, Pages, and workflow artifacts except for the documented
+five-clip VOiCES smoke fixture. See [`DATA_LICENSE.md`](DATA_LICENSE.md).
+
+## Versioned software release
+
+Release tags use `v0.1.0` or `v0.1.0-rc.1` (and alpha/beta equivalents). The
+release workflow runs CI, checks that the tag points to a commit on `main`, uses
+the `release` environment, verifies the Linux archive checksum, attests the
+archive, and publishes the GitHub release. Configure that environment to require
+the intended approval and verify its live settings before a stable release; the
+workflow file alone does not enforce an approval. A corrected release uses a
+new version. PyPI upload, Windows/macOS artifacts, public-audio playback, and
+third-party model distribution are not enabled.
+
+Before creating a stable release, record the source/license decisions, a passing
+hosted run on every advertised target, clean-install evidence, known limitations,
+and release notes. Repeat corpus acquisition/cache checks when source pins,
+rights, or cache inputs change. Data-acquisition success alone does not qualify
+model accuracy or product performance. Historical task handoffs in
+[`docs/task-evidence/`](docs/task-evidence/README.md) preserve the status known
+at the time; use the current protocol and status documents for present-day
+claims.

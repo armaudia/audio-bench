@@ -37,11 +37,18 @@ def validate_submitter_result(value: Any) -> dict[str, Any]:
     reference_local = evidence["reference_raw_latency_ms"]
     candidate_local = evidence["candidate_raw_latency_ms"]
     reference_central = evidence["reference_baseline_latency_ms"]
-    if any(not math.isfinite(x) or x <= 0 for x in (reference_local, candidate_local, reference_central)):
-        raise ValidationError("latency measurements must be finite positive numbers")
-    expected_latency = candidate_local * reference_central / reference_local
-    if not math.isfinite(expected_latency):
-        raise ValidationError("normalized latency estimate is not finite")
+    if any(not math.isfinite(x) or x <= 0 for x in (reference_local, candidate_local)):
+        raise ValidationError("local latency measurements must be finite positive numbers")
+    if reference_central is None:
+        if value["suite_id"] != "realtime-throughput-v1":
+            raise ValidationError("only the uncalibrated real-time suite may omit a central latency anchor")
+        expected_latency = None
+    else:
+        if not math.isfinite(reference_central) or reference_central <= 0:
+            raise ValidationError("central reference latency must be finite and positive")
+        expected_latency = candidate_local * reference_central / reference_local
+        if not math.isfinite(expected_latency):
+            raise ValidationError("normalized latency estimate is not finite")
     seen_metrics: set[str] = set()
     for metric in value["metrics"]:
         if metric["metric_id"] in seen_metrics:
@@ -56,6 +63,8 @@ def validate_submitter_result(value: Any) -> dict[str, Any]:
             raise ValidationError(f"metric {metric['metric_id']} has an invalid 95% interval")
         normalized = metric.get("normalized_median")
         if normalized is not None:
+            if expected_latency is None:
+                raise ValidationError("cannot normalize latency without a central runner calibration")
             if metric["unit"] != "ms" or metric.get("normalized_unit") != "ms":
                 raise ValidationError("only latency in milliseconds may be hardware-normalized")
             if not math.isfinite(normalized) or not math.isclose(normalized, expected_latency, rel_tol=1e-6, abs_tol=1e-6):

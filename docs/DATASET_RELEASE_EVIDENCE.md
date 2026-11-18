@@ -1,4 +1,9 @@
-# Dataset release evidence — 2026-11-17
+# Dataset acquisition release evidence — 2026-11-17
+
+This dated verification memo records the implementation and state at that time.
+Its final paragraph predates the production VoiceBank scoring and Pages
+integration; use [`SUBMISSIONS.md`](SUBMISSIONS.md), [`CORPUS.md`](CORPUS.md),
+and [`RELEASING.md`](../RELEASING.md) for current support and release status.
 
 Validated implementation: `7808008a80aec1e35f50eeedab8b15420cfa5e44`
 ([PR #12](https://github.com/armaudia/audio-bench/pull/12)).
@@ -60,7 +65,7 @@ remain authoritative. Dataset preparation never runs a candidate benchmark.
 - Unit coverage checks bounded retries, error-page rejection, archive integrity,
   cache integrity, path safety and the DNS5 public-cache denial.
 
-## Release claim boundary
+## Release claim boundary as of 2026-11-17
 
 This evidence qualifies VoiceBank acquisition, integrity checks and public
 Actions cache reuse. It does not qualify denoising accuracy or real-corpus

@@ -1,0 +1,23 @@
+{
+  "schema_id": "audio-bench/runner-calibration/0.1",
+  "description": "Latency anchors used only to estimate submitter-run latency on the audio-bench runner. These are not public leaderboard entries or quality scores.",
+  "source_result_store_revision": "46ffd62be236ac9175b895e501de75d4a3d5b021",
+  "source_sdk_revision": "84a102112ce83fb519303a832be15ad88e452d74",
+  "runner_fingerprint": "GitHub Actions ubuntu-24.04",
+  "calibrations": [
+    {
+      "baseline_provider_id": "speex.ns.v0",
+      "suite_id": "synthetic-smoke-v1",
+      "dataset_id": "sha256:b5ff8fc7185216331ed004005189319cd0bc4e2ad538c87176ba6bac91504ce8",
+      "latency_ms": 0.022375,
+      "method": "Median CPU time per 10 ms frame over 10 prior audio-bench-run synthetic smoke measurements."
+    },
+    {
+      "baseline_provider_id": "speex.ns.v0",
+      "suite_id": "voicebank-demand-paired-v1",
+      "dataset_id": "sha256:cfdc29c6655d195b806c58e75266c05e6cb974ac73c1c1291000af9f386e3f74",
+      "latency_ms": 0.024241217697068954,
+      "method": "Median CPU time per 10 ms frame over 2 prior audio-bench-run full VoiceBank+DEMAND measurements."
+    }
+  ]
+}

@@ -36,7 +36,7 @@ jobs:
       - run: python -m pip install -r locks/requirements-ci.txt
       - run: python -m pip install --no-deps --no-build-isolation -e .
       - name: Validate registration metadata only
-        run: python scripts/validate_submission.py submissions/*.json examples/submissions/*.json
+        run: python scripts/validate_submission.py submissions/*.json
       - name: Validate submitter-owned result records
         run: python scripts/validate_submitter_results.py submissions/results
       - name: Validate published result removal requests

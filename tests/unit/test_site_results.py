@@ -118,6 +118,22 @@ def test_result_removal_requests_prune_exact_cumulative_rows(tmp_path):
     assert {row["result_id"] for row in merged["results"]} == {"keep-run", "new-run"}
 
 
+def test_result_removal_can_update_cumulative_index_without_new_benchmark_rows(tmp_path):
+    existing = tmp_path / "existing.json"
+    removals = tmp_path / "removals"
+    removals.mkdir()
+    existing.write_text(json.dumps({
+        "schema_id": "audio-bench/site-results/0.1", "updated_at": "x",
+        "results": [{"result_id": "run-to-remove", "submission_id": "candidate"}],
+    }))
+    (removals / "remove.json").write_text(json.dumps({
+        "schema_id": "audio-bench/result-removal/0.1",
+        "result_id": "run-to-remove", "reason": "Clean release slate",
+    }))
+    merged = publisher.merge_index_files(existing, None, removal_paths=[removals])
+    assert merged["results"] == []
+
+
 def test_result_removal_requests_reject_duplicate_targets(tmp_path):
     removals = tmp_path / "removals"
     removals.mkdir()

@@ -48,7 +48,7 @@ with tempfile.TemporaryDirectory(prefix="audio-bench-site-") as temporary:
                 page.get_by_role("button", name="Clear filters").click()
                 assert page.locator(".results-table tbody tr").count() == expected
             else:
-                assert page.get_by_text("No validated benchmark run has been published yet.").is_visible()
+                assert page.get_by_text("No benchmark results are published yet. Submit the first pipeline to start the comparison.").is_visible()
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
             assert page.locator("#search").is_visible()

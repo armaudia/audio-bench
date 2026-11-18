@@ -228,8 +228,14 @@ The official VOiCES devkit is about 27.5 GiB. This repository stores only the
 small five-recording smoke subset; the larger cohort is created in an external
 cache from the official test partition. The Lab41 90-degree mirror is not used
 for scoring because it does not establish an independent held-out test
-selection. Evaluation and aggregate reporting have maintainer approval for all three
-cohorts. Public caching is enabled for VOiCES and VoiceBank+DEMAND only. Playback
-remains disabled in the status manifests. The benchmark runtime still
-executes the synthetic suite only; real-corpus scoring and Pages publication
-are not yet implemented.
+selection. Evaluation and attributed aggregate reporting are approved for the
+three cohorts under their specific status records. Public caching is enabled
+only for VOiCES and the pinned VoiceBank+DEMAND cohort. DNS5 public caching is
+disabled until selected-clip component terms are mapped. Playback remains
+disabled.
+
+The current benchmark runner scores the complete VoiceBank+DEMAND paired test
+cohort and the separate synthetic real-time throughput workload. VOiCES remains
+a distinct real-room track, and DNS5 remains acquisition-only until a separate
+scoring protocol is frozen. The public report currently starts empty after the
+release cleanup; this does not disable future benchmark submissions.

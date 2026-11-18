@@ -98,7 +98,7 @@ function render() {
   }).sort(compareRows);
   resultsHost.replaceChildren();
   if (!visible.length) {
-    resultsHost.append(text('p', records.length ? 'No results match those filters.' : 'No validated benchmark run has been published yet.', 'empty'));
+    resultsHost.append(text('p', records.length ? 'No results match those filters.' : 'No benchmark results are published yet. Submit the first pipeline to start the comparison.', 'empty'));
     status.textContent = records.length ? `0 of ${records.length} results` : 'Results are empty';
     return;
   }

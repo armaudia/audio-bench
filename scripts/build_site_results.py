@@ -248,9 +248,11 @@ def load_result_removals(paths: list[Path] | None = None) -> set[str]:
     return targets
 
 
-def merge_index_files(existing: Path, additions: Path, submitter_paths: list[Path] | None = None, removal_paths: list[Path] | None = None) -> dict[str, Any]:
+def merge_index_files(existing: Path, additions: Path | None, submitter_paths: list[Path] | None = None, removal_paths: list[Path] | None = None) -> dict[str, Any]:
     rows: dict[str, dict[str, Any]] = {}
     for path in (existing, additions):
+        if path is None:
+            continue
         if not path.exists():
             continue
         current = json.loads(path.read_text(encoding="utf-8"))
@@ -309,9 +311,13 @@ def main() -> None:
             if args.bundles or not args.existing:
                 parser.error("--from-index requires --existing and does not accept bundle arguments")
             index = merge_index_files(args.existing, args.from_index, args.submitter_results, args.remove_results)
+        elif args.existing:
+            if args.bundles:
+                parser.error("--existing without --from-index does not accept bundle arguments")
+            index = merge_index_files(args.existing, None, args.submitter_results, args.remove_results)
         else:
             if not args.bundles:
-                parser.error("provide one or more bundles, or use --from-index")
+                parser.error("provide bundles or an existing index")
             index = build_index(args.bundles, args.existing)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(index, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
