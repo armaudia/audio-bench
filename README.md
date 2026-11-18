@@ -18,6 +18,12 @@ not third-party speech-quality rankings. Submitter-owned runs can be performed
 locally and submitted as JSON without exposing private source; they are clearly
 marked unverified.
 
+Submissions declare a category: speech enhancement combines paired quality scores
+with runtime metrics, while real-time processing uses the paced `realtime-throughput-v1`
+profile to measure the largest tested stream count meeting its 10 ms p99 completion
+budget, along with CPU, memory, and aggregate throughput. The Pages results table
+filters by category and supports sorting each displayed metric.
+
 ## Setup
 
 Use Python 3.12 and a C/C++ compiler. Clone the public SDK repository at the exact

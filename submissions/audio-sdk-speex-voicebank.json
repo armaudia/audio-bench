@@ -3,6 +3,7 @@
   "submission_id": "audio-sdk-speex-voicebank",
   "display_name": "audio-sdk Speex noise suppressor",
   "task": "noise-cancellation",
+  "category_id": "speech-enhancement",
   "runner_mode": "audio-bench",
   "source": {
     "repository": "armaudia/audio-sdk",

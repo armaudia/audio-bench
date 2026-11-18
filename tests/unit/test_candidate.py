@@ -156,7 +156,7 @@ def test_evaluator_checks_package_hashes_and_provenance(tmp_path, monkeypatch):
     (package_dir / "package.json").write_text(json.dumps(package))
     calls = []
     monkeypatch.setattr(evaluator, "run_sdk_smoke", lambda *args, **kwargs: calls.append(kwargs))
-    monkeypatch.setattr(evaluator, "result_from_bundle", lambda _bundle: {
+    monkeypatch.setattr(evaluator, "result_from_bundle", lambda _bundle, _category_id=None: {
         "submission_id": "reference-test.provider.v0",
         "result_id": "run:attempt",
         "display_name": "Built-in test.provider.v0",

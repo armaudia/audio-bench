@@ -17,6 +17,10 @@ PUBLIC_PROVIDERS = {"speex.ns.v0", "dsp.highpass80.v0"}
 
 def validate_submission(value: Any) -> dict[str, Any]:
     """Validate metadata only. This function never resolves or executes source references."""
+    if isinstance(value, dict) and "category_id" not in value:
+        inferred = {"noise-cancellation": "speech-enhancement", "filtering": "real-time-processing"}.get(value.get("task"))
+        if inferred:
+            value = {**value, "category_id": inferred}
     try:
         import jsonschema
     except ImportError as exc:  # pragma: no cover - project dependency
@@ -37,13 +41,19 @@ def validate_submission(value: Any) -> dict[str, Any]:
         raise ValidationError("audio-bench runner submissions must reference public source")
     if value["baseline_provider_id"] not in PUBLIC_PROVIDERS:
         raise ValidationError("baseline_provider_id must identify a pinned built-in provider")
+    category_by_task = {"noise-cancellation": "speech-enhancement", "filtering": "real-time-processing"}
+    if category_by_task[value["task"]] != value["category_id"]:
+        raise ValidationError("category_id does not match the submitted task")
     if value["execution"]["enabled"] and value["model_digest"] is None and value["provider_id"] not in PUBLIC_PROVIDERS:
         raise ValidationError("enabled model execution requires an immutable model_digest")
     if value["execution"]["enabled"]:
         dataset_id, suite_id = value["benchmark"]["dataset_id"], value["benchmark"]["suite_id"]
-        supported = {"synthetic-16k-v1": "synthetic-smoke-v1",
-                     "voicebank-demand-test-v1": "voicebank-demand-paired-v1"}
-        if supported.get(dataset_id) != suite_id:
+        supported = {
+            ("synthetic-16k-v1", "synthetic-smoke-v1"): {"speech-enhancement"},
+            ("synthetic-16k-v1", "realtime-throughput-v1"): {"real-time-processing"},
+            ("voicebank-demand-test-v1", "voicebank-demand-paired-v1"): {"speech-enhancement"},
+        }
+        if value["category_id"] not in supported.get((dataset_id, suite_id), set()):
             raise ValidationError("enabled execution requires a supported dataset/suite pair")
     return value
 
@@ -53,6 +63,8 @@ def load_submission(path: Path) -> dict[str, Any]:
         value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise ValidationError(f"cannot read submission manifest: {exc}", path=str(path)) from exc
+    if isinstance(value, dict) and "category_id" not in value:
+        raise ValidationError("submission manifest must explicitly declare category_id", path=str(path))
     return validate_submission(value)
 
 

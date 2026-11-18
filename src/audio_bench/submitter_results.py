@@ -28,6 +28,9 @@ def validate_submitter_result(value: Any) -> dict[str, Any]:
         raise ValidationError(f"submitter result schema error at {location}: {error.message}")
 
     evidence = value["evidence"]
+    category_by_task = {"noise-cancellation": "speech-enhancement", "filtering": "real-time-processing"}
+    if value.get("category_id", category_by_task[value["task"]]) != category_by_task[value["task"]]:
+        raise ValidationError("category_id does not match the result task")
     if value["suite_id"] == "voicebank-demand-paired-v1":
         if value.get("case_count") != 824 or not str(value.get("dataset_label", "")).startswith("VoiceBank+DEMAND"):
             raise ValidationError("VoiceBank submitter results must identify the complete 824-pair cohort")

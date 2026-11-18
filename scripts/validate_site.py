@@ -27,6 +27,10 @@ def validate_index(index):
         for field in ("submission_id", "display_name", "provider_id", "task", "suite_id", "dataset_id", "result_status"):
             if not isinstance(row.get(field), str) or not row[field]:
                 raise ValueError(f"each result needs a nonempty {field}: {row['result_id']}")
+        task_key = row["task"].strip().lower().replace("_", "-").replace(" ", "-")
+        expected_category = {"noise-cancellation": "speech-enhancement", "filtering": "real-time-processing"}.get(task_key)
+        if row.get("category_id", expected_category) not in {"speech-enhancement", "real-time-processing"} or row.get("category_id", expected_category) != expected_category:
+            raise ValueError(f"task/category mismatch in {row['result_id']}")
         if row.get("runner_mode") not in {"audio-bench", "submitter-owned"}:
             raise ValueError(f"unsupported runner mode in {row['submission_id']}")
         source = row.get("source")

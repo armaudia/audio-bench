@@ -1,0 +1,19 @@
+{
+  "schema_id": "audio-bench/realtime-profile/0.1",
+  "suite_id": "realtime-throughput-v1",
+  "dataset_id": "synthetic-16k-v1",
+  "sample_rate_hz": 16000,
+  "frame_period_ms": 10,
+  "warmup_ms": 0,
+  "completion_lateness_budget_ms": 10,
+  "stream_levels": [1, 2, 4, 8, 16],
+  "input_repetitions_per_stream": 4,
+  "latency_statistic": "worst per-stream p99 completion lateness",
+  "capacity_metric": "largest tested stream level meeting the latency budget",
+  "memory_semantics": "sum of per-worker process peak RSS; not a simultaneous process-tree peak",
+  "limitations": [
+    "Synthetic deterministic input is a runtime load fixture, not a speech-quality cohort.",
+    "Each concurrent stream is an independent worker process; it does not claim SDK in-process thread scaling.",
+    "The result is capped at 16 tested streams and does not establish capacity above that level."
+  ]
+}

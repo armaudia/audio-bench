@@ -3,6 +3,7 @@
   "submission_id": "audio-pro-tiny16-example",
   "display_name": "audio-pro FastEnhancer Tiny16 (submitter-run example)",
   "task": "noise-cancellation",
+  "category_id": "speech-enhancement",
   "runner_mode": "submitter-owned",
   "source": {
     "repository": "armaudia/audio-pro",

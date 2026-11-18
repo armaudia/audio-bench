@@ -8,6 +8,21 @@ validates only metadata. It does not fetch or execute the referenced repository,
 and benchmark execution starts only after an enabled registration is merged to
 `main`.
 
+Every registration declares a `category_id`. Choose `speech-enhancement` for noise
+cancellation and related speech-quality tasks; its suites report quality together
+with runtime performance. Choose `real-time-processing` for components where a
+quality score is not meaningful. `realtime-throughput-v1` runs deterministic
+fixture audio at 1, 2, 4, 8, and 16 concurrent worker processes. It reports the
+largest tested level where every stream meets the 10 ms p99 frame-completion
+lateness budget, plus CPU, memory, and aggregate throughput at that level. Each
+stream uses a separate worker process; this does not claim in-process SDK thread
+scaling, and capacity above 16 streams is not measured. VoiceBank+DEMAND remains
+the paired speech-enhancement scoring suite.
+
+The GitHub Pages results table labels records by category and supports sorting by
+each displayed column. Use the category, runner, suite, and search controls to
+narrow the table. Missing metrics are shown as a dash.
+
 ## Runner choices
 
 `runner_mode: "audio-bench"` is for public repositories. Pin the exact

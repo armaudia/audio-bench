@@ -3,6 +3,7 @@
   "submission_id": "change-me-to-a-stable-id",
   "display_name": "Pipeline display name",
   "task": "noise-cancellation",
+  "category_id": "speech-enhancement",
   "runner_mode": "audio-bench",
   "source": {
     "repository": "owner/public-repository",
