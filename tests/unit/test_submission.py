@@ -82,9 +82,14 @@ def test_submitter_runner_manifest_can_be_enabled_after_model_digest_is_pinned()
 def test_submitter_runner_refuses_disabled_template_before_checkout(tmp_path):
     from run_submitter_owned import create_result
 
+    submission = template()
+    submission["runner_mode"] = "submitter-owned"
+    submission["source"]["visibility"] = "private"
+    submission_path = tmp_path / "disabled-submission.json"
+    submission_path.write_text(json.dumps(submission))
     with pytest.raises(ValidationError, match="execution is disabled"):
         create_result(
-            submission_path=ROOT / "submissions/_template.json",
+            submission_path=submission_path,
             candidate_source=tmp_path / "private-source-not-present",
             sdk_prefix=tmp_path / "sdk-not-present",
             native_build=tmp_path / "native-not-present",
