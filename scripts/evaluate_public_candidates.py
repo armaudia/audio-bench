@@ -37,7 +37,7 @@ def evaluate(package_root: Path, *, sdk_prefix: Path, native_build: Path,
     for package_dir in sorted(item for item in package_root.iterdir() if item.is_dir()):
         package = json.loads((package_dir / "package.json").read_text(encoding="utf-8"))
         submission = json.loads((package_dir / "submission.json").read_text(encoding="utf-8"))
-        validate_submission(submission)
+        submission = validate_submission(submission)
         if package.get("schema_id") != "audio-bench/candidate-package/0.1":
             raise ValidationError(f"unsupported candidate package in {package_dir.name}")
         plugin = package_dir / package["plugin_file"] if isinstance(package.get("plugin_file"), str) else None
