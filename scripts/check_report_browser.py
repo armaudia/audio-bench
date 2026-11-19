@@ -41,6 +41,7 @@ def main():
             page.get_by_role("button", name="Apply", exact=True).click()
             expect(page).to_have_url(base + "?task=" + task)
             expect(page.locator("#rows-body tr")).to_have_count(1)
+            expect(page.locator("#result-status")).to_have_text("Showing 1 of 1 configurations")
             with page.expect_download() as pending:
                 page.get_by_role("button", name="Export visible rows (CSV)", exact=True).click()
             destination = Path(temporary) / "rows.csv"
@@ -49,6 +50,10 @@ def main():
                 rows = list(csv.DictReader(stream))
             assert len(rows) == 7
             assert all(row["qualification"] == "not_assessed" and row["review"] == "pending" for row in rows)
+            page.get_by_role("button", name="Clear filters", exact=True).click()
+            expect(page).to_have_url(base)
+            page.set_viewport_size({"width": 390, "height": 844})
+            assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
             page.goto(base + "?task=unknown-test-task")
             expect(page.locator("#error")).to_contain_text("Unknown task ID")
             assert not errors, errors

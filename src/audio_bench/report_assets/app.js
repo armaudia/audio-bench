@@ -4,6 +4,7 @@
 const errorBox = document.querySelector('#error');
 const tbody = document.querySelector('#rows-body');
 const params = new URLSearchParams(location.search);
+const filters = [['filter-task', 'task'], ['filter-cohort', 'cohort'], ['filter-config', 'config']];
 let allRows = [];
 
 function showError(message) {
@@ -38,6 +39,8 @@ function visibleRows(rows) {
     (!params.get('config') || row.configuration_id === params.get('config')));
 }
 function render(rows) {
+  document.querySelector('#result-status').textContent = `Showing ${rows.length} of ${allRows.length} configurations`;
+  document.querySelector('#csv-export').disabled = !rows.length;
   tbody.replaceChildren();
   for (const row of rows) {
     const tr = document.createElement('tr');
@@ -97,6 +100,16 @@ function exportVisibleCsv() {
   link.click();
   URL.revokeObjectURL(url);
 }
+function applyFilters() {
+  for (const [id, key] of filters) {
+    const value = document.getElementById(id).value;
+    if (value) params.set(key, value); else params.delete(key);
+  }
+  const next = new URL(location.href);
+  next.search = params.toString();
+  history.replaceState(null, '', next);
+  render(visibleRows(allRows));
+}
 async function main() {
   const response = await fetch('data/index.json', { credentials: 'same-origin' });
   if (!response.ok) throw new Error(`Index load failed: HTTP ${response.status}`);
@@ -109,19 +122,18 @@ async function main() {
   tasks.forEach(value => option(document.querySelector('#filter-task'), value));
   cohorts.forEach(value => option(document.querySelector('#filter-cohort'), value));
   configs.forEach(value => option(document.querySelector('#filter-config'), value));
-  for (const [id, key] of [['filter-task', 'task'], ['filter-cohort', 'cohort'], ['filter-config', 'config']]) {
+  for (const [id, key] of filters) {
     const value = params.get(key);
     if (value) document.getElementById(id).value = value;
   }
   render(visibleRows(index.rows));
   document.querySelector('#filter-form').addEventListener('submit', event => {
     event.preventDefault();
-    const next = new URL(location.href);
-    for (const [id, key] of [['filter-task', 'task'], ['filter-cohort', 'cohort'], ['filter-config', 'config']]) {
-      const value = document.getElementById(id).value;
-      if (value) next.searchParams.set(key, value); else next.searchParams.delete(key);
-    }
-    location.href = next.href;
+    applyFilters();
+  });
+  document.querySelector('#reset-filters').addEventListener('click', () => {
+    for (const [id] of filters) document.getElementById(id).value = '';
+    applyFilters();
   });
   document.querySelector('#csv-export').addEventListener('click', exportVisibleCsv);
 }

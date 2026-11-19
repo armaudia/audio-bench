@@ -3,57 +3,84 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Public audio pipeline benchmark results with source, model, dataset, and runner provenance.">
-  <title>Audio Bench — Results</title>
-  <link rel="stylesheet" href="assets/site.css">
+  <meta name="description" content="Compare speech enhancement and real-time audio pipelines with published benchmark measurements and run evidence.">
+  <title>Audio Bench · Benchmark results</title>
+  <link rel="stylesheet" href="assets/site.css?rev=compare-v1">
 </head>
 <body>
-  <header class="hero">
-    <nav aria-label="Main navigation"><a class="brand" href="./">audio<span>bench</span></a><a href="https://github.com/armaudia/audio-bench/blob/main/docs/SUBMISSIONS.md">Submit a pipeline</a></nav>
-    <div class="hero-copy">
-      <p class="eyebrow">Open benchmark · Reproducible evidence</p>
-      <h1>Compare audio pipelines<br>with clear evidence.</h1>
-      <p>Compare paired speech-enhancement measurements on the full VoiceBank+DEMAND test split, alongside clearly labeled functional checks and submitter-run results.</p>
-      <a class="button" href="https://github.com/armaudia/audio-bench/blob/main/docs/SUBMISSIONS.md">How to submit <span aria-hidden="true">→</span></a>
-    </div>
-    <div class="hero-stats" aria-label="Result counts">
-      <div><strong id="result-count">—</strong><span>published runs</span></div>
-      <div><strong id="pipeline-count">—</strong><span>pipelines</span></div>
-      <div><strong id="suite-count">—</strong><span>benchmark suites</span></div>
-    </div>
+  <a class="skip-link" href="#results-heading">Skip to results</a>
+  <header class="site-header">
+    <nav class="container" aria-label="Main navigation">
+      <a class="brand" href="./"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span> Audio Bench</a>
+      <div class="nav-links">
+        <a href="#results-heading" aria-current="page">Results</a>
+        <a href="#methodology">Methodology</a>
+      </div>
+      <a class="nav-action" href="https://github.com/armaudia/audio-bench/blob/main/docs/SUBMISSIONS.md">Submit a pipeline <span aria-hidden="true">↗</span></a>
+    </nav>
   </header>
 
-  <main>
-    <section class="trust-note" aria-labelledby="evidence-heading">
-      <div class="trust-mark" aria-hidden="true">i</div>
-      <div><h2 id="evidence-heading">Know how each result was measured</h2>
-        <p>Audio-bench-run results are produced by the pinned CI runner. Submitters can also publish JSON-only measurements from private source; these are marked not independently verified. Any latency estimate remains beside the raw measurement.</p>
+  <main class="container">
+    <section class="hero" aria-labelledby="page-heading">
+      <div>
+        <h1 id="page-heading">Audio benchmark<br class="desktop-break"> results</h1>
+        <p>Compare how pipelines improve speech and how much audio they can process in real time. Every result shows the suite and who ran it.</p>
+        <a href="#methodology">How to read the results <span aria-hidden="true">↓</span></a>
+      </div>
+      <dl class="hero-stats" aria-label="Published benchmark counts">
+        <div><dt>Published runs</dt><dd id="result-count">—</dd></div>
+        <div><dt>Pipelines</dt><dd id="pipeline-count">—</dd></div>
+        <div><dt>Suites with results</dt><dd id="suite-count">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="explorer" aria-labelledby="results-heading">
+      <div class="section-heading">
+        <div><h2 id="results-heading" tabindex="-1">Explore results</h2><p>Choose a suite to compare and sort its measurements.</p></div>
+        <a class="download" href="data/results.json" download>Download JSON <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="explorer-panel">
+        <div id="categories" class="categories" role="group" aria-label="Benchmark category">
+          <button type="button" data-category="" aria-pressed="true">All results</button>
+          <button type="button" data-category="speech-enhancement" aria-pressed="false">Speech enhancement</button>
+          <button type="button" data-category="real-time-processing" aria-pressed="false">Real-time processing</button>
+        </div>
+        <form id="filter-form" class="filters" role="search" aria-label="Filter benchmark runs">
+          <label>Search<input id="search" type="search" placeholder="Pipeline, provider or dataset"></label>
+          <label>Benchmark suite<select id="suite-filter"><option value="">All suites</option></select></label>
+          <label>Run by<select id="runner-filter"><option value="">Any runner</option><option value="audio-bench">Audio Bench</option><option value="submitter-owned">Submitter</option></select></label>
+          <button id="clear-filters" class="text-button" type="button">Clear filters</button>
+        </form>
+        <div class="results-meta">
+          <p id="status" role="status">Loading results…</p>
+          <p id="comparison-note" hidden></p>
+        </div>
+        <div id="results"></div>
       </div>
     </section>
 
-    <section aria-labelledby="results-heading">
-      <div class="section-heading"><div><p class="eyebrow">THE RESULTS</p><h2 id="results-heading">Benchmark results</h2></div><a class="download" href="data/results.json" download>Download all results ↓</a></div>
-      <div class="filters" role="search">
-        <label for="search">Search pipelines</label><input id="search" type="search" placeholder="Name, provider, or source">
-        <label for="category-filter">Category</label><select id="category-filter"><option value="">All categories</option><option value="speech-enhancement">Speech enhancement</option><option value="real-time-processing">Real-time processing</option></select>
-        <label for="runner-filter">Runner</label><select id="runner-filter"><option value="">All runners</option><option value="audio-bench">Audio-bench</option><option value="submitter-owned">Submitter-owned</option></select>
-        <label for="suite-filter">Suite</label><select id="suite-filter"><option value="">All suites</option></select>
-        <button id="clear-filters" type="button">Clear filters</button>
+    <section id="methodology" class="methodology" aria-labelledby="methodology-heading">
+      <div class="section-heading"><div><h2 id="methodology-heading">Understand the results</h2><p>Start with the suite, then check who ran it and on which machine.</p></div></div>
+      <div class="guide-grid">
+        <article>
+          <h3>Speech enhancement</h3>
+          <p>VoiceBank+DEMAND uses 824 paired clips with clean references. Higher SI-SDR improvement means fewer distortions relative to the noisy input. Higher STOI and ESTOI indicate better predicted intelligibility.</p>
+          <a href="https://github.com/armaudia/audio-bench/blob/main/suites/voicebank-demand-paired-v1/protocol.json">Speech scoring protocol <span aria-hidden="true">↗</span></a>
+        </article>
+        <article>
+          <h3>Real-time processing</h3>
+          <p>The paced suite tests up to 16 concurrent worker processes with synthetic audio. More streams meeting the 10 ms deadline indicates higher tested capacity. Lower p99 lateness means frames finish closer to schedule.</p>
+          <a href="https://github.com/armaudia/audio-bench/blob/main/suites/realtime-throughput-v1/profile.json">Real-time test profile <span aria-hidden="true">↗</span></a>
+        </article>
+        <article>
+          <h3>Run evidence</h3>
+          <p>Audio Bench runs use the project’s CI runner. Submitter runs come from the submitter’s environment and are not independently verified. Synthetic smoke runs check integration. Use matching suites and comparable hardware when comparing runtime.</p>
+          <a href="https://github.com/armaudia/audio-bench/blob/main/docs/SUBMISSIONS.md">Submission and evidence guide <span aria-hidden="true">↗</span></a>
+        </article>
       </div>
-      <p id="status" class="status" role="status" aria-live="polite">Loading results…</p>
-      <div id="results" class="table-wrap"></div>
-    </section>
-
-    <section class="how" aria-labelledby="how-heading">
-      <p class="eyebrow">RUN MODES</p><h2 id="how-heading">Your code stays yours.</h2>
-      <div class="how-grid">
-        <article><span class="step">01</span><h3>Our runner</h3><p>For public repositories. The benchmark runs after the submission is merged, using an immutable source revision on the audio-bench runner.</p><span class="tag tag-verified">Audio-bench-run</span></article>
-        <article><span class="step">02</span><h3>Your runner <span class="run-state">JSON intake available</span></h3><p>For private repositories or submitters who keep execution in their own environment. Run the reference and candidate with the same harness, then submit raw measurements and any estimated latency in a JSON record.</p><span class="tag tag-owner">Submitter-run · not independently verified</span></article>
-      </div>
-      <p class="fine-print"><strong>Speech enhancement:</strong> VoiceBank+DEMAND scores use all 824 aligned test pairs at 16 kHz; synthetic fixtures are functional checks, not speech-quality rankings. <strong>Real-time processing:</strong> runs paced synthetic audio at 1–16 concurrent worker processes and reports the largest tested level meeting a 10 ms p99 completion-lateness budget, plus CPU, memory and throughput. This does not claim in-process SDK thread scaling or capacity above 16 streams. Submitter-owned results are not independently verified.</p>
     </section>
   </main>
-  <footer><a href="https://github.com/armaudia/audio-bench">GitHub repository</a><span>Results are versioned and downloadable as JSON.</span></footer>
-  <script type="module" src="assets/site.js?rev=f326c70968d12697df182ec1e944835b115ba20a"></script>
+  <footer class="container"><span>Audio Bench</span><a href="https://github.com/armaudia/audio-bench">Source on GitHub <span aria-hidden="true">↗</span></a></footer>
+  <script type="module" src="assets/site.js?rev=compare-v1"></script>
 </body>
 </html>
