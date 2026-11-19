@@ -63,6 +63,13 @@ with tempfile.TemporaryDirectory(prefix="audio-bench-site-") as temporary:
                 page.get_by_label("Benchmark suite").select_option(suite)
                 suite_count = sum(row["suite_id"] == suite for row in index["results"])
                 expect(rows).to_have_count(suite_count)
+                expand_metrics = page.get_by_role("button", name="Show all", exact=False)
+                if expand_metrics.is_visible():
+                    key_columns = page.get_by_role("columnheader").count()
+                    expand_metrics.click()
+                    assert page.get_by_role("columnheader").count() > key_columns
+                    page.get_by_role("button", name="Show key metrics", exact=True).click()
+                    expect(page.get_by_role("columnheader")).to_have_count(key_columns)
                 first_details = rows.first.get_by_text("Run details", exact=True)
                 first_details.click()
                 expect(rows.first.get_by_text("All measurements")).to_be_visible()
@@ -83,6 +90,10 @@ with tempfile.TemporaryDirectory(prefix="audio-bench-site-") as temporary:
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
             expect(page.get_by_role("searchbox", name="Search")).to_be_visible()
+            if args.results:
+                pipeline = page.locator(".results-table .pipeline > strong").first
+                pipeline.scroll_into_view_if_needed()
+                expect(pipeline).to_be_in_viewport()
             page.route("**/data/results.json?*", lambda route: route.fulfill(status=503))
             page.reload()
             expect(page.get_by_role("status")).to_contain_text("Could not load results (HTTP 503).")

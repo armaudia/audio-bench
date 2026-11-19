@@ -13,7 +13,7 @@
     <nav class="container" aria-label="Main navigation">
       <a class="brand" href="./"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span> Audio Bench</a>
       <div class="nav-links">
-        <a href="#results-heading" aria-current="page">Results</a>
+        <a href="#results-heading" aria-current="location">Results</a>
         <a href="#methodology">Methodology</a>
       </div>
       <a class="nav-action" href="https://github.com/armaudia/audio-bench/blob/main/docs/SUBMISSIONS.md">Submit a pipeline <span aria-hidden="true">↗</span></a>
@@ -53,7 +53,10 @@
         </form>
         <div class="results-meta">
           <p id="status" role="status">Loading results…</p>
-          <p id="comparison-note" hidden></p>
+          <div class="comparison-controls">
+            <p id="comparison-note" hidden></p>
+            <button id="metric-toggle" type="button" class="text-button" hidden></button>
+          </div>
         </div>
         <div id="results"></div>
       </div>

@@ -42,7 +42,8 @@ CI runs on Linux. PR checks validate code, metadata, policies, and browser
 behavior; they do not download real corpora or execute candidate submissions.
 Main-branch and release-tag CI exercise the built-in synthetic fixtures and the
 paced collector, then run the installed wheel with the native programs from the
-extracted release ZIP. Those measurements stay out of the public results index. The candidate workflow runs
+extracted release ZIP. Use `unzip` to preserve the native executables' permissions.
+Those measurements stay out of the public results index. The candidate workflow runs
 after an enabled public submission manifest is merged. It checks out the pinned
 public source and executes the candidate without a publishing credential.
 

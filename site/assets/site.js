@@ -1,6 +1,7 @@
 const resultsHost = document.querySelector('#results');
 const status = document.querySelector('#status');
 const comparisonNote = document.querySelector('#comparison-note');
+const metricToggle = document.querySelector('#metric-toggle');
 const search = document.querySelector('#search');
 const runnerFilter = document.querySelector('#runner-filter');
 const suiteFilter = document.querySelector('#suite-filter');
@@ -32,12 +33,13 @@ const metricInfo = {
 const highlights = {
   'voicebank-demand-paired-v1': ['si_sdr_improvement_db', 'estoi', 'latency_ms'],
   'realtime-throughput-v1': ['max_tested_streams_at_latency_target', 'p99_completion_lateness_ms', 'throughput_audio_seconds_per_wall_second'],
-  'synthetic-smoke-v1': ['latency_ms', 'throughput_audio_seconds_per_wall_second'],
+  'synthetic-smoke-v1': ['latency_ms', 'throughput_audio_seconds_per_wall_second', 'peak_worker_rss_bytes'],
 };
 const count = new Intl.NumberFormat();
 const precise = new Intl.NumberFormat(undefined, { maximumSignificantDigits: 4 });
 let records = [];
 let category = '';
+let showAllMetrics = false;
 let sort = { key: 'display_name', direction: 'asc' };
 
 function text(tag, value, className) {
@@ -62,7 +64,14 @@ function suiteLabel(id) { return Object.hasOwn(suites, id) ? suites[id] : id; }
 function categoryLabel(id) { return Object.hasOwn(categories, id) ? categories[id] : id; }
 function runnerLabel(row) { return row.runner_mode === 'submitter-owned' ? 'Submitter' : 'Audio Bench'; }
 function metricLabel(metric) {
-  return metricInfo[metric.metric_id]?.[0] || (metric.label || metric.metric_id).replaceAll('_', ' ');
+  const label = (metric.label || metric.metric_id).replaceAll('_', ' ');
+  return metricInfo[metric.metric_id]?.[0] || label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+function preferredMetrics(suite, measurements) {
+  const ids = Object.hasOwn(highlights, suite) ? highlights[suite] : [];
+  const preferred = ids.map(id => measurements.get(id)).filter(Boolean);
+  return preferred.length ? preferred : [...measurements.values()].slice(0, 3);
 }
 
 function sortValue(row, key) {
@@ -150,6 +159,7 @@ function addColumn(header, column) {
   const [key, label, note, preferred = 'asc'] = column;
   const th = document.createElement('th');
   th.scope = 'col';
+  th.setAttribute('role', 'columnheader');
   if (!key) {
     th.textContent = label;
     header.append(th);
@@ -186,17 +196,21 @@ function renderTable(visible, columns, measurements, activeSuite, openDetails) {
   region.setAttribute('aria-label', 'Benchmark comparison table');
   const table = document.createElement('table');
   table.className = 'results-table';
+  table.setAttribute('role', 'table');
   table.setAttribute('aria-label', activeSuite ? `${suiteLabel(activeSuite)} results` : 'Results across suites');
   const head = table.createTHead().insertRow();
+  head.setAttribute('role', 'row');
   for (const column of columns) addColumn(head, column);
   const body = table.createTBody();
   for (const row of visible) {
     const tr = body.insertRow();
+    tr.setAttribute('role', 'row');
     tr.dataset.resultId = row.result_id;
     const suite = document.createElement('td');
     suite.className = 'suite-cell';
     suite.append(text('strong', suiteLabel(row.suite_id)), text('span', categoryLabel(row.category_id), 'table-subline'));
     const runner = text('td', '');
+    runner.dataset.label = 'Run by';
     const external = row.runner_mode === 'submitter-owned';
     runner.append(text('span', runnerLabel(row), `tag ${external ? 'tag-owner' : 'tag-verified'}`));
     if (external) runner.append(text('span', 'Not independently verified', 'table-subline'));
@@ -204,18 +218,19 @@ function renderTable(visible, columns, measurements, activeSuite, openDetails) {
     if (!activeSuite) {
       const cell = tr.insertCell();
       cell.className = 'metric-cell';
-      const preferred = (Object.hasOwn(highlights, row.suite_id) ? highlights[row.suite_id] : [])
-        .map(id => row.measurements.get(id)).filter(Boolean);
-      const metrics = preferred.length ? preferred : [...row.measurements.values()].slice(0, 3);
+      cell.classList.add('metric-summary');
+      const metrics = preferredMetrics(row.suite_id, row.measurements);
       cell.append(metrics.length ? measurementList(metrics) : text('span', '—'));
     }
-    for (const id of measurements.keys()) {
+    for (const column of measurements) {
       const cell = tr.insertCell();
       cell.className = 'metric-cell';
-      const metric = row.measurements.get(id);
+      cell.dataset.label = metricLabel(column);
+      const metric = row.measurements.get(column.metric_id);
       if (metric) fillMeasurement(cell, metric);
       else cell.textContent = '—';
     }
+    for (const cell of tr.cells) cell.setAttribute('role', 'cell');
   }
   region.append(table);
   resultsHost.append(region);
@@ -253,11 +268,15 @@ function render() {
       for (const [id, metric] of row.measurements) measurements.set(id, metric);
     }
   }
+  const featured = preferredMetrics(activeSuite, measurements);
+  const metricColumns = showAllMetrics ? [...measurements.values()] : featured;
+  metricToggle.hidden = measurements.size <= featured.length;
+  metricToggle.textContent = showAllMetrics ? 'Show key metrics' : `Show all ${measurements.size} metrics`;
   const columns = [
     ['display_name', 'Pipeline'],
     ['suite_id', 'Benchmark suite'],
     ['runner_mode', 'Run by'],
-    ...[...measurements.values()].map(metric => {
+    ...metricColumns.map(metric => {
       const spec = metricInfo[metric.metric_id];
       return [`metric:${metric.metric_id}`, metricLabel(metric), spec?.[1], spec?.[2]];
     }),
@@ -271,7 +290,7 @@ function render() {
   comparisonNote.textContent = activeSuite
     ? (activeSuite === 'synthetic-smoke-v1' ? 'Synthetic integration check' : 'Compare runs on similar hardware.')
     : 'Select one suite to sort by its metrics.';
-  if (visible.length) renderTable(visible.sort(compareRows), columns, measurements, activeSuite, openDetails);
+  if (visible.length) renderTable(visible.sort(compareRows), columns, metricColumns, activeSuite, openDetails);
   else renderEmpty();
 }
 
@@ -289,6 +308,7 @@ function selectCategory(value) {
 
 function resetFilters() {
   search.value = ''; runnerFilter.value = ''; suiteFilter.value = '';
+  showAllMetrics = false;
   selectCategory('');
   search.focus();
 }
@@ -320,6 +340,10 @@ async function main() {
   for (const control of [search, runnerFilter, suiteFilter]) control.addEventListener('input', render);
   for (const button of categoryButtons) button.addEventListener('click', () => selectCategory(button.dataset.category));
   clearButton.addEventListener('click', resetFilters);
+  metricToggle.addEventListener('click', () => {
+    showAllMetrics = !showAllMetrics;
+    render();
+  });
   document.querySelector('#filter-form').addEventListener('submit', event => event.preventDefault());
   selectCategory('');
 }
