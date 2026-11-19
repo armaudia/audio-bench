@@ -217,6 +217,27 @@ def test_paced_warmup_keeps_state_and_measured_source_coverage(tmp_path):
 
 
 @pytest.mark.sdk
+def test_realtime_evaluator_runs_the_paced_collector(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(ROOT / "scripts"))
+    import evaluate_realtime
+
+    profile = json.loads(evaluate_realtime.PROFILE_PATH.read_text())
+    # This exercises the full process and timing path without gating CI on host load.
+    profile.update(stream_levels=[1], input_repetitions_per_stream=1, completion_lateness_budget_ms=1000)
+    profile_path = tmp_path / "profile.json"
+    profile_path.write_text(json.dumps(profile))
+    monkeypatch.setattr(evaluate_realtime, "PROFILE_PATH", profile_path)
+    work = tmp_path / "realtime"
+    result = evaluate_realtime.run_realtime_candidate(
+        native_build=NATIVE_BUILD, sdk_prefix=SDK_PREFIX,
+        provider_id="dsp.highpass80.v0", work=work,
+    )
+    assert (work / "streams-01/stream-00/collector-summary.json").is_file()
+    assert result["case_count"] == 1
+    assert result["evidence"]["tested_stream_levels"][0]["passed"]
+
+
+@pytest.mark.sdk
 @pytest.mark.skipif(
     not (NATIVE_BUILD / "audio_bench_collect").is_file(),
     reason="verified native collector build is not available",
