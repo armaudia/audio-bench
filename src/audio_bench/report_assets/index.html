@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <h1>audio-bench evidence report</h1>
+    <h1>Benchmark evidence report</h1>
     <p class="lede">
       Execution, reproduction, review and qualification are independent dimensions. A passing
       execution is not a qualification. Synthetic fixtures are correctness fixtures, not speech or
@@ -19,20 +19,22 @@
 
   <main>
     <section aria-labelledby="filters">
-      <h2 id="filters">Filters</h2>
+      <h2 id="filters">Filter results</h2>
       <form id="filter-form" class="filters">
         <label>Task <select id="filter-task"><option value="">all</option></select></label>
         <label>Cohort <select id="filter-cohort"><option value="">all</option></select></label>
         <label>Configuration <select id="filter-config"><option value="">all</option></select></label>
         <button type="submit">Apply</button>
+        <button id="reset-filters" type="button">Clear filters</button>
         <button id="csv-export" type="button">Export visible rows (CSV)</button>
-        <a href="data/index.json" download>Raw index (JSON)</a>
+        <a href="data/index.json" download>Download JSON</a>
       </form>
     </section>
 
     <section aria-labelledby="rows">
-      <h2 id="rows">Rows</h2>
-      <table>
+      <h2 id="rows">Benchmark results</h2>
+      <p id="result-status" class="note" role="status"></p>
+      <div class="table-scroll" role="region" aria-label="Benchmark results table" tabindex="0"><table>
         <thead>
           <tr>
             <th scope="col">Configuration</th>
@@ -46,7 +48,7 @@
         <tbody id="rows-body">
 <!--ROWS-->
         </tbody>
-      </table>
+      </table></div>
       <p class="note">
         A row with failed or missing observations is shown as-is and is never ranked as a complete
         comparison. Partial intersections are labelled partial diagnostics in the JSON index.

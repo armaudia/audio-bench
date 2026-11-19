@@ -94,7 +94,6 @@ def run_realtime_candidate(*, native_build: Path, sdk_prefix: Path, provider_id:
         start = time.monotonic_ns()
         for stream in range(stream_count):
             output = level_dir / f"stream-{stream:02d}"
-            output.mkdir()
             command = [*base, "--output-dir", str(output)]
             for item, path in enumerate(input_paths):
                 unique = level_dir / f"stream-{stream:02d}-case-{item:02d}.f32"

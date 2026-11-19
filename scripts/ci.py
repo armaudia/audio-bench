@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2026 Tsakanyan Hovhannes
 # SPDX-License-Identifier: Apache-2.0
-"""Verify the build and unit checks, with benchmark execution reserved for main pushes."""
+"""Verify contracts, synthetic checks, and the relocated release package."""
 from __future__ import annotations
 
 import argparse
@@ -68,20 +68,6 @@ def main() -> None:
     wheels = output / "wheels"
     run(sys.executable, "-m", "pip", "wheel", "--no-deps", "--no-build-isolation", "--wheel-dir", str(wheels), str(root))
     wheel = next(wheels.glob("audio_bench-*.whl"))
-    environment = output / "python"
-    venv.EnvBuilder(with_pip=True).create(environment)
-    python = environment / "bin/python"
-    options = ["--no-index", "--find-links", str(args.wheelhouse.resolve())] if args.wheelhouse else []
-    run(str(python), "-m", "pip", "install", *options, "--constraint", str(root / "locks/requirements-ci.txt"),
-        "--report", str(output / "wheel-install-results.json"), str(wheel))
-    clean_env = dict(os.environ)
-    clean_env.pop("PYTHONPATH", None)
-    if not args.skip_benchmarks:
-        run(str(python), "-m", "audio_bench", "smoke", "--output", str(output / "installed-smoke"),
-            "--native-build", str(native), "--sdk-prefix", str(prefix), cwd=environment, env=clean_env)
-        run(str(python), "-m", "audio_bench", "validate", str(output / "installed-smoke"), cwd=environment, env=clean_env)
-        run(str(python), "-m", "audio_bench", "report", "build", "--bundle", str(output / "installed-smoke"),
-            "--output", str(output / "installed-report"), cwd=environment, env=clean_env)
     package = output / "package"
     (package / "bin").mkdir(parents=True)
     for name in ("audio_bench_driver", "audio_bench_collect"):
@@ -100,6 +86,25 @@ def main() -> None:
     dist.mkdir()
     target = f"{platform.system().lower()}-{platform.machine().lower()}"
     archive = Path(shutil.make_archive(str(dist / f"audio-bench-0.1.0-{target}"), "zip", package))
+    extracted = output / "extracted"
+    # unzip preserves the executable mode of the two native programs in the ZIP.
+    run("unzip", "-q", str(archive), "-d", str(extracted))
+    environment = output / "python"
+    venv.EnvBuilder(with_pip=True).create(environment)
+    python = environment / "bin/python"
+    options = ["--no-index", "--find-links", str(args.wheelhouse.resolve())] if args.wheelhouse else []
+    clean_env = dict(os.environ)
+    clean_env.pop("PYTHONPATH", None)
+    run(str(python), "-m", "pip", "install", *options, "--constraint", str(extracted / "requirements-ci.txt"),
+        "--report", str(output / "wheel-install-results.json"), str(extracted / wheel.name),
+        cwd=environment, env=clean_env)
+    if not args.skip_benchmarks:
+        run(str(python), "-m", "audio_bench", "smoke", "--output", str(output / "installed-smoke"),
+            "--native-build", str(extracted / "bin"), "--sdk-prefix", str(extracted / "sdk/audio-sdk-0.1.0"),
+            cwd=environment, env=clean_env)
+        run(str(python), "-m", "audio_bench", "validate", str(output / "installed-smoke"), cwd=environment, env=clean_env)
+        run(str(python), "-m", "audio_bench", "report", "build", "--bundle", str(output / "installed-smoke"),
+            "--output", str(output / "installed-report"), cwd=environment, env=clean_env)
     (dist / (archive.name + ".sha256")).write_text(hashlib.sha256(archive.read_bytes()).hexdigest() + "  " + archive.name + "\n")
 
 
