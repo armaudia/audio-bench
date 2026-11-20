@@ -9,6 +9,8 @@ models, runners, redistribution, playback, or qualification claims.
 
 - **Provenance and rights:** Pin Bench and SDK revisions, package/build and
   scorer digests, provider descriptors, effective configs, and any asset IDs.
+  Check that the sealed provider descriptor matches the runtime descriptor and
+  the descriptor digest named by the effective config.
   For a chain, pin stage order and each stage's descriptor, config, and build.
   Record acquisition, evaluation, redistribution, and playback decisions and
   evidence separately. Unknown scope does not permit the action. Derived
@@ -65,9 +67,10 @@ pairs (six synthetic speakers, four pairs each) use mono 16 kHz and the same
 | Alignment | `sha256:22fa37573d1a33b92c55a5b934f3de460eb89a933c098533005b35940735c6d0` |
 | Scored intervals | `sha256:7335964c3209495a6fda2697b9ae1654c87ce5669a980c1966a1a60f2050914a` |
 
-Both providers produced valid sealed bundles: 168/168 finite observations per
+Both providers completed functional smoke: 168/168 finite observations per
 provider (24 cases × seven metrics), one row per offline report and zero media
-bytes. Label: **synthetic local functional evidence; not qualification**.
+bytes. The validator accepted both bundles despite the descriptor mismatch
+below. Label: **synthetic local functional evidence; not qualification**.
 Execution `passed`, review `pending`, reproduction `not_reproduced`, qualification
 `not_assessed`. The digests identify the recorded local artifacts, not
 byte-for-byte promises about reruns:
@@ -79,6 +82,38 @@ byte-for-byte promises about reruns:
 | `sdk/audio-sdk-0.1.0.tar.gz` | `sha256:9265196547dba1d74f6c05d00d87d23d36b0a86b38f1ad9feabc4945fe0ff372` |
 | `dsp.highpass80.v0` sealed core | `sha256:37b50f3fbe0e20470a35466815f48d610b2841870abf1a4db1d3e3b3f1a79f80` |
 | `speex.ns.v0` sealed core | `sha256:1d1c19186cf1828eee48d02ba30985eb6f15c38079b59deb7c18ee35e80bbda7` |
+
+### Descriptor provenance discrepancy
+
+For both built-ins, `smoke` seals the wheel's stale
+`runtime_data/schemas/sdk/providers/` descriptor as `provider-descriptor.json`
+and records its hash as `provider_digest` in the request matrix and `run.json`.
+The extracted driver's `--descriptor` instead matches the pinned SDK's
+`share/audio-sdk/schemas/providers/` copy and the wheel's `schema_data/sdk/providers/`
+copy byte for byte after removing the driver's trailing LF. The SDK
+`descriptor_digest` inside `--effective-config` matches the **driver** digest,
+not the sealed one. The hash of the entire effective config is a separate
+identity (`configuration_id` and collector `sdk_config_digest`).
+
+| Compared value (SHA-256) | `dsp.highpass80.v0` | `speex.ns.v0` |
+| --- | --- | --- |
+| Wheel runtime descriptor / sealed `provider_digest` | `6fcf3621a8d31ba6fe1eaed191ca4dcf71987718dd135b773925092dbac1219f` | `e8f9fdb91181f5ba68477028ffc55dfb0c5c06d2876bc8668a48c57f62297888` |
+| Driver / pinned SDK / wheel schema descriptor / effective-config `descriptor_digest` | `d664ddc7977b5ff193e184b12dca48f3923675e8a7f0d4feb79781b0ca7c77e3` | `8dcfbd3ca87ae85f0c1d6390ede34b62b5a44461bef65d52c7bf0cf5c303b733` |
+| Entire effective config | `44c6304e693a8b1a46306e730757de7bc509de4fdb03f4e36282de2cf7d3c8d3` | `de37eff9dc87bd971925cc17f7d0c02366c83947859fa048499368e5838bda29` |
+| `source_digest` inside the sealed descriptor | `4942fa9083c0d42da76798a177fbaa1cf36d9fda995b7a4906e33b4105a9f337` | `b8e058907560dd08bcabd96a01d7a022869dbfb1093668ca9b487f1a2743277c` |
+| `source_digest` inside the SDK descriptor | `9da5ab40e8795dd32b4228674e7d851e054cfbe798034e76944a96e8cbf2538f` | `4f324b89c5dfa81001fe55759e09b939eb964ef3b7dd74f9e89caa4630ae647b` |
+
+High-pass's sealed descriptor says `MIT (existing first-party source; release
+license decision pending)` with notice `licenses/first-party-MIT.txt`; the
+pinned SDK descriptor says `MPL-2.0` with notice `licenses/MPL-2.0.txt`.
+Speex says `BSD-3-Clause` in both. The stale high-pass metadata is not evidence
+of the runtime's license. `validate` checks the bundle's internal records and
+hashes, but does not reconcile the sealed `provider_digest` with the SDK
+descriptor or the effective config's `descriptor_digest`. These runs establish
+functional smoke only, not provider provenance or qualification. Any packaging
+or validation fix requires a separate maintainer-approved task.
+
+### Paired diagnostic
 
 A separate local diagnostic used the same scorer and intervals for the
 noisy-input identity control (not a sealed attempt); high-pass was a second
@@ -118,6 +153,45 @@ for provider in dsp.highpass80.v0 speex.ns.v0; do
   venv/bin/python -m audio_bench report build --bundle "${provider}-bundle" \
     --output "${provider}-report"
 done
+```
+
+To compare the descriptor provenance in those runs, from `OUT`:
+
+```sh
+venv/bin/python - <<'PY'
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+import audio_bench
+
+def sha(data):
+    return "sha256:" + hashlib.sha256(data).hexdigest()
+
+for provider in ("dsp.highpass80.v0", "speex.ns.v0"):
+    args = ["extracted/bin/audio_bench_driver", "--provider", provider]
+    driver = subprocess.check_output([*args, "--descriptor"]).removesuffix(b"\n")
+    config = subprocess.check_output([*args, "--effective-config"]).removesuffix(b"\n")
+    bundle = Path(f"{provider}-bundle")
+    attempt, = (bundle / "runs").glob("*/*")
+    request_path, = (bundle / "requests").glob("*.json")
+    request = json.loads(request_path.read_bytes())
+    run = json.loads((attempt / "run.json").read_bytes())
+    sealed = (attempt / "provider-descriptor.json").read_bytes()
+    name = f"providers/{provider}.descriptor.json"
+    wheel = Path(audio_bench.__file__).parent
+    sdk = Path("extracted/sdk/audio-sdk-0.1.0/share/audio-sdk/schemas")
+    assert sealed == (wheel / "runtime_data/schemas/sdk" / name).read_bytes()
+    assert driver == (sdk / name).read_bytes() == (wheel / "schema_data/sdk" / name).read_bytes()
+    assert sha(sealed) == run["provider_digest"] == request["matrix"][0]["provider_digest"]
+    assert sha(driver) == json.loads(config)["descriptor_digest"] != sha(sealed)
+    assert config == (attempt / "effective-config.json").read_bytes()
+    assert sha(config) == run["configuration_id"]
+    print(provider, "sealed/driver/config:", sha(sealed), sha(driver), sha(config))
+    for label, data in (("sealed", sealed), ("driver", driver)):
+        descriptor = json.loads(data)
+        print(label, descriptor["source_digest"], descriptor["upstream"])
+PY
 ```
 
 On separate copies of the high-pass bundle, the installed validator exited 1
