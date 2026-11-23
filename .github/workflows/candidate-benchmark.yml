@@ -102,7 +102,7 @@ jobs:
       - name: Restore or initialize the VoiceBank corpus cache
         if: steps.corpus.outputs.voicebank == 'true'
         id: dataset-cache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ runner.temp }}/audio-bench-datasets
           key: audio-bench-corpus-voicebank-demand-${{ hashFiles('DATA_LICENSE.md', 'scripts/check_corpus_rights.py', 'scripts/prepare_voices_cohort.py', 'scripts/fetch_voicebank_demand.py', 'scripts/fetch_dns5_dev.py', 'src/audio_bench/acquire.py', 'manifests/voices/voices-balanced-realroom-v1/selection.json', 'manifests/voices/voices-balanced-realroom-v1/status.json', 'manifests/voicebank-demand/voicebank-demand-test-v1/provenance.json', 'manifests/voicebank.status.json', 'manifests/dns5.status.json') }}
