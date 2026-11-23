@@ -65,6 +65,9 @@ and scoring scope. Audio files are not included in Actions artifacts or Git,
 except the attributed five-clip VOiCES smoke fixture; selected real cohorts are
 downloaded to verified local or eligible GitHub Actions caches.
 
+Use the [provider and composed-chain evidence template](docs/PROVIDER_EVIDENCE_TEMPLATE.md)
+to record matched controls, raw validity, and the scope of benchmark claims.
+
 ## Release status
 
 The code supports VoiceBank+DEMAND scoring and real-time throughput profiles,
